@@ -1,0 +1,3684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payout Grid Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --navy:#16294F;
+    --navy-deep:#0E1C38;
+    --blue:#2F5DA8;
+    --blue-soft:#EAF0FB;
+    --bg:#F3F5F9;
+    --card:#FFFFFF;
+    --border:#D8DCE6;
+    --text:#1D2433;
+    --text-soft:#6B7386;
+    --pos:#1E7A4C;
+    --pos-soft:#EAF7EF;
+    --amber:#E8A020;
+    --neg:#B23B3B;
+    --sans:'Inter', sans-serif;
+    --display:'Poppins', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 80px;}
+
+  header.topbar{
+    background:linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    padding:26px 0;
+  }
+  header.topbar .inner{
+    max-width:1180px;margin:0 auto;padding:0 20px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;
+  }
+  header.topbar h1{font-family:var(--display);color:#fff;font-size:22px;margin:0;font-weight:700;}
+  header.topbar p{color:#B9C4DD;font-size:13px;margin:4px 0 0;}
+  .db-status{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:10px 16px;color:#fff;font-size:13px;}
+  .db-status b{color:#8FB4F5;}
+
+  .tabs{display:flex;gap:4px;background:var(--navy-deep);}
+  .tabs .inner{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;gap:4px;}
+  .tab-btn{background:none;border:none;color:#B9C4DD;font-family:var(--sans);font-weight:600;font-size:14px;padding:14px 18px;cursor:pointer;border-bottom:3px solid transparent;}
+  .tab-btn.active{color:#fff;border-bottom-color:var(--blue);}
+  .tab-btn:hover{color:#fff;}
+
+  .view{display:none;padding-top:28px;}
+  .view.active{display:block;}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:22px;box-shadow:0 1px 3px rgba(16,29,58,0.05);}
+  .card h2{font-family:var(--display);font-size:17px;margin:0 0 4px;color:var(--navy);}
+  .card .sub{font-size:13px;color:var(--text-soft);margin:0 0 18px;}
+
+  #dropzone{border:1.5px dashed #A9B6D6;border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;background:var(--blue-soft);transition:background .15s ease;}
+  #dropzone.dragover{background:#DCE7FA;}
+  #dropzone .glyph{font-size:26px;color:var(--blue);margin-bottom:8px;}
+  #dropzone .primary{font-weight:600;font-size:14px;margin-bottom:2px;}
+  #dropzone .secondary{font-size:12px;color:var(--text-soft);}
+  #fileInputUpload{display:none;}
+
+  .map-row{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid #EEF0F5;}
+  .map-row:last-child{border-bottom:none;}
+  .map-row label{font-size:13px;font-weight:600;color:var(--navy);}
+  .map-row select, .map-row input[type=text]{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:13px;background:#fff;color:var(--text);}
+  .company-input{margin-bottom:16px;}
+
+  button.btn{font-family:var(--sans);font-weight:600;font-size:13px;padding:11px 20px;border-radius:9px;border:none;cursor:pointer;}
+  button.btn.primary{background:var(--blue);color:#fff;}
+  button.btn.primary:hover{background:#254a8a;}
+  button.btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--blue);}
+  button.btn.ghost:hover{background:var(--blue-soft);}
+  button.btn.dark{background:var(--navy-deep);color:#fff;}
+  button.btn.dark:hover{background:#08132a;}
+  button.btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+
+  .db-summary{display:flex;gap:24px;flex-wrap:wrap;margin-top:6px;}
+  .db-summary .stat{font-size:13px;}
+  .db-summary .stat b{display:block;font-family:var(--display);font-size:20px;color:var(--navy);}
+
+  table.mini{width:100%;border-collapse:collapse;font-size:12px;margin-top:14px;}
+  table.mini th{text-align:left;background:var(--blue-soft);color:var(--navy);padding:8px 10px;font-weight:600;}
+  table.mini td{padding:7px 10px;border-bottom:1px solid #EEF0F5;}
+  table.mini tr:last-child td{border-bottom:none;}
+  .removeFile{color:var(--neg);background:none;border:none;cursor:pointer;font-size:12px;text-decoration:underline;}
+
+  .field{position:relative;border:1px solid var(--border);border-radius:8px;background:#fff;padding:10px 12px 8px;margin-bottom:14px;}
+  .field label{position:absolute;top:-7px;left:11px;background:#fff;padding:0 5px;font-size:10.5px;color:var(--navy);font-weight:600;}
+  .field label .req{color:var(--blue);}
+  .field select, .field input{width:100%;border:none;outline:none;font-family:var(--sans);font-size:13px;color:var(--text);background:transparent;padding-top:1px;}
+  .field select{cursor:pointer;}
+  .field-note{font-size:11px;color:var(--text-soft);margin:-10px 0 12px 4px;}
+
+  /* ── Searchable combobox (Location / RTO) ── */
+  .combo{position:relative;}
+  .combo-display{
+    display:flex;align-items:center;justify-content:space-between;gap:6px;
+    width:100%;cursor:pointer;font-size:13px;color:var(--text);padding-top:1px;
+  }
+  .combo-display .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .combo-display .txt.placeholder{color:#9AA1B4;}
+  .combo-display .caret{color:var(--text-soft);flex-shrink:0;font-size:9px;}
+  .field.combo-open{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,93,168,0.12);}
+  .combo-panel{
+    display:none;position:absolute;z-index:40;left:-1px;right:-1px;top:calc(100% + 7px);
+    background:#fff;border:1px solid var(--border);border-radius:10px;
+    box-shadow:0 8px 22px rgba(16,29,58,0.16);overflow:hidden;
+  }
+  .combo-panel.open{display:block;}
+  .combo-search-wrap{padding:8px;border-bottom:1px solid #EEF0F5;}
+  .combo-search{
+    width:100%;padding:7px 10px;border:1.5px solid var(--text);border-radius:7px;
+    font-family:var(--sans);font-size:12.5px;outline:none;color:var(--text);
+  }
+  .combo-search::placeholder{color:#9AA1B4;}
+  .combo-list{max-height:230px;overflow-y:auto;padding:3px 0;}
+  .combo-opt{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:7px 11px;font-size:12.5px;color:var(--text);cursor:pointer;line-height:1.3;
+  }
+  .combo-opt:hover{background:var(--blue-soft);}
+  .combo-opt.selected{background:#EFF3FB;color:var(--blue);font-weight:600;}
+  .combo-opt .tick{color:var(--blue);font-size:13px;display:none;flex-shrink:0;}
+  .combo-opt.selected .tick{display:inline;}
+  .combo-opt .sub{color:var(--blue);font-weight:400;}
+  .combo-empty{padding:13px 11px;font-size:12px;color:var(--text-soft);text-align:center;}
+  .search-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:0 14px;}
+  @media (max-width:900px){.search-grid{grid-template-columns:1fr 1fr;}}
+  @media (max-width:600px){.search-grid{grid-template-columns:1fr;}}
+  .search-actions{display:flex;gap:10px;margin-top:6px;}
+
+  /* ===== Results page ===== */
+  #resultsWrap{display:none;}
+
+  .summary-bar{
+    position:sticky; top:0; z-index:30;
+    background:linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border-radius:12px;
+    padding:11px 14px 9px;
+    margin-bottom:14px;
+    overflow-x:auto;
+    white-space:nowrap;
+    box-shadow:0 3px 12px rgba(14,28,56,0.22);
+  }
+  .summary-bar .chip{
+    display:inline-flex;flex-direction:column;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(255,255,255,0.18);
+    border-radius:8px;
+    padding:5px 10px;
+    margin-right:7px;
+    min-width:124px;
+    vertical-align:top;
+    position:relative;
+  }
+  .summary-bar .chip .tag{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#B9C4DD;margin-bottom:1px;}
+  .summary-bar .chip .val{font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap;}
+  /* Chips that are live dropdowns — edit the search without scrolling back up */
+  .summary-bar .chip.editable{cursor:pointer;padding-right:24px;}
+  .summary-bar .chip.editable:hover{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.34);}
+  .summary-bar .chip.editable::after{
+    content:'▾';position:absolute;right:9px;top:50%;transform:translateY(-25%);
+    color:#B9C4DD;font-size:10px;pointer-events:none;
+  }
+  .summary-bar .chip select{
+    position:absolute;inset:0;width:100%;height:100%;
+    opacity:0;cursor:pointer;border:none;
+  }
+  .summary-bar .chip .val.dim{color:#94A3C4;font-weight:500;}
+
+  .results-toolbar{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+    margin-bottom:18px;
+  }
+  .results-toolbar .left{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .results-toolbar h2{font-family:var(--display);font-size:19px;color:var(--navy);margin:0;font-weight:700;}
+  .results-toolbar .date-box{
+    display:flex;align-items:center;gap:8px;
+    background:#fff;border:1px solid var(--border);border-radius:10px;padding:9px 14px;
+    font-size:13px;color:var(--text);
+  }
+  .results-toolbar .date-box b{display:block;font-size:10px;color:var(--text-soft);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+
+  .results-body{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start;}
+  @media (max-width:800px){.results-body{grid-template-columns:1fr;}}
+
+  .filters-panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;position:sticky;top:74px;max-height:calc(100vh - 92px);overflow-y:auto;}
+  .filters-panel .fp-head{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:15px;color:var(--navy);font-weight:700;margin-bottom:14px;}
+  .fp-group{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #EEF0F5;}
+  .fp-group:last-of-type{border-bottom:none;}
+  .fp-group .fp-title{font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+  .fp-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .fp-toggle-row span{font-size:13px;font-weight:600;}
+  .switch{position:relative;display:inline-block;width:38px;height:20px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;}
+  .switch .slider{position:absolute;cursor:pointer;inset:0;background:#D8DCE6;border-radius:20px;transition:.15s;}
+  .switch .slider:before{content:"";position:absolute;height:14px;width:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;}
+  .switch input:checked + .slider{background:var(--blue);}
+  .switch input:checked + .slider:before{transform:translateX(18px);}
+  .fp-check{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:13px;color:var(--text);cursor:pointer;}
+  .fp-check input{width:16px;height:16px;accent-color:var(--blue);cursor:pointer;}
+  .fp-empty{font-size:12px;color:var(--text-soft);}
+  .fp-actions{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+  .fp-actions button.btn{padding:9px 16px;font-size:12px;}
+  .fp-clear{background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;}
+
+  .result-card{
+    border:1px solid var(--border);border-radius:10px;background:#fff;margin-bottom:9px;overflow:hidden;
+  }
+  .result-card .rc-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 12px;flex-wrap:wrap;}
+  .rc-insurer{display:flex;align-items:center;gap:8px;}
+  .rc-badge{
+    width:28px;height:28px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:700;font-size:10px;color:#fff;flex-shrink:0;
+  }
+  .rc-insurer .name-block .lbl{font-size:8.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+  .rc-insurer .name-block .name{font-family:var(--display);font-size:12px;font-weight:700;color:var(--navy);line-height:1.2;}
+  .rc-payout{text-align:right;}
+  .rc-payout .lbl{font-size:8.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+  .rc-payout .val{font-family:var(--display);font-size:16px;font-weight:700;color:var(--pos);line-height:1.1;}
+  .rc-tags{display:flex;flex-wrap:wrap;gap:4px;padding:0 12px 9px;}
+  .rc-tags .tag{background:#EFF1F5;color:var(--text-soft);font-size:9.5px;font-weight:600;padding:3px 8px;border-radius:12px;white-space:nowrap;}
+  /* Tags whose value differs across the result set — these explain the payout gap */
+  .rc-tags .tag.tag-diff{background:var(--blue-soft);color:var(--navy);border:1px solid #C3D4EE;}
+  .rc-strip{background:var(--pos-soft);height:3px;}
+
+  .empty-state{text-align:center;padding:50px 20px;color:var(--text-soft);font-size:14px;background:#fff;border:1px solid var(--border);border-radius:14px;}
+
+  footer.foot{text-align:center;padding-top:30px;font-size:12px;color:var(--text-soft);}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="inner">
+    <div>
+      <h1>Payout Grid Portal</h1>
+      <p>Upload once, search anytime.</p>
+    </div>
+    <div class="db-status" id="dbStatus">No data loaded yet</div>
+    <div id="persistNote" style="font-size:11px;margin-top:4px;color:var(--text-soft)"></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="inner">
+    <button class="tab-btn active" data-tab="upload">Upload &amp; Manage Data</button>
+    <button class="tab-btn" data-tab="search">Search Payout</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- UPLOAD VIEW -->
+  <section class="view active" id="view-upload">
+
+    <div class="card">
+      <h2>Load a previously saved master file</h2>
+      <p class="sub">If you've already built your database before, load the master JSON file here instead of re-uploading every company's grid.</p>
+      <input type="file" id="loadMasterInput" accept=".pgdb,.json">
+      <div class="btn-row">
+        <button class="btn ghost" onclick="document.getElementById('loadMasterInput').click()">Choose master file</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Add a company payout grid</h2>
+      <p class="sub">Upload one company's file at a time (CSV or Excel). You'll map its columns next, then add it to your database.</p>
+      <div id="dropzone">
+        <div class="glyph">⤓</div>
+        <div class="primary">Drop a payout grid file here, or click to browse</div>
+      <div id="importProgress" style="display:none;margin-top:10px;padding:9px 12px;border-radius:8px;background:#eff6ff;border:1px solid #bfdbfe;font-size:13px;color:#1e3a8a"></div>
+      <div id="vmStatus" style="margin-top:10px;padding:10px 12px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;font-size:13px;color:#0f172a"></div>
+        <div class="secondary">.CSV · .XLSX · .XLS</div>
+      </div>
+      <input type="file" id="fileInputUpload" accept=".csv,.xlsx,.xls">
+    </div>
+
+    <div class="card" id="mappingCard" style="display:none;">
+      <h2>Map columns</h2>
+      <p class="sub">Tell us which column in your file corresponds to each field. Anything left unmapped is still kept and shown as a tag on results.</p>
+
+      <div class="company-input">
+        <div class="field">
+          <label>Company / Insurer name for this file <span class="req">*</span></label>
+          <input type="text" id="companyNameInput" placeholder="e.g. HDFC Ergo, ICICI Lombard...">
+        </div>
+      </div>
+
+      <div id="savedMapBanner" style="display:none;background:var(--blue-soft);border:1px solid var(--blue);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--navy);">
+        This file's columns match a format you've mapped before — it'll be added automatically using that same mapping.
+        <button type="button" id="remapInsteadBtn" style="background:none;border:none;color:var(--blue);font-weight:600;text-decoration:underline;cursor:pointer;padding:0;margin-left:4px;">Remap columns instead</button>
+      </div>
+
+      <div id="mapRows"></div>
+
+      <div class="btn-row">
+        <button class="btn primary" id="addToDbBtn">Add to database</button>
+        <button class="btn ghost" id="cancelMapBtn">Cancel</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Your database</h2>
+      <div class="db-summary">
+        <div class="stat"><b id="statRecords">0</b>records</div>
+        <div class="stat"><b id="statCompanies">0</b>companies</div>
+        <div class="stat"><b id="statFiles">0</b>files loaded</div>
+      </div>
+      <table class="mini" id="filesTable" style="display:none;">
+        <thead><tr><th>Company</th><th>Rows</th><th></th></tr></thead>
+        <tbody id="filesTableBody"></tbody>
+      </table>
+      <div class="btn-row">
+        <button class="btn primary" id="downloadMasterBtn" disabled>Download master file</button>
+        <button class="btn ghost" id="clearDbBtn" disabled>Clear database</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- SEARCH VIEW -->
+  <section class="view" id="view-search">
+
+    <div class="card" id="searchFormCard">
+      <h2>Find your payout</h2>
+      <p class="sub">Fill in what you know — options narrow down based on your other selections.</p>
+
+      <div class="search-grid">
+        <div class="field"><label>Which vehicle are you looking for?</label>
+          <select id="sel-vehicleType"><option value="">Select Vehicle Type</option></select></div>
+        
+        <div class="field combo" id="f-make"><label>What is your vehicle's make?</label>
+          <select id="sel-make" style="display:none;"><option value="">Select Make</option></select>
+          <div class="combo-display" id="make-display">
+            <span class="txt placeholder">Select Make</span><span class="caret">▼</span>
+          </div>
+          <div class="combo-panel" id="make-panel">
+            <div class="combo-search-wrap">
+              <input type="text" class="combo-search" id="make-search" placeholder="Search…" autocomplete="off">
+            </div>
+            <div class="combo-list" id="make-list"></div>
+          </div>
+        </div>
+        <div class="field combo" id="f-model"><label>What is your vehicle's model?</label>
+          <select id="sel-model" style="display:none;"><option value="">Select Model</option></select>
+          <div class="combo-display" id="model-display">
+            <span class="txt placeholder">Select Model</span><span class="caret">▼</span>
+          </div>
+          <div class="combo-panel" id="model-panel">
+            <div class="combo-search-wrap">
+              <input type="text" class="combo-search" id="model-search" placeholder="Search…" autocomplete="off">
+            </div>
+            <div class="combo-list" id="model-list"></div>
+          </div>
+        </div>
+<div class="field combo" id="f-bodyType"><label>What is the body type?</label>
+          <select id="sel-bodyType" style="display:none;"><option value="">Select Body Type</option></select>
+          <div class="combo-display" id="body-display">
+            <span class="txt placeholder">Select Body Type</span><span class="caret">▼</span>
+          </div>
+          <div class="combo-panel" id="body-panel">
+            <div class="combo-search-wrap">
+              <input type="text" class="combo-search" id="body-search" placeholder="Search…" autocomplete="off">
+            </div>
+            <div class="combo-list" id="body-list"></div>
+          </div>
+        </div>
+        <div class="field combo" id="f-location"><label>Please help us with your location</label>
+          <select id="sel-location" style="display:none;"><option value="">Select Location</option></select>
+          <div class="combo-display" id="loc-display">
+            <span class="txt placeholder">Select Location</span><span class="caret">▼</span>
+          </div>
+          <div class="combo-panel" id="loc-panel">
+            <div class="combo-search-wrap">
+              <input type="text" class="combo-search" id="loc-search" placeholder="Search location..." autocomplete="off">
+            </div>
+            <div class="combo-list" id="loc-list"></div>
+          </div>
+        </div>
+        <div class="field"><label>How would you like to get covered?</label>
+          <select id="sel-policyType"><option value="">Select Policy Type</option></select></div>
+        <div class="field"><label>Which insurer are you looking for?</label>
+          <select id="sel-insurer"><option value="">All Insurers</option></select></div>
+        <div class="field"><label>Registration Number (Optional)</label>
+          <input type="text" id="regNumber" placeholder="eg. MH12AB1234"></div>
+      </div>
+      <!-- GVW now lives in the results Filters sidebar; kept here so the
+           cascading-filter logic has a value to read. -->
+      <select id="sel-gvwRange" style="display:none;"><option value="">Select GVW Range</option></select>
+
+      <div class="field" style="max-width:260px;">
+        <label>Date</label>
+        <input type="date" id="searchDate">
+      </div>
+        
+        
+        
+
+      <div class="search-actions">
+        <button class="btn primary" id="searchBtn">Search payout</button>
+        <button class="btn ghost" id="resetSearchBtn">Reset</button>
+      </div>
+    </div>
+
+    <div id="resultsWrap">
+      <div id="declinedNote" style="display:none;margin:0 0 14px;padding:11px 14px;border-radius:8px;background:#fef3c7;border:1px solid #fcd34d;font-size:13px;color:#78350f"></div>
+
+      <div class="summary-bar" id="summaryBar"></div>
+
+      <div class="results-toolbar">
+        <div class="left">
+          <h2 id="resultsCount">Showing 0 results</h2>
+          <button class="btn ghost" id="saveSearchBtn" style="padding:9px 16px;font-size:12px;">Save Search</button>
+        </div>
+        <div class="date-box"><span>📅</span><span><b id="resultsDateLabel">Date</b><span id="resultsDate">—</span></span></div>
+      </div>
+
+      <div class="results-body">
+        <div class="filters-panel">
+          <div class="fp-head">⚙ Filters</div>
+
+          <div class="fp-group" id="fp-toggles-group">
+            <div class="fp-toggle-row" id="fp-ncb-row"><span>NCB</span>
+              <label class="switch"><input type="checkbox" id="fp-ncb"><span class="slider"></span></label></div>
+            <div class="fp-toggle-row" id="fp-cpa-row"><span>CPA</span>
+              <label class="switch"><input type="checkbox" id="fp-cpa"><span class="slider"></span></label></div>
+          </div>
+
+          <div class="fp-group" id="fp-policyType-group">
+            <div class="fp-title">Policy Type</div>
+            <div id="fp-policyType-opts"></div>
+          </div>
+
+          <div class="fp-group" id="fp-fuel-group">
+            <div class="fp-title">Fuel Type</div>
+            <div id="fp-fuel-opts"></div>
+          </div>
+
+          <div class="fp-group" id="fp-noOfWheels-group">
+            <div class="fp-title">Wheels</div>
+            <div id="fp-noOfWheels-opts"></div>
+          </div>
+
+          <div class="fp-group" id="fp-condition-group">
+            <div class="fp-title">Condition</div>
+            <div id="fp-condition-opts"></div>
+          </div>
+
+          <div class="fp-group" id="fp-vehicleAge-group">
+            <div class="fp-title">Vehicle Age (in years)</div>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="vehicleAge" value="0-2"><span>0-2</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="vehicleAge" value="2-4"><span>2-4</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="vehicleAge" value="4-6"><span>4-6</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="vehicleAge" value="6-8"><span>6-8</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="vehicleAge" value="8-10"><span>8-10</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="vehicleAge" value="10+"><span>10+</span></label>
+          </div>
+
+          <div class="fp-group" id="fp-gvwRange-group">
+            <div class="fp-title">GVW Range</div>
+            <div id="fp-gvwRange-opts"></div>
+          </div>
+
+          <div class="fp-group" id="fp-odTerm-group">
+            <div class="fp-title">OD Term</div>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="0-1"><span>0-1</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="2-5"><span>2-5</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="6-10+"><span>6-10+</span></label>
+          </div>
+
+          <div class="fp-group" id="fp-tpTerm-group">
+            <div class="fp-title">TP Term</div>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="0-1"><span>0-1</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="2-5"><span>2-5</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="6-10+"><span>6-10+</span></label>
+          </div>
+
+          <div class="fp-group" id="fp-zeroDep-group">
+            <div class="fp-title">Zero Dep</div>
+            <div id="fp-zeroDep-opts"></div>
+          </div>
+
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+
+          <div id="fpDynamic"></div>
+
+          <div class="fp-actions">
+            <button class="btn dark" id="applyFiltersBtn">Apply</button>
+            <button class="fp-clear" id="clearFiltersBtn">Clear All</button>
+          </div>
+        </div>
+
+        <div>
+          <div id="identicalNote" style="display:none;background:#FFF6E5;border:1px solid #E8C583;color:#7A5B18;border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:10px;"></div>
+          <div id="resultsList"></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<footer class="foot">Everything runs in your browser — your data isn't uploaded to a server.</footer>
+
+<script>
+(function(){
+  const STD_FIELDS = [
+    { key: 'company', label: 'Insurer column (leave as None to use the name typed above)' },
+    { key: 'vehicleType', label: 'Vehicle Type' },
+    { key: 'bodyType', label: 'Body Type' },
+    { key: 'policyType', label: 'Policy Type' },
+    { key: 'location', label: 'Location / RTO code' },
+    { key: 'state', label: 'State (for the location label)' },
+    { key: 'city', label: 'City (shown in the location dropdown)' },
+    { key: 'make', label: 'Make' },
+    { key: 'excludeMake', label: 'Exclude Make (makes this row does NOT cover)' },
+    { key: 'model', label: 'Model' },
+    { key: 'fuel', label: 'Fuel Type' },
+    { key: 'gvwRange', label: 'GVW Range (for commercial vehicle grids)' },
+    { key: 'condition', label: 'Condition (New / Renewal / Rollover)' },
+    { key: 'noOfWheels', label: 'Number Of Wheels' },
+    { key: 'vehicleAge', label: 'Vehicle Age (in years)' },
+    { key: 'odTerm', label: 'OD Term' },
+    { key: 'tpTerm', label: 'TP Term' },
+    { key: 'ncb', label: 'NCB' },
+    { key: 'cpa', label: 'CPA' },
+    { key: 'zeroDep', label: 'Zero Dep' },
+    { key: 'discount', label: 'Discount Range' },
+    { key: 'payout', label: 'Payout (%)' },
+    // A rate can be quoted separately for own-damage and third-party premium.
+    // New India publishes every motor rate that way, and United India writes
+    // "OD - 10%, TP - 0%" on large passenger vehicles.
+    { key: 'odPayout', label: 'OD Payout (%)' },
+    { key: 'tpPayout', label: 'TP Payout (%)' }
+  ];
+
+  // small helper the rest of this file relies on
+  const clean = v => String(v == null ? '' : v).trim();
+
+  // ── How the loaded grids are held ───────────────────────────
+  // A parser export carries one row per RTO, so a rule covering 274 codes
+  // arrives 274 times: two exports alone are 1.3 million rows of 32 columns.
+  // Held the old way — one object per row, one string per cell — that is forty
+  // million strings and properties. It is why SheetJS refused the 148 MB export
+  // ("Too many properties to enumerate"), and why every dropdown change took
+  // seconds: each one re-scanned every row six times over.
+  //
+  // So each column now keeps only the DISTINCT values it ever held, plus one
+  // integer per row pointing into that list. "Digit Insurance" is stored once
+  // instead of 516,904 times, and a filter is answered by testing a few hundred
+  // distinct values and then scanning a block of integers.
+  function Col(){
+    this.vals  = [''];
+    this.map   = new Map([['', 0]]);   // value -> index; only needed while importing
+    this.codes = new Int32Array(4096);
+    this.n     = 0;
+  }
+  Col.prototype.ensure = function(n){
+    if (n <= this.codes.length) return;
+    let cap = this.codes.length || 4096;
+    while (cap < n) cap *= 2;
+    const bigger = new Int32Array(cap);
+    bigger.set(this.codes);
+    this.codes = bigger;
+  };
+  Col.prototype.setAt = function(i, v){
+    this.ensure(i + 1);
+    let c = this.map.get(v);
+    if (c === undefined){ c = this.vals.length; this.vals.push(v); this.map.set(v, c); }
+    this.codes[i] = c;
+    if (i >= this.n) this.n = i + 1;
+  };
+  Col.prototype.get = function(i){ return this.vals[this.codes[i]]; };
+  Col.prototype.rebuildMap = function(){
+    this.map = new Map();
+    for (let i = 0; i < this.vals.length; i++) this.map.set(this.vals[i], i);
+  };
+
+  const store = { n: 0, keys: [], cols: new Map(), extraKeys: [] };
+  let declinedBits = null;      // one byte per row, filled after each import
+  let codeInfo = new Map();     // RTO code -> { city, state }, for the dropdown labels
+
+  function storeCol(key){
+    let c = store.cols.get(key);
+    if (!c){
+      c = new Col();
+      c.ensure(store.n || 1);
+      c.n = store.n;                  // rows already loaded simply have no value here
+      store.cols.set(key, c);
+      store.keys.push(key);
+    }
+    if (!c.map) c.rebuildMap();       // restored from storage without one
+    return c;
+  }
+  function dbCount(){ return store.n; }
+
+  // One row, rebuilt as the plain object the rest of the page expects. Only ever
+  // called for rows that are going on screen or into a download.
+  function dbRow(i){
+    const rec = { _extra: {}, _i: i };
+    for (let k = 0; k < STD_FIELDS.length; k++){
+      const c = store.cols.get(STD_FIELDS[k].key);
+      rec[STD_FIELDS[k].key] = c ? c.get(i) : '';
+    }
+    for (let k = 0; k < store.extraKeys.length; k++){
+      const c = store.cols.get('x:' + store.extraKeys[k]);
+      rec._extra[store.extraKeys[k]] = c ? c.get(i) : '';
+    }
+    return rec;
+  }
+
+  function storeClear(){
+    store.n = 0; store.keys = []; store.cols = new Map(); store.extraKeys = [];
+    declinedBits = null; codeInfo = new Map(); clusters = new Map(); clusterAlias = new Map();
+  }
+
+  // Dropping a file drops its rows. The distinct-value lists stay as they are —
+  // a few unused entries cost nothing — and only the integers move.
+  function storeKeep(keep){
+    let m = 0;
+    for (let i = 0; i < store.n; i++) if (keep[i]) m++;
+    store.cols.forEach(c => {
+      const nc = new Int32Array(Math.max(m, 1));
+      let j = 0;
+      for (let i = 0; i < store.n; i++) if (keep[i]) nc[j++] = c.codes[i];
+      c.codes = nc; c.n = m;
+    });
+    store.n = m;
+  }
+
+  // "Won't write this" is read off four standard columns and every extra one.
+  // Testing the distinct values once each and then walking integers turns what
+  // was a regex over 1.3 million joined strings into a few thousand tests.
+  function computeDeclined(){
+    declinedBits = new Uint8Array(store.n);
+    const cols = [];
+    ['payout','remarks','discount','condition'].forEach(k => {
+      const c = store.cols.get(k); if (c) cols.push(c);
+    });
+    store.extraKeys.forEach(k => {
+      const c = store.cols.get('x:' + k); if (c) cols.push(c);
+    });
+    cols.forEach(c => {
+      const hit = new Uint8Array(c.vals.length);
+      for (let v = 0; v < c.vals.length; v++) if (DECLINE_RE.test(c.vals[v])) hit[v] = 1;
+      const codes = c.codes;
+      for (let i = 0; i < store.n; i++) if (hit[codes[i]]) declinedBits[i] = 1;
+    });
+  }
+
+  // Distinct values of one column, optionally restricted to a set of rows.
+  function uniqueValsMasked(mask, key, transform){
+    const c = store.cols.get(key);
+    if (!c) return [];
+    const seen = new Uint8Array(c.vals.length);
+    const codes = c.codes;
+    if (mask){ for (let i = 0; i < store.n; i++){ if (mask[i]) seen[codes[i]] = 1; } }
+    else     { for (let i = 0; i < store.n; i++){ seen[codes[i]] = 1; } }
+    const out = new Set();
+    for (let v = 0; v < c.vals.length; v++){
+      if (!seen[v]) continue;
+      const val = transform ? transform(c.vals[v]) : c.vals[v];
+      if (val && String(val).trim()) out.add(val);
+    }
+    return [...out].sort();
+  }
+  function distinctCount(key){ return uniqueValsMasked(null, key).length; }
+
+  // The first city and state seen for each RTO code — enough to label it.
+  function rebuildCodeInfo(){
+    codeInfo = new Map();
+    const loc = store.cols.get('location');
+    if (!loc) return;
+    const city = store.cols.get('city'), st = store.cols.get('state');
+    const done = new Uint8Array(loc.vals.length);
+    for (let i = 0; i < store.n; i++){
+      const lv = loc.codes[i];
+      if (done[lv]) continue;
+      done[lv] = 1;
+      const code = clean(loc.vals[lv]);
+      if (!code) continue;
+      // Several old codes now share one: keep the first entry that names a city,
+      // so DL01 reads "New Delhi, Delhi" rather than whichever row came last.
+      const prev = codeInfo.get(code);
+      if (prev && clean(prev.city)) continue;
+      codeInfo.set(code, { city: city ? city.get(i) : '', state: st ? st.get(i) : '' });
+    }
+  }
+  // code → state, learned from whatever rows DO name both. Rebuilt whenever the
+  // store changes, so a grid loaded later can resolve an earlier row's state.
+  // Declared up here because refreshDbSummary() rebuilds it and is defined long
+  // before the geography helpers further down.
+  let codeStateMap = new Map();
+  // The Vehicle Master is a REFERENCE list of vehicles, not payout rows. Merging
+  // it into the payout store is what emptied the Make/Model dropdowns: those read from
+  // payout rows, where make is usually blank because a blank means "all makes".
+  // Kept here instead, and used to populate the vehicle dropdowns.
+  let vehicleMaster = [];          // { make, model, bodyType, vehicleType, fuel, cc, gvw, wheels }
+  let vmMakes = [];                // sorted unique makes
+  let vmModelsByMake = new Map();  // make -> [models]
+  let vmBodyByMakeModel = new Map(); // make|model -> [body types]
+  let loadedFiles = [];
+  let pendingHeaders = [];
+  let pendingSource = null;   // { kind:"csv", file } or { kind:"rows", rows }
+  let pendingFileName = '';
+  let currentMatches = [];
+  let sidebarFilterState = {}; // { groupKey: Set(values) }
+  let savedMappings = {}; // { headerSignature: { field: headerName|null } }
+
+  function headerSignature(headers){
+    // The trailing marker is the version of the auto-mapping rules. Bumping it
+    // retires mappings remembered before those rules were corrected, rather
+    // than silently reapplying a wrong one to a familiar-looking file.
+    return headers.map(h => String(h).trim().toLowerCase()).slice().sort().join('||') + '##m2';
+  }
+
+  // ---- Tabs ----
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('view-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'search') populateSearchOptions();
+    });
+  });
+
+  // ---- Upload dropzone ----
+  const dropzone = document.getElementById('dropzone');
+  const fileInputUpload = document.getElementById('fileInputUpload');
+  dropzone.addEventListener('click', () => fileInputUpload.click());
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault(); dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleUploadFile(e.dataTransfer.files[0]);
+  });
+  fileInputUpload.addEventListener('change', e => {
+    if (e.target.files.length) handleUploadFile(e.target.files[0]);
+  });
+
+  // ── Reading a CSV without SheetJS ───────────────────────────
+  // SheetJS builds one JavaScript object property per cell. The 148 MB export
+  // is 643,534 rows of 32 columns — 20.6 million cells — and V8 refuses to
+  // enumerate an object that large, which is the "Too many properties to
+  // enumerate" this file used to fail with. A CSV needs none of that: it is
+  // read straight through, a chunk at a time, and every value is looked up in a
+  // table of the ones already seen so repeated text is stored once rather than
+  // half a million times.
+  function makeCsvParser(onRow){
+    let field = '', row = [], inQuotes = false, carry = '', first = true;
+    const pool = new Map();
+    const intern = t => { const hit = pool.get(t); if (hit !== undefined) return hit; pool.set(t, t); return t; };
+    function endField(){ row.push(intern(field)); field = ''; }
+    function endRow(){ endField(); onRow(row); row = []; }
+    return {
+      // `hasMore` holds back the final character, because the only lookahead
+      // this parser does — telling a doubled "" from a closing quote — must not
+      // fall off the end of a chunk.
+      write(text, hasMore){
+        if (first){ first = false; if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); }
+        text = carry + text; carry = '';
+        let end = text.length;
+        if (hasMore && end > 0){ carry = text.charAt(end - 1); end--; }
+        let i = 0;
+        while (i < end){
+          if (inQuotes){
+            const start = i;
+            while (i < end && text.charCodeAt(i) !== 34) i++;
+            if (i > start) field += text.slice(start, i);
+            if (i < end){
+              if (text.charCodeAt(i + 1) === 34){ field += '"'; i += 2; }
+              else { inQuotes = false; i++; }
+            }
+            continue;
+          }
+          const start = i;
+          let c = 0;
+          while (i < end){
+            c = text.charCodeAt(i);
+            if (c === 44 || c === 10 || c === 13 || c === 34) break;
+            i++;
+          }
+          if (i > start) field += text.slice(start, i);
+          if (i >= end) break;
+          if (c === 34){ inQuotes = true; i++; }
+          else if (c === 44){ endField(); i++; }
+          else if (c === 10){ endRow(); i++; }
+          else { i++; if (text.charCodeAt(i) === 10) i++; endRow(); }   // \r or \r\n
+        }
+      },
+      end(){
+        if (carry){ const t = carry; carry = ''; this.write(t, false); }
+        if (field !== '' || row.length) endRow();
+      }
+    };
+  }
+
+  // Walk the whole file through that parser, yielding to the browser between
+  // chunks so the page keeps painting and the progress line keeps moving.
+  async function streamCsv(file, onRow, onProgress){
+    const parser = makeCsvParser(onRow);
+    if (file.stream && window.TextDecoder){
+      const reader = file.stream().getReader();
+      const dec = new TextDecoder('utf-8');
+      let read = 0, sinceYield = 0;
+      for(;;){
+        const { done, value } = await reader.read();
+        if (done) break;
+        read += value.byteLength;
+        parser.write(dec.decode(value, { stream: true }), true);
+        sinceYield += value.byteLength;
+        if (sinceYield > (1 << 21)){
+          sinceYield = 0;
+          if (onProgress) onProgress(read, file.size);
+          await new Promise(r => setTimeout(r, 0));
+        }
+      }
+      parser.write(dec.decode(), false);
+      if (onProgress) onProgress(file.size, file.size);
+    } else {
+      parser.write(await file.text(), false);
+    }
+    parser.end();
+  }
+
+  function handleUploadFile(file){
+    if (/\.csv$/i.test(file.name)) { handleCsvUpload(file); return; }
+    handleWorkbookUpload(file);
+  }
+
+  function beginMapping(headers, source, fileName){
+    pendingHeaders = headers.map(h => String(h).trim());
+    pendingSource = source;
+    pendingFileName = fileName.replace(/\.[^/.]+$/, '');
+    document.getElementById('companyNameInput').value = pendingFileName;
+    const sig = headerSignature(pendingHeaders);
+    if (savedMappings[sig]) renderQuickAdd(sig); else renderMapping();
+  }
+
+  async function handleCsvUpload(file){
+    try{
+      // Only the head of the file is needed to show the column mapping. The
+      // rest is read when the rows are actually added, so a 148 MB export never
+      // has to sit in memory twice.
+      const HEAD = 1 << 21;
+      const partial = file.size > HEAD;
+      const sample = [];
+      const p = makeCsvParser(r => { if (sample.length < 80) sample.push(r); });
+      p.write(await file.slice(0, HEAD).text(), partial);
+      if (!partial) p.end();
+      const rows = sample.filter(r => r.some(c => c !== ''));
+      if (!rows.length){ alert('This file looks empty.'); return; }
+
+      // Fork BEFORE the mapping screen: a file with Make + Model +
+      // Variant/Cubic Capacity is the vehicle master, never an insurer grid.
+      if (looksLikeVehicleMaster(rows[0])){
+        const all = [];
+        await streamCsv(file, r => { if (r.some(c => c !== '')) all.push(r); },
+                        (d, t) => showImportProgress(d, t, 'bytes'));
+        showImportProgress(0, 0);
+        loadVehicleMaster(all, file.name);
+        return;
+      }
+      if (rows.length < 2){ alert('This file needs a header row and at least one data row.'); return; }
+      beginMapping(rows[0], { kind: 'csv', file }, file.name);
+    } catch(err){
+      showImportProgress(0, 0);
+      alert('Could not read this file: ' + err.message);
+    }
+  }
+
+  function handleWorkbookUpload(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try{
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: 'array', cellDates: true });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
+        const rows = json.filter(r => r.some(c => String(c).trim() !== ''));
+
+        if (looksLikeVehicleMaster(rows[0] || [])) {
+          loadVehicleMaster(rows, file.name);
+          return;
+        }
+        if (rows.length < 2){ alert('This file needs a header row and at least one data row.'); return; }
+        beginMapping(rows[0].map(h => String(h).trim()), { kind: 'rows', rows: rows.slice(1) }, file.name);
+      } catch(err){
+        const tooBig = /propert|enumerate|Invalid string length|out of memory/i.test(err.message || '');
+        alert('Could not read this file: ' + err.message +
+              (tooBig ? '\n\nAn Excel file this large cannot be opened inside a browser. ' +
+                        'Save it as CSV and upload that instead — CSV is read directly, at any size.' : ''));
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // ── The vehicle master persists between visits ──────────────
+  // Re-uploading 43,921 rows every session is needless: it only changes when
+  // new makes or models appear. Stored as unique class/make/model/body/fuel
+  // combinations — a fraction of the raw rows, and all the dropdowns need.
+  const VM_KEY = 'payoutPortal.vehicleMaster.v1';
+
+  // The master is kept in IndexedDB, not localStorage. A real master compacts to
+  // roughly 3 MB and localStorage caps out around 5, so a large one threw
+  // QuotaExceededError, the catch below swallowed it, and the master silently
+  // failed to persist — while the screen still said it would stay loaded. The
+  // old localStorage copy is still READ, once, so an existing save migrates.
+  const VM_IDB_KEY = 'vehicleMaster.v1';
+  let vmSaveState = 'none';          // none | saved | failed
+
+  function compactVehicleMaster(fileName){
+    const seen = new Set(), compact = [];
+    vehicleMaster.forEach(v => {
+      const rec = [vmClass(v), v.make, v.model, vmBody(v), v.vehicleType, v.fuel];
+      const k = rec.join('\u0001');
+      if (seen.has(k)) return;
+      seen.add(k);
+      compact.push(rec);
+    });
+    return { savedAt: new Date().toISOString(), fileName: fileName || '',
+             rawRows: vehicleMaster.length, rows: compact };
+  }
+
+  // Resolves only once the master is genuinely stored, so the status line can
+  // tell the truth instead of promising a save that never happened.
+  function saveVehicleMaster(fileName){
+    const payload = compactVehicleMaster(fileName);
+    return idbWrite(payload, VM_IDB_KEY)
+      .then(() => { vmSaveState = 'saved'; renderVehicleMasterStatus(); })
+      .catch(e => {
+        vmSaveState = 'failed';
+        console.warn('vehicle master not saved:', e && e.message);
+        renderVehicleMasterStatus();
+      });
+  }
+
+  function applyVehicleMasterPayload(p){
+    if (!p || !Array.isArray(p.rows) || !p.rows.length) return false;
+    vehicleMaster = p.rows.map(r => ({
+      _class: r[0], make: r[1], model: r[2], bodyType: r[3],
+      vehicleType: r[4], fuel: r[5], variant: '', cc: '', gvw: '', wheels: '', seats: ''
+    }));
+    buildVehicleIndexes();
+    vmSavedInfo = { fileName: p.fileName || 'vehicle master',
+                    savedAt: p.savedAt || '', rawRows: p.rawRows || vehicleMaster.length };
+    vmSaveState = 'saved';
+    return true;
+  }
+
+  function restoreVehicleMaster(){
+    return idbRead(VM_IDB_KEY)
+      .then(p => {
+        if (applyVehicleMasterPayload(p)) return true;
+        // Nothing in IndexedDB — fall back to a master saved by an older build,
+        // then write it across so the size limit stops applying to it.
+        try {
+          const raw = localStorage.getItem(VM_KEY);
+          if (!raw) return false;
+          if (!applyVehicleMasterPayload(JSON.parse(raw))) return false;
+          idbWrite(compactVehicleMaster(vmSavedInfo.fileName), VM_IDB_KEY)
+            .then(() => { try { localStorage.removeItem(VM_KEY); } catch (e) {} })
+            .catch(() => {});
+          return true;
+        } catch (e) { return false; }
+      })
+      .catch(() => false);
+  }
+
+  function forgetVehicleMaster(){
+    vmSaveState = 'none';
+    idbWrite(null, VM_IDB_KEY).catch(() => {});
+    try { localStorage.removeItem(VM_KEY); } catch (e) {}
+    vehicleMaster = []; vmSavedInfo = null;
+    buildVehicleIndexes();
+    populateSearchOptions();
+    renderVehicleMasterStatus();
+  }
+
+  let vmSavedInfo = null;
+
+  function renderVehicleMasterStatus(){
+    const box = document.getElementById('vmStatus');
+    if (!box) return;
+    if (!vehicleMaster.length) {
+      box.innerHTML = '<span style="color:#94a3b8">No vehicle master loaded — ' +
+        'Make and Model will stay empty. Drop the file on the box above.</span>';
+      return;
+    }
+    const when = vmSavedInfo && vmSavedInfo.savedAt
+      ? new Date(vmSavedInfo.savedAt).toLocaleDateString() : 'this session';
+    // Only promise it will survive when the save actually succeeded.
+    const keepNote = vmSaveState === 'saved'
+      ? ' (saved ' + when + '). It stays loaded; upload again only when makes or models change. '
+      : vmSaveState === 'failed'
+        ? '. <b style="color:#b91c1c">Not saved to this browser</b> — it will be gone when you ' +
+          'close the tab, so keep the file handy. '
+        : '. ';
+    box.innerHTML = '<b>Vehicle master ready</b> — ' + vmMakes.length.toLocaleString() +
+      ' makes from ' + (vmSavedInfo && vmSavedInfo.rawRows ? vmSavedInfo.rawRows.toLocaleString() : vehicleMaster.length.toLocaleString()) +
+      ' rows' + keepNote +
+      '<a href="#" id="vmForget" style="color:#b91c1c">Remove</a>';
+    const a = document.getElementById('vmForget');
+    if (a) a.onclick = function(e){ e.preventDefault(); forgetVehicleMaster(); };
+  }
+
+  function looksLikeVehicleMaster(headerRow){
+    const h = (headerRow || []).map(x => String(x||'').trim().toLowerCase());
+    const has = re => h.some(v => re.test(v));
+    return has(/^make$/) && has(/^model$/) &&
+           (has(/^variant$/) || has(/^cubic\s*capacity$/) || has(/^vehicle\s*code$/));
+  }
+
+  function loadVehicleMaster(rows, fileName){
+    const head = rows[0].map(x => String(x||'').trim().toLowerCase());
+    const col = re => head.findIndex(v => re.test(v));
+    const c = {
+      make: col(/^make$/), model: col(/^model$/), variant: col(/^variant$/),
+      body: col(/^body\s*type$/), vtype: col(/^vehicle\s*type$/), fuel: col(/^fuel\s*type$/),
+      cc: col(/^cubic\s*capacity$/), gvw: col(/^gross\s*vehicle\s*weight$/),
+      wheels: col(/^no\s*of\s*wheels$/), seats: col(/^seating\s*capacity$/)
+    };
+    const get = (r, i) => i >= 0 ? String(r[i] == null ? '' : r[i]).trim() : '';
+    const out = [];
+    for (let i = 1; i < rows.length; i++){
+      const r = rows[i];
+      const make = get(r, c.make);
+      if (!make) continue;
+      out.push({
+        make, model: get(r, c.model), variant: get(r, c.variant),
+        bodyType: get(r, c.body), vehicleType: get(r, c.vtype), fuel: get(r, c.fuel),
+        cc: get(r, c.cc), gvw: get(r, c.gvw), wheels: get(r, c.wheels), seats: get(r, c.seats)
+      });
+    }
+    vehicleMaster = out;
+    buildVehicleIndexes();
+    populateSearchOptions();
+    vmSavedInfo = { fileName: fileName || '', savedAt: new Date().toISOString(), rawRows: out.length };
+    vmSaveState = 'none';
+    renderVehicleMasterStatus();
+    // The status line is rewritten again when the save resolves, so what it
+    // says about persistence reflects what actually happened.
+    // Nothing is written to #dbStatus: that box reports the payout database and
+    // is rewritten by refreshDbSummary, which would wipe this message anyway.
+    saveVehicleMaster(fileName);
+  }
+
+  // Wheel counts arrive as "6", "6W", "6 Wheeler", "12 & above". Normalise them
+  // so the filter offers one entry per band instead of a dozen spellings.
+  function normWheeler(v){
+    const t = clean(v).toLowerCase();
+    if (!t) return '';
+    if (/12\s*(\+|&|and|above|plus|more)/.test(t) || /\b(1[3-9]|[2-9]\d)\s*w/.test(t)) return '12+W';
+    const m = t.match(/(\d{1,2})/);
+    if (!m) return '';
+    const n = +m[1];
+    if (n <= 2) return '2W';
+    if (n === 3) return '3W';
+    if (n <= 4) return '4W';
+    if (n <= 6) return '6W';
+    if (n <= 8) return '8W';
+    if (n <= 12) return '12W';
+    return '12+W';
+  }
+
+  const WHEELER_ORDER = ['2W','3W','4W','6W','8W','12W','12+W'];
+
+  // The standard GVW ladder. Insurers cut their bands slightly differently —
+  // Royal uses 0-2.3T where others use 0-2T — so the list is ordered by this
+  // ladder and any odd band sits at its own numeric position rather than
+  // shuffling the sequence about from one file to the next.
+  const GVW_LADDER = ['0-2T','2-2.5T','2.5-3.5T','3.5-7.5T','7.5-12T','12-20T','20+T'];
+
+  function gvwSortKey(v){
+    const t = clean(v);
+    const i = GVW_LADDER.indexOf(t);
+    if (i >= 0) return [i, 0, t];
+    // lower bound first, then upper — "2.3-3.5T" lands between 2-2.5T and 2.5-3.5T
+    const nums = (t.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+    const lo = nums.length ? nums[0] : 9999;
+    const hi = nums.length > 1 ? nums[1] : (/\+/.test(t) ? 9999 : lo);
+    let slot = GVW_LADDER.length;
+    for (let k = 0; k < GVW_LADDER.length; k++) {
+      const ln = (GVW_LADDER[k].match(/\d+(?:\.\d+)?/g) || []).map(Number);
+      if (lo < (ln.length ? ln[0] : 0)) { slot = k - 0.5; break; }
+      if (lo === (ln.length ? ln[0] : -1)) { slot = k + 0.25; break; }
+    }
+    return [slot, hi, t];
+  }
+
+  function sortGvw(vals){
+    return vals.slice().sort((a, b) => {
+      const ka = gvwSortKey(a), kb = gvwSortKey(b);
+      return ka[0] - kb[0] || ka[1] - kb[1] || String(ka[2]).localeCompare(String(kb[2]));
+    });
+  }
+
+  // Two-wheeler bodies use the same words everywhere: Scooter / Bike.
+  function vmBody(v){
+    const b = (v.bodyType || '').toLowerCase(), t = (v.vehicleType || '').toLowerCase();
+    if (/scooter|moped|scooty/.test(b) || /scooter/.test(t)) return 'Scooter';
+    if (/motor\s*cycle|motorcycle|\bbike\b/.test(b) || /motorbike/.test(t)) return 'Bike';
+    return v.bodyType || '';
+  }
+
+  // Which vehicle-type filter does a master row answer to?
+  function vmClass(v){
+    if (v._class) return v._class;
+    const t = (v.vehicleType || '').toLowerCase();
+    const b = (v.bodyType || '').toLowerCase();
+    // A tractor is a GCV whose body is "Tractor" — there is no Tractor class,
+    // so a master row filed under a tractor vehicle type answers to GCV and
+    // keeps Tractor where it belongs, in Body Type.
+    if (/\btractor\b/.test(t) && !/trailer|head|truck|haul/.test(t)) return 'GCV';
+    if (/goods/.test(t)) return 'GCV';
+    if (/scooter|motorbike/.test(t)) return 'Two Wheeler';
+    if (/trailer/.test(t)) return 'Trailer';
+    if (/misc/.test(t)) return 'Misc-D vehicles';
+    if (/passenger/.test(t)) {
+      // One vocabulary with the parser: a school bus is "School Bus", any other
+      // bus is "PCV Bus", and plain PCV is the passenger three-wheeler class.
+      if (/school/.test(b)) return 'School Bus';
+      if (/\bbus\b/.test(b)) return 'PCV Bus';
+      if (/taxi|cab/.test(b)) return 'Taxi';
+      return 'PCV';
+    }
+    if (/vehicle/.test(t)) return 'Private Car';
+    return '';
+  }
+
+  function buildVehicleIndexes(){
+    const mk = new Set(), byMake = new Map(), byModel = new Map();
+    vehicleMaster.forEach(v => {
+      mk.add(v.make);
+      if (!byMake.has(v.make)) byMake.set(v.make, new Set());
+      if (v.model) byMake.get(v.make).add(v.model);
+      const k = v.make + '\u0001' + v.model;
+      if (!byModel.has(k)) byModel.set(k, new Set());
+      const b = vmBody(v);
+      if (b) byModel.get(k).add(b);
+    });
+    vmMakes = [...mk].sort();
+    vmModelsByMake = new Map([...byMake].map(([m, s]) => [m, [...s].sort()]));
+    vmBodyByMakeModel = new Map([...byModel].map(([m, s]) => [m, [...s].sort()]));
+  }
+
+  // Makes / models / bodies for the dropdowns, narrowed by what is already chosen.
+  // Which master classes answer to a chosen Vehicle Type. Passenger business is
+  // written on ordinary cars — a taxi is usually a Swift Dzire, not a
+  // purpose-built vehicle — so PCV and Taxi draw on the private-car list too.
+  const CLASS_POOL = {
+    // PCV is passenger business written on ordinary cars, so it draws on the
+    // private-car list. Taxi does NOT: a taxi is already inside PCV, and
+    // folding cars in again would duplicate the same makes under two headings.
+    'PCV':              ['PCV', 'Private Car'],
+    // A bus is a purpose-built vehicle — it never draws on the private-car list.
+    'PCV Bus':          ['PCV Bus'],
+    'School Bus':       ['School Bus', 'PCV Bus'],
+    'Taxi':             ['Taxi'],
+    'Kaali Peeli Taxi': ['Kaali Peeli Taxi', 'Taxi'],
+  };
+
+  function classMatches(v, vt){
+    if (!vt) return true;
+    const c = vmClass(v);
+    const allowed = CLASS_POOL[vt];
+    return allowed ? allowed.indexOf(c) >= 0 : c === vt;
+  }
+
+  function vmOptions(kind){
+    if (!vehicleMaster.length) return [];
+    const vt = selVehicleType ? selVehicleType.value : '';
+    const make = selMake ? selMake.value : '';
+    const model = selModel ? selModel.value : '';
+    const scoped = v => {
+      if (kind !== 'make' && make && v.make !== make) return false;
+      if (kind !== 'model' && model && v.model !== model) return false;
+      return true;
+    };
+    let pool = vehicleMaster.filter(v => classMatches(v, vt) && scoped(v));
+    if (!pool.length && vt) {
+      // The master may model the class as a BODY rather than a vehicle type —
+      // a tractor is filed as a goods vehicle whose body is "Tractor" — so look
+      // there before giving up. Choosing Tractor used to empty the Make and
+      // Model lists entirely; falling straight back to the whole master was the
+      // opposite mistake, offering hatchbacks under Tractor.
+      const re = new RegExp('\\b' + String(vt).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+      const asBody = vehicleMaster.filter(v => re.test(String(vmBody(v) || '')) && scoped(v));
+      pool = asBody.length ? asBody : vehicleMaster.filter(scoped);
+    }
+    if (kind === 'make')  return [...new Set(pool.map(v => v.make))].filter(Boolean).sort();
+    if (kind === 'model') return [...new Set(pool.map(v => v.model))].filter(Boolean).sort();
+    return [...new Set(pool.map(vmBody))].filter(Boolean).sort();
+  }
+
+  let usingSavedMappingSig = null;
+
+  function renderQuickAdd(sig){
+    usingSavedMappingSig = sig;
+    document.getElementById('mapRows').innerHTML = '';
+    document.getElementById('savedMapBanner').style.display = 'block';
+    document.getElementById('mappingCard').style.display = 'block';
+    document.getElementById('mappingCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('remapInsteadBtn').addEventListener('click', () => {
+    usingSavedMappingSig = null;
+    document.getElementById('savedMapBanner').style.display = 'none';
+    renderMapping();
+  });
+
+  function renderMapping(){
+    usingSavedMappingSig = null;
+    document.getElementById('savedMapBanner').style.display = 'none';
+    const mapRows = document.getElementById('mapRows');
+    mapRows.innerHTML = '';
+    STD_FIELDS.forEach(f => {
+      const row = document.createElement('div');
+      row.className = 'map-row';
+      const guessIdx = guessColumn(f.key, pendingHeaders);
+      const opts = ['<option value="-1">None</option>']
+        .concat(pendingHeaders.map((h,i) => `<option value="${i}" ${i===guessIdx?'selected':''}>${h}</option>`));
+      row.innerHTML = `<label>${f.label}</label><select data-field="${f.key}">${opts.join('')}</select>`;
+      mapRows.appendChild(row);
+    });
+    document.getElementById('mappingCard').style.display = 'block';
+    document.getElementById('mappingCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function guessColumn(key, headers){
+    // Several of these are lists, tried in order, because a loose pattern kept
+    // taking the wrong column: a parser export puts "Product Line" (always
+    // "Motor") before "Policy Type", so /product/ matched first and the real
+    // Comprehensive / SATP / SAOD column was left unmapped — which is why
+    // filtering by policy type quietly did nothing.
+    const patterns = {
+      company: /^insurer$|insurance\s*co|^company$|insurer\s*name/i,
+      vehicleType: [/^vehicle\s*(type|category)$/i, /vehicle\s*type|veh\s*type/i, /category/i],
+      bodyType: [/^body\s*type$/i, /body\s*type|body\s*style|^body$/i],
+      policyType: [/^policy\s*type$/i, /policy\s*type/i, /^product(\s*(line|type))?$/i, /\bcover\b/i],
+      location: /^(rto|location|rto\s*code|region_code)$|rto.*code|location/i,
+      state: /^state$|state.*name/i,
+      city: /^city$|region_city|city\s*name/i,
+      // Mapped explicitly, or "Exclude Make" ends up as a spare column and the
+      // makes an insurer refuses stop blocking anything.
+      excludeMake: [/^exclude[sd]?\s*makes?$/i, /exclude[sd]?\s*makes?/i, /make.*exclu/i],
+      make: [/^make$/i, /^manufacturer$|^brand$/i, /(?<!exclude[sd]?\s)make|manufacturer|brand/i],
+      model: /model/i,
+      fuel: /fuel/i,
+      // Tonnage and GVW Range are the same dimension, so one column serves
+      // both. Older exports say "Tonnage"; newer ones say "GVW Range".
+      gvwRange: /gvw\s*range|gross\s*vehicle|^tonnage$|\btonnage\b|\bgvw\b|weight/i,
+      condition: /condition/i,
+      noOfWheels: /wheel/i,
+      vehicleAge: /vehicle\s*age|veh\s*age/i,
+      odTerm: /od\s*term/i,
+      tpTerm: /tp\s*term/i,
+      ncb: /\bncb\b/i,
+      cpa: /\bcpa\b/i,
+      zeroDep: /zero\s*dep|nil\s*dep/i,
+      discount: /discount/i,
+      // The OD and TP legs are matched before the general payout pattern, and
+      // the general one explicitly refuses them — otherwise a column order that
+      // put "OD Payout %" first would have the net payout read the OD leg.
+      odPayout: /^\s*od\s*payout/i,
+      tpPayout: /^\s*tp\s*payout/i,
+      payout: /^(?!\s*(od|tp)\s*payout)(.*)(payout|commission|%|percent)/i
+    };
+    const re = patterns[key];
+    if (!re) return -1;
+    const list = Array.isArray(re) ? re : [re];
+    for (let p = 0; p < list.length; p++){
+      const idx = headers.findIndex(h => list[p].test(h));
+      if (idx >= 0) return idx;
+    }
+    return -1;
+  }
+
+  document.getElementById('cancelMapBtn').addEventListener('click', () => {
+    document.getElementById('mappingCard').style.display = 'none';
+    document.getElementById('savedMapBanner').style.display = 'none';
+    usingSavedMappingSig = null;
+    fileInputUpload.value = '';
+  });
+
+  document.getElementById('addToDbBtn').addEventListener('click', () => {
+    const companyName = document.getElementById('companyNameInput').value.trim();
+    if (!companyName){ alert('Please enter a company / insurer name for this file.'); return; }
+
+    const sig = headerSignature(pendingHeaders);
+    let mapping = {};
+
+    if (usingSavedMappingSig && savedMappings[sig]){
+      // Reapply a remembered mapping (stored by header name) to this file's actual column order
+      const nameMap = savedMappings[sig];
+      Object.entries(nameMap).forEach(([field, headerName]) => {
+        mapping[field] = headerName === null ? -1 : pendingHeaders.indexOf(headerName);
+      });
+    } else {
+      const mapSelects = document.querySelectorAll('#mapRows select');
+      mapSelects.forEach(sel => { mapping[sel.dataset.field] = parseInt(sel.value, 10); });
+      // Remember this mapping (by header name, not index) for future files with the same columns
+      const nameMap = {};
+      Object.entries(mapping).forEach(([field, idx]) => {
+        nameMap[field] = idx >= 0 ? pendingHeaders[idx] : null;
+      });
+      savedMappings[sig] = nameMap;
+    }
+
+    let addedCount = 0;
+    let dupCount = 0;
+    const insurersSeen = new Set();
+    // Computed ONCE. These were being rebuilt for every column of every row —
+    // Object.values(mapping) on a 400k-row file is tens of millions of array
+    // allocations, which is what made a large upload look frozen.
+    const usedIdx = new Set(Object.values(mapping).filter(i => i >= 0));
+    const extraCols = pendingHeaders
+      .map((h, i) => ({ h, i }))
+      .filter(x => !usedIdx.has(x.i));
+
+    // Make sure the store has a column for every field this file writes, and
+    // keep a direct handle on each one: the import loop must not do a map
+    // lookup per cell.
+    STD_FIELDS.forEach(f => storeCol(f.key));
+    extraCols.forEach(c => {
+      if (store.extraKeys.indexOf(c.h) < 0) store.extraKeys.push(c.h);
+      storeCol('x:' + c.h);
+    });
+    const writeCols = [];
+    STD_FIELDS.forEach(f => {
+      const idx = mapping[f.key];
+      if (idx >= 0) writeCols.push({ col: store.cols.get(f.key), idx, key: f.key });
+    });
+    extraCols.forEach(c => writeCols.push({ col: store.cols.get('x:' + c.h), idx: c.i, key: null }));
+    const companyCol = store.cols.get('company');
+    const companyMapped = mapping.company >= 0;
+    // Columns an earlier file introduced that this one does not write still
+    // need an entry for every new row, or the columns fall out of step.
+    const written = new Set(writeCols.map(w => w.col));
+    const blankCols = store.keys.map(k => store.cols.get(k)).filter(c => !written.has(c));
+
+    // Payout grids repeat the same row many times (the same combination on
+    // several sheets or blocks). Identical rows carry no extra information and
+    // would show up as several indistinguishable cards, so keep the first copy
+    // of each. The old check built a JSON string per row; this one hashes the
+    // integers already written and only compares rows when two hashes collide.
+    const allCols = store.keys.map(k => store.cols.get(k));
+    const seenHash = new Map();
+    function sameRow(a, b){
+      for (let j = 0; j < allCols.length; j++){
+        if (allCols[j].codes[a] !== allCols[j].codes[b]) return false;
+      }
+      return true;
+    }
+
+    const buildRow = row => {
+      const i = store.n;                 // written provisionally; kept only if new
+      let anything = false;
+      for (let j = 0; j < writeCols.length; j++){
+        const w = writeCols[j];
+        const raw = row[w.idx];
+        const v = raw === undefined || raw === null ? '' : String(raw).trim();
+        if (v !== '') anything = true;
+        w.col.setAt(i, v);
+      }
+      // A parser export can hold several insurers in one file. When an Insurer
+      // column is mapped, each row keeps its own insurer; otherwise every row
+      // falls back to the name typed above.
+      if (!companyMapped || !companyCol.get(i)){ companyCol.setAt(i, companyName); anything = true; }
+      for (let j = 0; j < blankCols.length; j++) blankCols[j].setAt(i, '');
+      if (!anything) return;
+      insurersSeen.add(companyCol.get(i));
+
+      let h = 2166136261;
+      for (let j = 0; j < allCols.length; j++){
+        h ^= allCols[j].codes[i];
+        h = Math.imul(h, 16777619);
+      }
+      h = h >>> 0;
+      const prior = seenHash.get(h);
+      if (prior !== undefined){
+        if (typeof prior === 'number'){
+          if (sameRow(prior, i)) { dupCount++; return; }
+          seenHash.set(h, [prior, i]);
+        } else {
+          for (let j = 0; j < prior.length; j++) if (sameRow(prior[j], i)) { dupCount++; return; }
+          prior.push(i);
+        }
+      } else {
+        seenHash.set(h, i);
+      }
+      store.n = i + 1;
+      addedCount++;
+    };
+
+    runImport();
+
+    async function runImport(){
+      try{
+        if (pendingSource && pendingSource.kind === 'csv'){
+          // Re-read the file straight from disk. Only the header was kept, so
+          // the rows never exist as a second copy in memory.
+          let header = true;
+          await streamCsv(pendingSource.file,
+            r => { if (header){ header = false; return; } buildRow(r); },
+            (d, t) => showImportProgress(d, t, 'bytes'));
+        } else {
+          const rows = (pendingSource && pendingSource.rows) || [];
+          const total = rows.length, CHUNK = 20000;
+          for (let i = 0; i < total; i += CHUNK){
+            const end = Math.min(i + CHUNK, total);
+            for (let j = i; j < end; j++) buildRow(rows[j]);
+            if (total > CHUNK){
+              showImportProgress(end, total);
+              await new Promise(r => setTimeout(r, 0));
+            }
+          }
+        }
+      } catch(err){
+        showImportProgress(0, 0);
+        alert('Could not finish reading this file: ' + err.message);
+        return;
+      }
+      showImportProgress(0, 0);
+      // Trim every column to the rows actually kept, so saving to the browser
+      // copies exactly the data and not the spare capacity behind it.
+      store.cols.forEach(c => { if (c.codes.length !== store.n) c.codes = c.codes.slice(0, store.n); c.n = store.n; });
+      canonLocationColumn();
+      repairCityNames();
+      normaliseConditions();
+      promoteBodyCategories();
+      dropFabricatedSplits();
+      mergeCaseVariants('make');
+      mergeCaseVariants('excludeMake');
+      resolveResidualMakes();
+      computeDeclined();
+      rebuildCodeInfo();
+      learnClusters();
+      finishImport();
+    }
+
+    function finishImport(){
+    const insurerList = [...insurersSeen].filter(Boolean).sort();
+    loadedFiles.push({
+      company: insurerList.length > 1 ? `${insurerList.length} insurers (${companyName})` : (insurerList[0] || companyName),
+      insurers: insurerList,
+      rows: addedCount,
+      dupes: dupCount
+    });
+    const notes = [];
+    if (insurerList.length > 1) notes.push(`Found ${insurerList.length} insurers in this file: ${insurerList.join(', ')}.`);
+    if (dupCount) notes.push(`${dupCount} identical duplicate row${dupCount===1?' was':'s were'} skipped — they were exact copies across every column.`);
+    if (notes.length) alert(`Added ${addedCount} rows.\n\n` + notes.join('\n\n'));
+    document.getElementById('mappingCard').style.display = 'none';
+    document.getElementById('savedMapBanner').style.display = 'none';
+    usingSavedMappingSig = null;
+    fileInputUpload.value = '';
+    pendingSource = null;              // lets the browser reclaim a parsed workbook
+    populateSearchOptions();
+    refreshDbSummary();
+    }
+  });
+
+  // A visible line of progress, so a long import does not look like a hang.
+  function showImportProgress(done, total, unit){
+    const box = document.getElementById('importProgress');
+    if (!box) return;
+    if (!total) { box.style.display = 'none'; return; }
+    box.style.display = 'block';
+    const pct = Math.round(done / total * 100);
+    box.textContent = unit === 'bytes'
+      ? 'Reading ' + Math.round(done / 1048576) + ' of ' + Math.round(total / 1048576) +
+        ' MB (' + pct + '%) — ' + store.n.toLocaleString() + ' rows so far…'
+      : 'Reading ' + done.toLocaleString() + ' of ' + total.toLocaleString() +
+        ' rows (' + pct + '%)…';
+  }
+
+  // ── Keeping the loaded payout data ──────────────────────────
+  // Uploaded grids stay until they are removed, across reloads and restarts.
+  // This uses IndexedDB rather than localStorage: localStorage caps out around
+  // 5 MB and a few real grids run to hundreds of thousands of rows, so it would
+  // fail on exactly the data worth keeping. IndexedDB also stores the arrays
+  // directly, with no JSON round-trip.
+  const PDB_NAME = 'payoutPortal', PDB_STORE = 'state', PDB_KEY = 'payoutData.v1';
+  let persistReady = false;     // false while restoring, so we don't re-save what we just read
+  let persistTimer = null;
+
+  function idbOpen(){
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) return reject(new Error('IndexedDB unavailable'));
+      const req = indexedDB.open(PDB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(PDB_STORE)) db.createObjectStore(PDB_STORE);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function idbWrite(value, key){
+    return idbOpen().then(db => new Promise((resolve, reject) => {
+      const tx = db.transaction(PDB_STORE, 'readwrite');
+      const store = tx.objectStore(PDB_STORE);
+      if (value === null) store.delete(key || PDB_KEY); else store.put(value, key || PDB_KEY);
+      tx.oncomplete = () => { db.close(); resolve(); };
+      tx.onerror = () => { db.close(); reject(tx.error); };
+    }));
+  }
+
+  function idbRead(key){
+    return idbOpen().then(db => new Promise((resolve, reject) => {
+      const tx = db.transaction(PDB_STORE, 'readonly');
+      const req = tx.objectStore(PDB_STORE).get(key || PDB_KEY);
+      req.onsuccess = () => { db.close(); resolve(req.result || null); };
+      req.onerror = () => { db.close(); reject(req.error); };
+    }));
+  }
+
+  // Debounced: loading a file fires several refreshes, and writing 300k rows
+  // each time would stall the tab.
+  // The store goes to IndexedDB as it sits in memory: the distinct-value lists
+  // plus one block of integers per column. Structured clone copies a typed array
+  // wholesale, so there is no JSON round-trip and no per-row work at all.
+  function serializeStore(){
+    const cols = {};
+    store.keys.forEach(k => {
+      const c = store.cols.get(k);
+      cols[k] = { vals: c.vals, codes: c.codes.length === store.n ? c.codes : c.codes.slice(0, store.n) };
+    });
+    return { v: 2, n: store.n, keys: store.keys.slice(), extraKeys: store.extraKeys.slice(), cols };
+  }
+
+  function loadStore(snap){
+    storeClear();
+    store.n = snap.n || 0;
+    store.keys = (snap.keys || []).slice();
+    store.extraKeys = (snap.extraKeys || []).slice();
+    store.keys.forEach(k => {
+      const src = snap.cols[k] || { vals: [''], codes: [] };
+      const c = new Col();
+      c.vals = src.vals;
+      c.codes = src.codes instanceof Int32Array ? src.codes : Int32Array.from(src.codes || []);
+      c.n = store.n;
+      c.map = null;                   // rebuilt only if another file is imported
+      store.cols.set(k, c);
+    });
+    canonLocationColumn();
+    repairCityNames();
+    normaliseConditions();
+    promoteBodyCategories();
+    dropFabricatedSplits();
+    mergeCaseVariants('make');
+    mergeCaseVariants('excludeMake');
+    resolveResidualMakes();
+    computeDeclined();
+    rebuildCodeInfo();
+    learnClusters();
+  }
+
+  // A master file saved by an older build is a plain array of row objects.
+  function loadLegacyRows(rows){
+    storeClear();
+    if (!rows || !rows.length) return;
+    const extras = new Set();
+    rows.forEach(r => { if (r._extra) Object.keys(r._extra).forEach(k => extras.add(k)); });
+    store.extraKeys = [...extras];
+    STD_FIELDS.forEach(f => storeCol(f.key));
+    store.extraKeys.forEach(k => storeCol('x:' + k));
+    const cols = store.keys.map(k => ({ k, c: store.cols.get(k) }));
+    rows.forEach((r, i) => {
+      cols.forEach(({ k, c }) => {
+        const v = k.slice(0, 2) === 'x:' ? (r._extra ? r._extra[k.slice(2)] : '') : r[k];
+        c.setAt(i, v == null ? '' : String(v));
+      });
+    });
+    store.n = rows.length;
+    canonLocationColumn();
+    repairCityNames();
+    normaliseConditions();
+    promoteBodyCategories();
+    dropFabricatedSplits();
+    mergeCaseVariants('make');
+    mergeCaseVariants('excludeMake');
+    resolveResidualMakes();
+    computeDeclined();
+    rebuildCodeInfo();
+    learnClusters();
+  }
+
+  function persistDatabase(){
+    if (!persistReady) return;
+    clearTimeout(persistTimer);
+    persistTimer = setTimeout(() => {
+      const payload = store.n
+        ? { savedAt: new Date().toISOString(), store: serializeStore(), loadedFiles, savedMappings }
+        : null;                       // nothing loaded means nothing to keep
+      idbWrite(payload)
+        .then(() => setPersistNote(store.n ? 'saved' : 'empty'))
+        .catch(e => {
+          console.warn('payout data not saved:', e && e.message);
+          setPersistNote('failed', e && e.message);
+        });
+    }, 400);
+  }
+
+  function setPersistNote(state, detail){
+    const el = document.getElementById('persistNote');
+    if (!el) return;
+    if (state === 'saved'){
+      el.style.color = 'var(--text-soft)';
+      el.textContent = 'Saved on this browser — stays until you remove it.';
+    } else if (state === 'failed'){
+      el.style.color = 'var(--neg, #b91c1c)';
+      el.textContent = 'Could not save to this browser (' + (detail || 'storage error') +
+                       '). Data will be lost when the tab closes — use Download master file.';
+    } else {
+      el.textContent = '';
+    }
+  }
+
+  function restorePayoutData(){
+    return idbRead().then(saved => {
+      if (saved && saved.store && saved.store.n){
+        loadStore(saved.store);
+        loadedFiles = saved.loadedFiles || [];
+        savedMappings = saved.savedMappings || savedMappings;
+      } else if (saved && saved.database && saved.database.length){
+        loadLegacyRows(saved.database);          // saved by an older build
+        loadedFiles = saved.loadedFiles || [];
+        savedMappings = saved.savedMappings || savedMappings;
+      }
+      persistReady = true;
+      refreshDbSummary();
+      populateSearchOptions();
+      if (store.n) setPersistNote('saved');
+    }).catch(e => {
+      console.warn('payout data not restored:', e && e.message);
+      persistReady = true;      // still allow saving later
+    });
+  }
+
+  function refreshDbSummary(){
+    // Every path that adds, removes or restores rows ends here, so this is the
+    // one place the RTO-to-state index has to be rebuilt and the one place the
+    // browser copy has to be brought up to date.
+    rebuildCodeState();
+    persistDatabase();
+    const companies = distinctCount('company');
+    document.getElementById('statRecords').textContent = store.n.toLocaleString();
+    document.getElementById('statCompanies').textContent = companies;
+    document.getElementById('statFiles').textContent = loadedFiles.length;
+    document.getElementById('downloadMasterBtn').disabled = store.n === 0;
+    document.getElementById('clearDbBtn').disabled = store.n === 0;
+
+    const tbl = document.getElementById('filesTable');
+    const body = document.getElementById('filesTableBody');
+    if (loadedFiles.length){
+      tbl.style.display = 'table';
+      body.innerHTML = loadedFiles.map((f,i) => `<tr><td>${f.company}</td><td>${f.rows}</td><td><button class="removeFile" data-idx="${i}">remove</button></td></tr>`).join('');
+    } else {
+      tbl.style.display = 'none';
+    }
+
+    const status = document.getElementById('dbStatus');
+    if (store.n){
+      const rtos = distinctCount('location');
+      status.innerHTML = `<b>${store.n.toLocaleString()}</b> records loaded from ` +
+                         `<b>${companies}</b> companies · ${rtos.toLocaleString()} RTOs`;
+    } else {
+      status.textContent = 'No data loaded yet';
+    }
+  }
+
+  document.getElementById('filesTableBody').addEventListener('click', (e) => {
+    if (e.target.classList.contains('removeFile')){
+      const idx = parseInt(e.target.dataset.idx, 10);
+      const removed = loadedFiles[idx];
+      // A single file may have carried several insurers, so drop them all
+      const names = new Set(removed.insurers && removed.insurers.length
+        ? removed.insurers : [removed.company]);
+      const company = store.cols.get('company');
+      if (company){
+        const drop = new Uint8Array(company.vals.length);
+        for (let v = 0; v < company.vals.length; v++) if (names.has(company.vals[v])) drop[v] = 1;
+        const keep = new Uint8Array(store.n);
+        for (let i = 0; i < store.n; i++) keep[i] = drop[company.codes[i]] ? 0 : 1;
+        storeKeep(keep);
+        computeDeclined();
+        rebuildCodeInfo();
+        learnClusters();
+      }
+      loadedFiles.splice(idx, 1);
+      populateSearchOptions();
+      refreshDbSummary();
+    }
+  });
+
+  document.getElementById('clearDbBtn').addEventListener('click', () => {
+    if (!confirm('Clear all loaded payout data?\n\nThis also removes the copy saved in this ' +
+                 'browser, so it will not come back on reload.')) return;
+    storeClear();
+    loadedFiles = [];
+    currentMatches = [];
+    populateSearchOptions();
+    refreshDbSummary();          // writes the empty state through to storage
+  });
+
+  // ── The master file ─────────────────────────────────────────
+  // A JSON array of 1.3 million row objects is both too slow to write and, at
+  // several hundred megabytes of text, past what a browser will hold as one
+  // string. The master file therefore carries the same shape the portal keeps
+  // in memory: a small JSON header naming the columns and their distinct
+  // values, then the integer blocks as raw bytes.
+  const PGDB_MAGIC = 'PGDB';
+  document.getElementById('downloadMasterBtn').addEventListener('click', () => {
+    const vals = {};
+    store.keys.forEach(k => { vals[k] = store.cols.get(k).vals; });
+    const header = JSON.stringify({
+      savedAt: new Date().toISOString(), v: 2, n: store.n,
+      keys: store.keys, extraKeys: store.extraKeys, vals, loadedFiles, savedMappings
+    });
+    const headerBytes = new TextEncoder().encode(header);
+    const lead = new DataView(new ArrayBuffer(12));
+    for (let i = 0; i < 4; i++) lead.setUint8(i, PGDB_MAGIC.charCodeAt(i));
+    lead.setUint32(4, 2, true);
+    lead.setUint32(8, headerBytes.byteLength, true);
+    const parts = [lead.buffer, headerBytes];
+    store.keys.forEach(k => {
+      const c = store.cols.get(k);
+      parts.push(c.codes.length === store.n ? c.codes : c.codes.slice(0, store.n));
+    });
+    const blob = new Blob(parts, { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'payout-master-database.pgdb';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('loadMasterInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try{
+        const buf = ev.target.result;
+        const head = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
+        const isPgdb = String.fromCharCode.apply(null, head) === PGDB_MAGIC;
+        if (isPgdb){
+          const lead = new DataView(buf);
+          const hLen = lead.getUint32(8, true);
+          const payload = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 12, hLen)));
+          let off = 12 + hLen;
+          const cols = {};
+          payload.keys.forEach(k => {
+            cols[k] = { vals: payload.vals[k], codes: new Int32Array(buf.slice(off, off + payload.n * 4)) };
+            off += payload.n * 4;
+          });
+          loadStore({ n: payload.n, keys: payload.keys, extraKeys: payload.extraKeys, cols });
+          loadedFiles = payload.loadedFiles || [];
+          savedMappings = payload.savedMappings || {};
+        } else {
+          // A master file written by an older build: plain JSON.
+          const payload = JSON.parse(new TextDecoder().decode(new Uint8Array(buf)));
+          loadLegacyRows(payload.database || []);
+          loadedFiles = payload.loadedFiles || [];
+          savedMappings = payload.savedMappings || {};
+        }
+        populateSearchOptions();
+        refreshDbSummary();
+        alert('Master database loaded: ' + store.n.toLocaleString() + ' records.');
+      } catch(err){
+        alert('Could not read this master file: ' + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+
+  // ---- Search form ----
+  const selVehicleType = document.getElementById('sel-vehicleType');
+  const selLocation = document.getElementById('sel-location');
+  const selPolicyType = document.getElementById('sel-policyType');
+  const selInsurer = document.getElementById('sel-insurer');
+  const selMake = document.getElementById('sel-make');
+  const selModel = document.getElementById('sel-model');
+  // ── One set of weight slabs for every insurer ───────────────
+  // Each insurer cuts tonnage its own way: 50 different bands across the book,
+  // many of them overlapping — 0-2T, 0-2.3T, 0-2.5T, 2-2.5T, 2-2.8T, 2-3.5T,
+  // 2.3-3.5T, 2.5-3.5T all describe vehicles you would call the same thing.
+  // Picking from that list meant knowing whose band you were looking at, and a
+  // 2.6T lorry priced by Royal Sundaram at 2.3-3.5T was invisible if you chose
+  // 2.5-3.5T.
+  //
+  // So the filter offers ONE standard set of slabs, and a rule matches a slab
+  // when the insurer's own band overlaps it. A band that straddles two slabs
+  // appears under both, so no rule is lost, and the result card still shows the
+  // insurer's real band — only the filter is simplified.
+  const GVW_SLABS = [
+    { label: 'Up to 2.5T', lo: 0,  hi: 2.5 },
+    { label: '2.5 - 3.5T', lo: 2.5, hi: 3.5 },
+    { label: '3.5 - 7.5T', lo: 3.5, hi: 7.5 },
+    { label: '7.5 - 12T',  lo: 7.5, hi: 12 },
+    { label: '12 - 20T',   lo: 12,  hi: 20 },
+    { label: '20 - 40T',   lo: 20,  hi: 40 },
+    { label: 'Above 40T',  lo: 40,  hi: Infinity }
+  ];
+
+  // "0-2.5T", "7.5T+", "48+ Ton", "2.5-2.805T" → a numeric span.
+  function parseGvwBand(v){
+    const t = String(v == null ? '' : v).toLowerCase()
+      .replace(/[\s,]/g, '').replace(/tonnes?|tons?|t/g, '');
+    let m;
+    if ((m = /^([\d.]+)-([\d.]+)$/.exec(t))) return [parseFloat(m[1]), parseFloat(m[2])];
+    if ((m = /^([\d.]+)\+$/.exec(t)))        return [parseFloat(m[1]), Infinity];
+    if ((m = /^([\d.]+)$/.exec(t)))          return [0, parseFloat(m[1])];
+    return null;
+  }
+
+  function gvwSlabFor(label){ return GVW_SLABS.find(s => s.label === label) || null; }
+
+  // A row with no band is not weight-specific, so it answers every slab.
+  function gvwMatchesSlab(bandText, slabLabel){
+    const slab = gvwSlabFor(slabLabel);
+    if (!slab) return true;
+    const raw = clean(bandText);
+    if (!raw) return true;
+    const b = parseGvwBand(raw);
+    if (!b) return true;                       // unreadable band: never hide it
+    return b[0] < slab.hi && b[1] > slab.lo;   // touching endpoints do not overlap
+  }
+
+  const selGvw = document.getElementById('sel-gvwRange');
+  const selBodyType = document.getElementById('sel-bodyType');
+
+  // ---- Matching helpers for multi-value / range-style grid cells ----
+  // Many grid cells cover several values at once, e.g. "Petrol, Diesel, CNG, LPG"
+  // or "Renewal,Rollover", or a numeric range like "6-20" / "21-35+" / "All Years".
+  function splitList(str){
+    return String(str || '').split(/[,/]/).map(s => s.trim().toLowerCase()).filter(Boolean);
+  }
+  function valueContains(cellValue, selected){
+    if (!cellValue) return false;
+    const list = splitList(cellValue);
+    if (list.length <= 1) return cellValue.trim().toLowerCase() === String(selected).trim().toLowerCase();
+    return list.includes(String(selected).trim().toLowerCase());
+  }
+  // Turn an age/term value into a numeric [min, max] span. Grids write these
+  // many ways — "0", "5+", ">5", "<=5", "1 to 2", "upto 5", "All Years" — and
+  // all of them have to land in the right bucket.
+  function parseRange(str){
+    let s = String(str || '').trim().toLowerCase();
+    if (!s) return null;
+    s = s.replace(/\b(years?|yrs?|yr)\b/g, ' ').replace(/[–—~]/g, '-').replace(/\s+/g, ' ').trim();
+    if (!s) return null;
+    if (/^(all|any)\b/.test(s)) return [-Infinity, Infinity];
+    let m;
+    // "1 to 2" / "1-2" / "1 - 2"  (a trailing + opens the top end)
+    if ((m = s.match(/^(\d+(?:\.\d+)?)\s*(?:to|-)\s*(\d+(?:\.\d+)?)\s*(\+?)$/)))
+      return [parseFloat(m[1]), m[3] ? Infinity : parseFloat(m[2])];
+    // "5+" / ">=5" / "above 5" / "over 5" / "more than 5"
+    if ((m = s.match(/^(\d+(?:\.\d+)?)\s*\+$/)))                       return [parseFloat(m[1]), Infinity];
+    if ((m = s.match(/^>=\s*(\d+(?:\.\d+)?)$/)))                       return [parseFloat(m[1]), Infinity];
+    if ((m = s.match(/^(?:>|above|over|more than|greater than)\s*(\d+(?:\.\d+)?)$/)))
+      return [parseFloat(m[1]), Infinity];
+    // "<5" / "<=5" / "upto 5" / "below 5" / "less than 5"
+    if ((m = s.match(/^<=\s*(\d+(?:\.\d+)?)$/)))                       return [0, parseFloat(m[1])];
+    if ((m = s.match(/^(?:upto|up to|max|maximum)\s*(\d+(?:\.\d+)?)$/)))return [0, parseFloat(m[1])];
+    if ((m = s.match(/^(?:<|below|under|less than)\s*(\d+(?:\.\d+)?)$/)))
+      return [0, parseFloat(m[1])];
+    // plain number
+    if ((m = s.match(/^(\d+(?:\.\d+)?)$/)))                            return [parseFloat(m[1]), parseFloat(m[1])];
+    return null; // non-numeric text — treated as always matching
+  }
+  function rangeOverlaps(cellValue, bucketValue){
+    const a = parseRange(cellValue);
+    const b = parseRange(bucketValue);
+    if (!a || !b) return true; // can't parse — don't exclude on it
+    // Bands touch at their edges: 0-4 and 4-6 share the value 4. Treating that
+    // as an overlap made a "0-4" row answer the 4-6 bucket as well, so every
+    // grid band matched one bucket too many. Compare as half-open ranges.
+    if (a[0] === a[1] || b[0] === b[1]) return a[0] <= b[1] && b[0] <= a[1];
+    return a[0] < b[1] && b[0] < a[1];
+  }
+
+  // ── Policy type canonicalisation ──
+  // Insurers spell the same policy type differently (COMP / Comp / Package /
+  // Comprehensive; STP / SATP / TP Only; SAOD / SA OD / OD Only). Selecting
+  // "Comprehensive" must return every insurer's rows for that segment, so the
+  // dropdown offers canonical names and matching compares canonical to canonical.
+  function canonPolicyType(v){
+    const s = String(v||'').trim().toLowerCase();
+    if (!s) return '';
+    if (/\bsa\s*od\b|\bsaod\b|od\s*only|stand\s*alone\s*od/.test(s)) return 'SAOD';
+    if (/\bsatp\b|\bstp\b|\btp\b|third\s*party|liability\s*only/.test(s)) return 'SATP';
+    if (/comp|package|\bpkg\b|\bod\s*\+\s*tp\b|1\s*\+\s*1|bundled/.test(s)) return 'Comprehensive';
+    return String(v).trim();
+  }
+  function policyTypeOptions(mask){
+    return uniqueValsMasked(mask, 'policyType', canonPolicyType);
+  }
+
+  // ── Location labels: "DL1C - New Delhi, Delhi" ──
+  // RTO code first, then city, then state. Any part that's missing (or just
+  // repeats another part) is skipped, so a file with only codes still works.
+  function locationLabel(code, city, state){
+    const parts = [];
+    const seen = new Set();
+    [code, city, state].forEach(v => {
+      const s = String(v||'').trim();
+      if (!s) return;
+      const k = s.toLowerCase();
+      if (seen.has(k)) return;
+      seen.add(k);
+      parts.push(s);
+    });
+    if (!parts.length) return '';
+    return parts.length > 1 ? parts[0] + ' - ' + parts.slice(1).join(', ') : parts[0];
+  }
+  // ── How wide is a row's geography? ──────────────────────────
+  // Three cases, narrowest first:
+  //   RTO code given      → that code only
+  //   state but no RTO    → every RTO in that state
+  //   neither             → every RTO in the country
+  // The last two are assertions, not gaps. A circular that names a state and
+  // excludes no RTO means every RTO in the state, and one that names no
+  // geography at all means the whole book. Treating a blank as "matches
+  // nothing" hid every such row; treating it as "matches everything" was worse,
+  // because a Maharashtra rate then answered a search for a Delhi RTO.
+  const stateKey = v => String(v || '').toLowerCase()
+      .replace(/&/g, 'and').replace(/[^a-z]/g, '')
+      // the spellings that differ between circulars
+      .replace(/^pondicherry$/, 'puducherry')
+      .replace(/^chattisgarh$/, 'chhattisgarh')
+      .replace(/^orissa$/, 'odisha')
+      .replace(/^uttaranchal$/, 'uttarakhand')
+      // "New Delhi" IS the state Delhi. "Delhi NCR" is NOT — it is a block that
+      // reaches into Haryana, UP, Chandigarh and beyond, and folding it onto
+      // Delhi made a Delhi-only rate answer an NCR search and hid the Haryana
+      // and UP RTOs an NCR rate actually covers.
+      .replace(/^newdelhi$/, 'delhi');
+
+  // ── One RTO office, one code ────────────────────────────────
+  // A Delhi plate carries the SERIES letter — DL 1A, DL 1C, DL 1S — but DL-1 is
+  // a single RTO office, not twenty-six. The letter says which batch the
+  // registration came from, broadly by vehicle class, and the grids file under
+  // both styles: 259 Delhi codes for 13 real offices. Searching DL1A returned
+  // three insurers where the same car under DL01 returned ten, so seven
+  // insurers' payouts were invisible. The letter is dropped and the zone padded
+  // to two digits, so every Delhi code lands on DL01 … DL13.
+  //
+  // Delhi only. Tamil Nadu, UP, Assam and Chandigarh also have letter-suffixed
+  // codes, but there the letter can mark a genuinely separate sub-office, and
+  // merging those would hide real differences rather than reveal them.
+  const canonRto = code => {
+    const c = String(code == null ? '' : code).trim().toUpperCase().replace(/[\s-]/g, '');
+    const m = /^DL0?(\d{1,2})[A-Z]{0,2}$/.exec(c);
+    return m ? 'DL' + (m[1].length === 1 ? '0' + m[1] : m[1]) : String(code == null ? '' : code).trim();
+  };
+
+  // Applied to the column's DISTINCT values, so every row that pointed at DL1A
+  // points at DL01 with no per-row work at all.
+  function canonLocationColumn(){
+    const loc = store.cols.get('location');
+    if (!loc) return;
+    for (let v = 0; v < loc.vals.length; v++){
+      const c = canonRto(loc.vals[v]);
+      if (c !== loc.vals[v]) loc.vals[v] = c;
+    }
+    loc.map = null;          // the value-to-index map no longer matches
+  }
+
+  // ── There is no "Old" ───────────────────────────────────────
+  // Vehicle Condition has three values: New, Rollover, Renewal. A grid saying
+  // "Old", "Non New" or "Used" has not chosen between the two old-vehicle
+  // types, so it means both. The parser writes "Rollover/Renewal" now; every
+  // CSV exported before that still says "Old", so it is rewritten on import
+  // and old exports filter correctly without being rebuilt.
+  const COND_OLD = /^(old|non[\s-]?new|old\s*business|used|old\s*vehicle)$/i;
+  function normaliseConditions(){
+    const c = store.cols.get('condition');
+    if (!c || !store.n) return 0;
+    let changed = 0;
+    for (let v = 0; v < c.vals.length; v++){
+      const t = clean(c.vals[v]);
+      if (!t) continue;
+      let out = t;
+      if (COND_OLD.test(t)) out = 'Rollover/Renewal';
+      else if (/\s&\s/.test(t)) out = t.split(/\s*&\s*/).join('/');   // "New & Rollover"
+      if (out !== c.vals[v]){ c.vals[v] = out; changed++; }
+    }
+    if (changed) c.map = null;
+    return changed;
+  }
+
+  // ── A region is not a city ──────────────────────────────────
+  // Several grids carry their cluster name in the column the parser reads as
+  // City, so the location list showed "DL53 - Delhi NCR, Delhi" — a region
+  // standing where a city belongs. A few Delhi codes also arrived with a city
+  // from another state ("DL51 - Raipur"). The parser no longer writes either,
+  // but every CSV exported before that still does, so they are repaired on the
+  // way in as well and old exports read correctly without being rebuilt.
+  const CITY_IS_REGION = /\bncr\b|\bregion\b|\bcluster\b|\brest\s+of\b|\ball\s+rto/i;
+  // Only the codes the RTO master actually had wrong. Everything else keeps
+  // whatever the grid said — DL14-DL18 in particular are read differently by
+  // different insurers and are not something to overwrite from here.
+  const CITY_FIX = new Map([
+    ['DL38','New Delhi'], ['DL48','East Delhi'], ['DL51','Rajpur Road Burari'],
+    ['DL52','New Delhi'], ['DL53','New Delhi'], ['DL56','East Delhi']
+  ]);
+
+  function repairCityNames(){
+    const loc = store.cols.get('location');
+    if (!loc || !store.n) return 0;
+    const city = storeCol('city');
+    // Decide once per distinct value, then the rows are a walk over integers.
+    const wanted = new Array(loc.vals.length).fill(null);   // per RTO code
+    let anyCode = false;
+    for (let v = 0; v < loc.vals.length; v++){
+      const w = CITY_FIX.get(clean(loc.vals[v]));
+      if (w){ wanted[v] = w; anyCode = true; }
+    }
+    const bad = new Uint8Array(city.vals.length);           // per city value
+    let anyBad = false;
+    for (let v = 0; v < city.vals.length; v++){
+      const t = clean(city.vals[v]);
+      if (!t) continue;
+      if (CITY_IS_REGION.test(t) || NOT_A_PLACE.test(t) || isZoneName(t)){ bad[v] = 1; anyBad = true; }
+    }
+    if (!anyCode && !anyBad) return 0;
+    const lc = loc.codes, cc = city.codes;
+    let changed = 0;
+    for (let i = 0; i < store.n; i++){
+      const want = wanted[lc[i]];
+      if (want != null){
+        if (clean(city.vals[cc[i]]) !== want){ city.setAt(i, want); changed++; }
+        continue;
+      }
+      if (bad[cc[i]]){ city.setAt(i, ''); changed++; }
+    }
+    city.map = null;
+    return changed;
+  }
+
+  // ── A Vehicle Category never belongs in Body Type ───────────
+  // Body Type is for the machine WITHIN a class — a Tipper, a Tanker, a
+  // Scooter. Some grids write the CLASS there instead: SBI files tractors as
+  // GCV with "Tractor" in Body Type, Magma files school buses as "Passenger
+  // Bus" with "School Bus" in Body Type, Chola as "Taxi". A search for the
+  // Tractor category then missed all 1,219 of them. Where the body names a
+  // class, the class wins and the body is cleared.
+  //
+  // Only an exact class name counts. Folding the body through the whole
+  // vocabulary would be too eager — "Trailer" is a GCV class in some grids but
+  // a genuine goods body on 7,259 rows, and must stay in Body Type.
+  const CATEGORY_NAMES = new Map([
+    ['private car','Private Car'], ['two wheeler','Two Wheeler'], ['taxi','Taxi'],
+    ['kaali peeli taxi','Kaali Peeli Taxi'], ['kaali peeli','Kaali Peeli Taxi'],
+    ['school bus','School Bus'], ['pcv bus','PCV Bus'], ['passenger bus','PCV Bus'],
+    ['pcv','PCV'], ['gcv','GCV'],
+    ['misc-d vehicles','Misc-D vehicles'], ['misc d vehicles','Misc-D vehicles']
+  ]);
+  // Tractor is deliberately absent above: it is a GCV whose BODY is "Tractor",
+  // the way the vehicle master files it, so it must not be lifted out of Body
+  // Type. Rows that arrive with it as a category are turned round instead.
+
+  // "TATA MOTORS" and "Tata Motors" are one make written twice; a filter on one
+  // misses the other's rows. Values differing only in case settle on a single
+  // spelling, preferring the one that is not shouted.
+  function mergeCaseVariants(key){
+    const col = store.cols.get(key);
+    if (!col) return;
+    const spelling = new Map();
+    for (let v = 0; v < col.vals.length; v++){
+      const raw = clean(col.vals[v]);
+      if (!raw) continue;
+      const k = raw.toLowerCase();
+      const kept = spelling.get(k);
+      if (!kept || (kept === kept.toUpperCase() && raw !== raw.toUpperCase())) spelling.set(k, raw);
+    }
+    for (let v = 0; v < col.vals.length; v++){
+      const raw = clean(col.vals[v]);
+      if (!raw) continue;
+      const kept = spelling.get(raw.toLowerCase());
+      if (kept && kept !== col.vals[v]) col.vals[v] = kept;
+    }
+    col.map = null;
+  }
+
+  // ── An OD/TP split has to be a real split ───────────────────
+  // It is only worth showing when it says something the net rate does not.
+  // SBI's grid quotes ONE net figure per cell — "Comp /SATP (Net)" — and the
+  // parser copied that figure into OD as well, so all 28,665 of its rows read
+  // "OD 54%, TP —" for a rate the circular never split. New India leaves the
+  // net blank and quotes OD and TP separately, and United India writes
+  // "OD - 10%, TP - 0%"; both survive this, because their legs differ from the
+  // net or carry a TP of their own.
+  function dropFabricatedSplits(){
+    const pay = store.cols.get('payout'), od = store.cols.get('odPayout');
+    if (!pay || !od) return;
+    const tp = store.cols.get('tpPayout');
+    const num = v => {
+      const m = String(v == null ? '' : v).match(/-?\d+(?:\.\d+)?/);
+      return m ? parseFloat(m[0]) : null;
+    };
+    const payN = pay.vals.map(num), odN = od.vals.map(num);
+    const tpHas = tp ? tp.vals.map(v => clean(v) !== '') : null;
+    let blank = od.vals.indexOf('');
+    if (blank < 0) blank = od.vals.push('') - 1;
+    const pc = pay.codes, oc = od.codes, tc = tp ? tp.codes : null;
+    for (let i = 0; i < store.n; i++){
+      const o = odN[oc[i]];
+      if (o === null) continue;
+      if (tc && tpHas[tc[i]]) continue;       // a TP leg of its own means a real split
+      if (payN[pc[i]] === o) oc[i] = blank;
+    }
+    od.map = null;
+  }
+
+  // ── "Other Makes" is a column heading, not a manufacturer ───
+  // A grid prices a few makes in columns of their own and puts everything else
+  // in a catch-all cell. Stored as though it were a make, that cell answered to
+  // nothing — a search for Hyundai skipped the very row meant to cover Hyundai,
+  // and "Other Makes" sat in the Make list as if you could buy one.
+  //
+  // So the make is emptied, because a blank make covers every make, and the
+  // makes priced separately in the same block move into Exclude Make — which is
+  // exactly what "other" means. A block is one insurer's rates for one category
+  // at one GVW band: SBI names Ashok Leyland, Chevrolet, Force and Mahindra at
+  // 2-2.5T, so its catch-all there excludes those four, while its 0-2.5T
+  // catch-all names nobody and so covers the lot.
+  const RESIDUAL_MAKE = /^(other|others|other\s*makes?|all\s*other\s*makes?|rest(\s*of(\s*the)?)?\s*makes?|remaining\s*makes?|any\s*other(\s*makes?)?)$/i;
+
+  function resolveResidualMakes(){
+    const make = store.cols.get('make');
+    if (!make) return;
+    const isResid = make.vals.map(v => RESIDUAL_MAKE.test(clean(v)));
+    if (!isResid.some(Boolean)) return;
+    const ex  = storeCol('excludeMake');
+    const ins = store.cols.get('company');
+    const cat = store.cols.get('vehicleType');
+    const gvw = store.cols.get('gvwRange');
+    // An exact numeric key for the block, so the two passes below never build
+    // two million strings.
+    const K1 = cat ? cat.vals.length : 1, K2 = gvw ? gvw.vals.length : 1;
+    const keyAt = i => (((ins ? ins.codes[i] : 0) * K1) + (cat ? cat.codes[i] : 0)) * K2 +
+                       (gvw ? gvw.codes[i] : 0);
+
+    // Which makes does each block price in their own right?
+    const siblings = new Map();
+    for (let i = 0; i < store.n; i++){
+      const mc = make.codes[i];
+      if (isResid[mc]) continue;
+      const v = clean(make.vals[mc]);
+      if (!v) continue;
+      const k = keyAt(i);
+      let set = siblings.get(k);
+      if (!set) siblings.set(k, set = new Set());
+      set.add(v);
+    }
+
+    let blankMake = make.vals.indexOf('');
+    if (blankMake < 0) blankMake = make.vals.push('') - 1;
+    const exIndex = new Map();
+    for (let i = 0; i < ex.vals.length; i++) if (!exIndex.has(ex.vals[i])) exIndex.set(ex.vals[i], i);
+    const exCodeFor = text => {
+      if (exIndex.has(text)) return exIndex.get(text);
+      const i = ex.vals.push(text) - 1;
+      exIndex.set(text, i);
+      return i;
+    };
+
+    for (let i = 0; i < store.n; i++){
+      if (!isResid[make.codes[i]]) continue;
+      const sibs = siblings.get(keyAt(i));
+      make.codes[i] = blankMake;
+      if (!sibs || !sibs.size) continue;
+      // Whatever the grid already excluded is kept; the siblings are added to it.
+      const already = clean(ex.vals[ex.codes[i]]);
+      const have = new Set(already ? already.split(/\s*[,;/|]\s*/).filter(Boolean) : []);
+      sibs.forEach(v => have.add(v));
+      ex.codes[i] = exCodeFor([...have].sort().join(', '));
+    }
+    make.map = null; ex.map = null;
+  }
+
+  // A rule filed under a "Tractor" category becomes a GCV carrying a Tractor
+  // body, so it lines up with the master and answers a GCV search.
+  function demoteTractorCategory(){
+    const cat = store.cols.get('vehicleType');
+    if (!cat) return;
+    const isTractor = cat.vals.map(v => /^tractor$/i.test(clean(v)));
+    if (!isTractor.some(Boolean)) return;
+    const body = storeCol('bodyType');
+    let gcv = cat.vals.findIndex(v => clean(v) === 'GCV');
+    if (gcv < 0) gcv = cat.vals.push('GCV') - 1;
+    let tb = body.vals.findIndex(v => clean(v) === 'Tractor');
+    if (tb < 0) tb = body.vals.push('Tractor') - 1;
+    const blankBody = new Set();
+    for (let v = 0; v < body.vals.length; v++) if (!clean(body.vals[v])) blankBody.add(v);
+    const cc = cat.codes, bc = body.codes;
+    for (let i = 0; i < store.n; i++){
+      if (!isTractor[cc[i]]) continue;
+      cc[i] = gcv;
+      if (blankBody.has(bc[i])) bc[i] = tb;
+    }
+    cat.map = null; body.map = null;
+  }
+
+  function promoteBodyCategories(){
+    demoteTractorCategory();
+    const cat = store.cols.get('vehicleType');
+    if (!cat) return;
+    // "Passenger Bus" is the same class as PCV Bus under another insurer's name.
+    for (let v = 0; v < cat.vals.length; v++){
+      const hit = CATEGORY_NAMES.get(clean(cat.vals[v]).toLowerCase());
+      if (hit && hit !== cat.vals[v]) cat.vals[v] = hit;
+    }
+    cat.map = null;
+
+    const body = store.cols.get('bodyType');
+    if (!body) return;
+    mergeCaseVariants('bodyType');    // "AUTO" and "Auto" are one body type
+    const promoted = [];
+    let any = false;
+    for (let v = 0; v < body.vals.length; v++){
+      const hit = CATEGORY_NAMES.get(clean(body.vals[v]).toLowerCase());
+      promoted.push(hit || null);
+      if (hit) any = true;
+    }
+    if (!any) return;
+
+    let blankIdx = body.vals.indexOf('');
+    if (blankIdx < 0) blankIdx = body.vals.push('') - 1;
+    const catIndex = new Map();
+    for (let i = 0; i < cat.vals.length; i++) if (!catIndex.has(cat.vals[i])) catIndex.set(cat.vals[i], i);
+    const codeFor = name => {
+      if (catIndex.has(name)) return catIndex.get(name);
+      const i = cat.vals.push(name) - 1;
+      catIndex.set(name, i);
+      return i;
+    };
+    // Worked out once per distinct body value, then applied as integers.
+    const target = promoted.map(n => (n === null ? -1 : codeFor(n)));
+    const bc = body.codes, cc = cat.codes;
+    for (let i = 0; i < store.n; i++){
+      const t = target[bc[i]];
+      if (t < 0) continue;
+      cc[i] = t;
+      bc[i] = blankIdx;
+    }
+    body.map = null;
+  }
+
+  function rebuildCodeState(){
+    codeStateMap = new Map();
+    const loc = store.cols.get('location'), st = store.cols.get('state');
+    if (!loc || !st) return;
+    const done = new Uint8Array(loc.vals.length);
+    for (let i = 0; i < store.n; i++){
+      const lv = loc.codes[i];
+      if (done[lv]) continue;
+      const code = clean(loc.vals[lv]);
+      if (!code) { done[lv] = 1; continue; }
+      const sk = stateKey(st.get(i));
+      if (!sk) continue;                 // a later row may still name the state
+      done[lv] = 1;
+      codeStateMap.set(code, sk);
+    }
+  }
+
+  // ── Clusters: one name standing for many RTOs ───────────────
+  // Digit prices "Delhi NCR" as a single block covering 274 codes across four
+  // states. Those rows arrive from the parser already expanded to one code
+  // each, so the name is the only thing left to put back. Any city, state or
+  // geography label covering more than one RTO becomes a location you can pick,
+  // and choosing it searches every code it stands for. Nothing has to be set
+  // up: the clusters are read back out of the data itself.
+  let clusters = new Map();      // key -> { key, label, codes:Set, states:Set }
+
+  // Not every label in a grid is a place. Royal Sundaram writes a bare "Y"
+  // where a city belongs; several insurers carry a compass zone, which means
+  // something different to each of them, so merging IndusInd's NORTH with Royal
+  // Sundaram's invents coverage neither grid ever gave; and some rows hold a
+  // bare state or RTO code. None of those is a region worth offering.
+  const NOT_A_PLACE = /^(y|n|na|nil|none|null|blank|-+|\d+(\.\d+)?)$|^[a-z]$|^[a-z]{2}\s*\d{0,2}$/i;
+
+  // A compass zone, however it is written: "North", "North 1", "North East 2",
+  // "NE-3", "North East States". The single-word version was caught by a regex,
+  // which then let "North East 2" through — so the name is read word by word
+  // instead, and it is a zone only when every word in it is a direction, a zone
+  // number, or one of the filler words a grid puts after one.
+  const DIRECTION = /^(north|south|east|west|central|ne|nw|se|sw|n|s|e|w)$/i;
+  const ZONE_FILLER = /^(states?|zones?|regions?|india)$/i;
+  const isZoneName = v => {
+    const parts = String(v || '').trim().split(/[\s\-_,.\/]+/).filter(Boolean);
+    let directions = 0;
+    for (let i = 0; i < parts.length; i++){
+      const p = parts[i];
+      if (/^\d+$/.test(p) || ZONE_FILLER.test(p)) continue;
+      if (!DIRECTION.test(p)) return false;
+      directions++;
+    }
+    return directions > 0;
+  };
+
+  // The same region is written differently by every insurer — "Delhi NCR",
+  // "DL - NCR", "All RTOs in Delhi NCR" — and an older Magma export can still
+  // carry the payout rate inside the name, "All RTOs in DL NCR (53)". Left as
+  // they are, one region becomes four.
+  const tidyRegion = v => String(v || '').trim()
+      .replace(/\s*\(\s*\d+(?:\.\d+)?\s*%?\s*\)\s*$/, '')
+      .replace(/^all\s+rtos?\s+in\s+/i, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  // The same spellings stateKey already reconciles. Without them Shriram's
+  // "CHATTISGARH" and United India's "Chhattisgarh" were separate regions, each
+  // hiding the other's payouts, and so were Orissa/Odisha and
+  // Pondicherry/Puducherry. Applied as substring swaps so "REST OF CHATTISGARH"
+  // lands on the same key as "Rest Of Chhattisgarh".
+  const clusterKey = v => String(v || '').toLowerCase()
+      .replace(/&/g, 'and').replace(/[^a-z0-9]/g, '')
+      .replace(/chattisgarh/g, 'chhattisgarh')
+      .replace(/orissa/g, 'odisha')
+      .replace(/pondicherry/g, 'puducherry')
+      .replace(/uttaranchal/g, 'uttarakhand')
+      .replace(/^(ncr|ncrdelhi|delhincrregion|delhiandncr|dlncr|dlncrregion)$/, 'delhincr');
+  const letterCount = v => (String(v).match(/[a-z]/gi) || []).length;
+  let clusterAlias = new Map();      // a merged region's other keys -> the surviving one
+
+  // A region is a GRID's own geography — the block an insurer priced as one
+  // unit — so it is read from the geography and cluster columns and from
+  // nowhere else. City and state are not regions: reading them made every town
+  // its own "region", and worse, it made "Delhi" mean every row in Delhi state,
+  // which would have left "Delhi - DL01" and "Delhi NCR - DL01" returning the
+  // same thing. Zone columns are left out too — a zone is each insurer's own
+  // carve-up of the country and means something different to each of them.
+  function regionSourceCols(){
+    const out = [];
+    store.extraKeys.forEach(k => {
+      if (/geograph|cluster/i.test(k) && !/zone/i.test(k)){
+        const c = store.cols.get('x:' + k);
+        if (c) out.push(c);
+      }
+    });
+    return out;
+  }
+  // A geography column is written widest-first — "Delhi / Delhi NCR" — so the
+  // region it actually prices is the last part. Keeping both halves made
+  // "Delhi" stand for all 276 NCR codes instead of the 255 the state really has.
+  const regionNameOf = v => {
+    const p = String(v == null ? '' : v).split('/');
+    return tidyRegion(p[p.length - 1]);
+  };
+
+  function learnClusters(){
+    clusters = new Map();
+    rebuildCodeState();                  // cluster states are read off this
+    const loc = store.cols.get('location');
+    if (!loc || !store.n) return;
+    const sources = regionSourceCols();
+    const lc = loc.codes;
+    sources.forEach(src => {
+      const sc = src.codes;
+      const nameOf = regionNameOf;
+      const pairs = new Set();
+      let lastA = -1, lastB = -1;
+      for (let i = 0; i < store.n; i++){
+        const a = sc[i], b = lc[i];
+        if (a === lastA && b === lastB) continue;   // rows arrive grouped by RTO
+        lastA = a; lastB = b;
+        pairs.add(a * 8388608 + b);
+      }
+      pairs.forEach(p => {
+        const name = nameOf(clean(src.vals[Math.floor(p / 8388608)]));
+        const code = clean(loc.vals[p % 8388608]);
+        if (!name || !code || NOT_A_PLACE.test(name) || isZoneName(name)) return;
+        const k = clusterKey(name);
+        if (!k || k === clusterKey(code)) return;
+        let e = clusters.get(k);
+        if (!e){ e = { key: k, label: name, codes: new Set(), states: new Set() }; clusters.set(k, e); }
+        // Several spellings land on the same key; show the fullest one.
+        else if (letterCount(name) > letterCount(e.label)) e.label = name;
+        e.codes.add(code);
+      });
+    });
+    // A name standing for a single RTO is not a region — it is that RTO.
+    [...clusters.keys()].forEach(k => { if (clusters.get(k).codes.size < 2) clusters.delete(k); });
+
+    // Two regions covering exactly the same RTOs are one block under several
+    // names — "Bhopal", "Gwalior" and "Indore" all arrive covering the same 61
+    // codes. Merging them lists those RTOs once instead of three times over,
+    // and the group name says every wording it answers to, so it is visible
+    // that the grids do not actually separate them.
+    clusterAlias = new Map();
+    const bySet = new Map();
+    [...clusters.values()].forEach(e => {
+      const sig = [...e.codes].sort().join(',');
+      const first = bySet.get(sig);
+      if (!first){ bySet.set(sig, e); e.names = [e.label]; e.keys = [e.key]; return; }
+      first.names.push(e.label);
+      first.keys.push(e.key);
+      clusters.delete(e.key);
+      clusterAlias.set(e.key, first.key);
+    });
+    bySet.forEach(e => {
+      if (e.names.length > 1){
+        e.names.sort((a, b) => letterCount(b) - letterCount(a) || a.localeCompare(b));
+        e.short = e.names[0];
+        e.label = e.names.slice(0, 3).join(' / ') +
+                  (e.names.length > 3 ? ' +' + (e.names.length - 3) + ' more' : '');
+      } else {
+        e.short = e.label;
+      }
+    });
+    clusters.forEach(e => e.codes.forEach(c => {
+      const st = codeStateMap.get(c); if (st) e.states.add(st);
+    }));
+  }
+
+  // A region by any of its names.
+  function clusterFor(key){
+    return clusters.get(key) || clusters.get(clusterAlias.get(key)) || null;
+  }
+
+  // What the chosen location stands for. The dropdown lists an RTO once on its
+  // own and again under each region it belongs to, and a region entry carries
+  // its key after a "#": "DL01#delhincr". The two are different questions.
+  // "Delhi NCR - DL01" asks what the Delhi NCR grid pays at DL01; "Delhi - DL01"
+  // asks what the Delhi grid pays there, which is a different rate at several
+  // insurers. Picking DL01 on its own, under All RTOs, still returns every rate
+  // that applies there.
+  function expandLocationChoice(want){
+    let w = String(want == null ? '' : want);
+    const hash = w.indexOf('#');
+    if (hash >= 0) w = w.slice(0, hash);
+    // "@delhincr" — the whole-region entry kept working for searches saved
+    // before the list was split out into individual RTOs.
+    if (w.charAt(0) === '@'){
+      const e = clusterFor(w.slice(1));
+      return e ? { codes: e.codes, states: e.states } : { codes: new Set(), states: new Set() };
+    }
+    w = canonRto(w);
+    const codes = new Set([w]), states = new Set();
+    const st = codeStateMap.get(w);
+    if (st) states.add(st);
+    return { codes, states };
+  }
+
+  // ── How wide is a row's geography? ──────────────────────────
+  // Three cases, narrowest first:
+  //   RTO code (or a cluster name) given → those codes only
+  //   state but no RTO                   → every RTO in that state
+  //   neither                            → every RTO in the country
+  // The last two are assertions, not gaps. A circular naming a state and
+  // excluding no RTO means every RTO in that state, and one naming no geography
+  // at all means the whole book.
+  function geoCovers(r, want){
+    const rowCode = clean(r.location);
+    const w = expandLocationChoice(want);
+    if (rowCode){
+      const e = clusterFor(clusterKey(rowCode));
+      if (e) { for (const c of e.codes) if (w.codes.has(c)) return true; return false; }
+      return w.codes.has(rowCode);
+    }
+    const rowState = stateKey(r.state);
+    if (!rowState) return true;                    // countrywide rule
+    // If nothing in the data says which state these RTOs belong to, show the
+    // row rather than hide a real rate on a technicality.
+    if (!w.states.size) return true;
+    return w.states.has(rowState);
+  }
+
+  // Does a row belong to a named region? It does when one of the geography
+  // columns the regions were learned from names that region on that row.
+  function regionTest(key){
+    const e = key ? clusterFor(key) : null;
+    if (!e) return null;
+    // A merged region answers to every name that was folded into it.
+    const want = new Set(e.keys && e.keys.length ? e.keys : [e.key]);
+    const masks = [];
+    regionSourceCols().forEach(col => {
+      const ok = new Uint8Array(col.vals.length);
+      let any = false;
+      for (let v = 0; v < col.vals.length; v++){
+        if (want.has(clusterKey(regionNameOf(col.vals[v])))){ ok[v] = 1; any = true; }
+      }
+      if (any) masks.push({ codes: col.codes, ok });
+    });
+    if (!masks.length) return null;
+    if (masks.length === 1){
+      const c = masks[0].codes, o = masks[0].ok;
+      return i => o[c[i]] === 1;
+    }
+    return i => {
+      for (let m = 0; m < masks.length; m++) if (masks[m].ok[masks[m].codes[i]]) return true;
+      return false;
+    };
+  }
+
+  // The same question answered for every row at once: each distinct location
+  // and state value is tested once, then the rows are a walk over integers.
+  function geoTest(want){
+    const loc = store.cols.get('location');
+    if (!loc) return null;
+    const hash = String(want == null ? '' : want).indexOf('#');
+    const regionKey = hash >= 0 ? String(want).slice(hash + 1) : '';
+    const st = store.cols.get('state');
+    const w = expandLocationChoice(want);
+    const locOk = new Uint8Array(loc.vals.length);
+    for (let v = 0; v < loc.vals.length; v++){
+      const raw = clean(loc.vals[v]);
+      if (!raw){ locOk[v] = 2; continue; }          // 2 = fall through to the state
+      const e = clusterFor(clusterKey(raw));
+      if (e){
+        let hit = 0;
+        for (const c of e.codes) if (w.codes.has(c)) { hit = 1; break; }
+        locOk[v] = hit;
+      } else {
+        locOk[v] = w.codes.has(raw) ? 1 : 0;
+      }
+    }
+    let stOk = null;
+    if (st){
+      stOk = new Uint8Array(st.vals.length);
+      for (let v = 0; v < st.vals.length; v++){
+        const k = stateKey(st.vals[v]);
+        stOk[v] = (!k || !w.states.size || w.states.has(k)) ? 1 : 0;
+      }
+    }
+    const lc = loc.codes, sc = st ? st.codes : null;
+    const atCode = i => {
+      const a = locOk[lc[i]];
+      if (a !== 2) return a === 1;
+      return stOk ? stOk[sc[i]] === 1 : true;
+    };
+    const inRegion = regionTest(regionKey);
+    if (!inRegion) return atCode;
+    return i => atCode(i) && inRegion(i);
+  }
+
+  // ── The location list ───────────────────────────────────────
+  // One line per RTO: code, city, state. Nothing else. An RTO belongs to
+  // several of the insurers' named blocks at once, so listing it under each of
+  // them put the same code on screen five to thirteen times over; the blocks
+  // are still used to MATCH rows whose grid names a region instead of a code,
+  // they are just not something to scroll through.
+  function locationOptions(mask){
+    const loc = store.cols.get('location');
+    if (!loc || !store.n) return [];
+    const seen = new Uint8Array(loc.vals.length);
+    const codes = loc.codes;
+    if (mask){ for (let i = 0; i < store.n; i++){ if (mask[i]) seen[codes[i]] = 1; } }
+    else     { for (let i = 0; i < store.n; i++){ seen[codes[i]] = 1; } }
+    const visible = new Set();
+    for (let v = 0; v < loc.vals.length; v++){
+      if (!seen[v]) continue;
+      const code = clean(loc.vals[v]);
+      if (code) visible.add(code);           // a Set: one entry per code, never two
+    }
+    const rtos = [...visible]
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
+      .map(c => {
+        const i = codeInfo.get(c) || {};
+        return { value: c, label: locationLabel(c, i.city, i.state) };
+      });
+    // Delhi NCR is the one block worth its own line: it crosses three states,
+    // so no city and no state in this list reaches it, and several grids price
+    // it as a unit. Every OTHER block the insurers name — KOTA, Lucknow,
+    // Madhya Pradesh, AHMEDABAD — only repeats a city or a state that is
+    // already pickable, so listing all 193 of them buried the RTO codes behind
+    // a wall of duplicates. They are still used to MATCH rows whose grid names
+    // a region instead of a code; they are just not something to scroll past.
+    const regions = [];
+    const ncr = clusterFor('delhincr');
+    if (ncr && ncr.codes && ncr.codes.size > 1){
+      for (const c of ncr.codes){
+        if (!visible.has(c)) continue;
+        regions.push({ group: 'Region', value: '@' + ncr.key,
+                       label: 'Delhi NCR \u2014 ' + ncr.codes.size + ' RTOs' });
+        break;
+      }
+    }
+    return regions.concat(rtos);
+  }
+
+  function fillLocationSelect(sel, items, placeholder){
+    const current = sel.value;
+    const esc = v => String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+    // The items arrive already ordered by group, so the optgroups are opened and
+    // closed in one pass — with 13,000 entries this is the difference between a
+    // dropdown that appears instantly and one that stalls the tab.
+    const parts = ['<option value="">' + esc(placeholder) + '</option>'];
+    let open = null;
+    for (let i = 0; i < items.length; i++){
+      const o = items[i];
+      const g = o.group || '';
+      if (g !== open){
+        if (open) parts.push('</optgroup>');
+        if (g) parts.push('<optgroup label="' + esc(g) + '">');
+        open = g;
+      }
+      parts.push('<option value="' + esc(o.value) + '">' + esc(o.label) + '</option>');
+    }
+    if (open) parts.push('</optgroup>');
+    sel.innerHTML = parts.join('');
+    if (items.some(o => o.value === current)) sel.value = current;
+    if (sel._syncCombo) sel._syncCombo();
+  }
+
+  function fillSelect(sel, values, placeholder){
+    // keep any searchable panel in step with the new options
+    if (sel && sel._syncCombo) setTimeout(() => sel._syncCombo(), 0);
+    const current = sel.value;
+    sel.innerHTML = `<option value="">${placeholder}</option>` + values.map(v => `<option value="${v}">${v}</option>`).join('');
+    if (values.includes(current)) sel.value = current;
+  }
+  function currentFilters(){
+    return {
+      vehicleType: selVehicleType.value, location: selLocation.value, policyType: selPolicyType.value,
+      insurer: selInsurer.value, make: selMake.value, model: selModel.value,
+      bodyType: selBodyType.value,
+      gvwRange: selGvw.value
+    };
+  }
+  // Classes to offer in Vehicle Type: what the grids price, plus what the master
+  // can describe. Only grid-side filters apply here.
+  function vehicleTypeOptions(maskFor){
+    const out = new Set(uniqueValsMasked(maskFor('vehicleType'), 'vehicleType', canonCategory));
+    if (vehicleMaster.length) vehicleMaster.forEach(v => { const c = vmClass(v); if (c) out.add(c); });
+    return [...out].sort();
+  }
+
+
+  // ── Vehicle Category vs Body Type ───────────────────────────
+  // Grids write the class and the body as one string: "GCV-Truck",
+  // "GCV-Heavy Truck/Semi Trailer". The class belongs in Vehicle Category and
+  // the body in Body Type, otherwise every body becomes its own "category" and
+  // the dropdown fills with GCV-Truck, GCV-Tipper, GCV-Tanker...
+  const CATEGORY_RULES = [
+    [/kaali\s*peeli|kali\s*pili|black\s*(and|&)?\s*yellow/i, 'Kaali Peeli Taxi'],
+    // "School" anywhere means a school bus — "PCV-Bus_School" reads back-to-front.
+    [/\bschool\b|educational\s*inst/i,                         'School Bus'],
+    // Every other bus is its own class, "PCV Bus" — not plain PCV, which the
+    // grids use for passenger three-wheelers.
+    [/(passenger|staff|omni|stage|contract)\s*bus|^bus\b|\bbus\b/i, 'PCV Bus'],
+    [/employee\s*pick|employee\s*transport|staff\s*transport/i, 'Taxi'],
+    [/\btaxi\b|\bcab\b/i,                                     'Taxi'],
+    [/\bgcv\b|goods/i,                                         'GCV'],
+    [/\bpcv\b|passenger\s*carrying/i,                          'PCV'],
+    [/two\s*wheeler|\b2\s*w\b|scooter|moped|motor\s*cycle|motorbike|\bbike\b/i, 'Two Wheeler'],
+    [/private\s*car|\bpvt\b|^car\b/i,                          'Private Car'],
+    [/trailer/i,                                                'Trailer'],
+    // "Tractor" alone is a GCV body, not a class of its own.
+    [/tractor/i,                                                'GCV'],
+    [/misc|construction|\bce\b/i,                               'Misc-D vehicles'],
+  ];
+
+  function splitCategoryBody(raw){
+    const t = String(raw || '').trim();
+    if (!t) return { category: '', body: '' };
+    // A class name is the whole value, never a class plus a body. Splitting
+    // "Misc-D vehicles" on its hyphen invented a body type called "D vehicles".
+    const whole = CATEGORY_NAMES.get(t.toLowerCase());
+    if (whole) return { category: whole, body: '' };
+    // "GCV-Truck" / "GCV - Heavy Truck/Semi Trailer" / "PCV_Taxi"
+    const m = t.match(/^([A-Za-z][A-Za-z .]*?)\s*[-_/|]\s*(.+)$/);
+    let head = m ? m[1].trim() : t, tail = m ? m[2].trim() : '';
+    // The HEAD names the class. Only a bus or taxi in the tail can override it,
+    // because those are genuinely different classes — "GCV-Tractor" and
+    // "GCV-Heavy Truck/Semi Trailer" are still GCV with a body, not a Tractor
+    // class and not a Trailer class.
+    // A bus now resolves to PCV, so testing the RESULT for "Bus|Taxi" no longer
+    // works — test the tail itself instead.
+    if (tail && /\b(bus|taxi|cab|kaali\s*peeli)\b|school/i.test(tail)) {
+      for (const [re, name] of CATEGORY_RULES) {
+        if (re.test(tail) && /^(PCV|PCV Bus|Taxi|School Bus|Kaali Peeli Taxi)$/.test(name)) {
+          return { category: name, body: tail };
+        }
+      }
+    }
+    for (const [re, name] of CATEGORY_RULES) {
+      if (re.test(head)) return { category: name, body: tail };
+    }
+    return { category: t, body: '' };
+  }
+
+  function canonCategory(raw){ return splitCategoryBody(raw).category || String(raw || '').trim(); }
+
+  // ── One filter, tested once per distinct value ──────────────
+  // Every filter in the search bar asks about a single column, so the answer
+  // only ever depends on which of that column's distinct values a row holds.
+  // Each test is therefore worked out over the few hundred values the column
+  // actually contains, and applied to the rows as a lookup on an integer.
+  function dictMask(key, test){
+    const c = store.cols.get(key);
+    if (!c) return null;
+    const ok = new Uint8Array(c.vals.length);
+    for (let v = 0; v < c.vals.length; v++) if (test(c.vals[v])) ok[v] = 1;
+    return { c, ok };
+  }
+  const maskTest = m => { const codes = m.c.codes, ok = m.ok; return i => ok[codes[i]] === 1; };
+
+  // [{ key, test }] — tagged so a dropdown can be refreshed against every
+  // filter except its own.
+  function buildTests(f){
+    const t = [];
+    const add = (key, m) => { if (m) t.push({ key, test: maskTest(m) }); };
+    if (f.vehicleType){
+      add('vehicleType', dictMask('vehicleType',
+        v => canonCategory(v) === f.vehicleType || valueContains(v, f.vehicleType)));
+    }
+    if (f.bodyType){
+      const mb = dictMask('bodyType', v => valueContains(v, f.bodyType));
+      const mv = dictMask('vehicleType', v => valueContains(splitCategoryBody(v).body, f.bodyType));
+      if (mb && mv){
+        const bc = mb.c.codes, bo = mb.ok, vc = mv.c.codes, vo = mv.ok;
+        t.push({ key: 'bodyType', test: i => bo[bc[i]] === 1 || vo[vc[i]] === 1 });
+      } else { add('bodyType', mb || mv); }
+    }
+    if (f.location){
+      const g = geoTest(f.location);
+      if (g) t.push({ key: 'location', test: g });
+    }
+    if (f.policyType) add('policyType', dictMask('policyType', v => canonPolicyType(v) === f.policyType));
+    if (f.make){
+      // A row naming no make covers EVERY make, so an exact match would discard
+      // almost all of them. An explicit exclusion still blocks it.
+      add('make', dictMask('excludeMake', v => !excludedBy(v, f.make)));
+      add('make', dictMask('make', v => !clean(v) || valueContains(v, f.make)));
+    }
+    if (f.model){
+      // The chosen MODEL can be on the exclusion list too.
+      add('model', dictMask('excludeMake', v => !excludedBy(v, f.model)));
+      add('model', dictMask('model', v => !clean(v) || valueContains(v, f.model)));
+    }
+    if (f.gvwRange) add('gvwRange', dictMask('gvwRange', v => gvwMatchesSlab(v, f.gvwRange)));
+    if (f.insurer) add('insurer', dictMask('company', v => v === f.insurer));
+    return t;
+  }
+
+  function maskFrom(tests){
+    if (!tests.length) return null;                 // null means "every row"
+    const mask = new Uint8Array(store.n);
+    outer: for (let i = 0; i < store.n; i++){
+      for (let t = 0; t < tests.length; t++) if (!tests[t].test(i)) continue outer;
+      mask[i] = 1;
+    }
+    return mask;
+  }
+
+  // Refreshing the search form asks the same question of eight dropdowns, each
+  // time leaving its own filter out. The tests are built once and the masks
+  // cached, instead of eight full passes over the data building row objects.
+  function maskerForOptions(){
+    const tagged = buildTests(currentFilters());
+    const cache = new Map();
+    return key => {
+      if (!cache.has(key)) cache.set(key, maskFrom(tagged.filter(t => t.key !== key)));
+      return cache.get(key);
+    };
+  }
+  function populateSearchOptions(){
+    const maskFor = maskerForOptions();
+    // Vehicle Type lists every class that is PRICED, and is never narrowed by
+    // make/model/body: those come from the vehicle master, so filtering payout
+    // rows by "TVS" found nothing and blanked this dropdown.
+    fillSelect(selVehicleType, vehicleTypeOptions(maskFor), 'Select Vehicle Type');
+    // Bodies come from the master when loaded, plus any body the grids carry
+    // inside their vehicle-type string ("GCV-Tipper" -> Tipper).
+    const bodyMask = maskFor('bodyType');
+    const gridBodies = new Set(uniqueValsMasked(bodyMask, 'bodyType'));
+    uniqueValsMasked(bodyMask, 'vehicleType', v => splitCategoryBody(v).body)
+      .forEach(b => gridBodies.add(b));
+    const bodyOpts = vehicleMaster.length
+      ? [...new Set(vmOptions('body').concat([...gridBodies]))].sort()
+      : [...gridBodies].sort();
+    fillSelect(selBodyType, bodyOpts, 'Select Body Type');
+    fillLocationSelect(selLocation, locationOptions(maskFor('location')), 'Select Location');
+    fillSelect(selPolicyType, policyTypeOptions(maskFor('policyType')), 'Select Policy Type');
+    fillSelect(selInsurer, uniqueValsMasked(maskFor('insurer'), 'company'), 'All Insurers');
+    // Vehicles come from the master when it is loaded; the grids rarely name a
+    // make, so reading them here is what left these empty.
+    if (vehicleMaster.length){
+      fillSelect(selMake,  vmOptions('make'),  'Select Make');
+      fillSelect(selModel, vmOptions('model'), 'Select Model');
+    } else {
+      fillSelect(selMake, uniqueValsMasked(maskFor('make'), 'make'), 'Select Make');
+      fillSelect(selModel, uniqueValsMasked(maskFor('model'), 'model'), 'Select Model');
+    }
+    // Only the slabs some rule actually reaches, in weight order.
+    const bandsPresent = uniqueValsMasked(maskFor('gvwRange'), 'gvwRange');
+    const slabs = GVW_SLABS
+      .filter(sl => bandsPresent.some(b => { const p = parseGvwBand(b); return p && p[0] < sl.hi && p[1] > sl.lo; }))
+      .map(sl => sl.label);
+    fillSelect(selGvw, slabs, 'Select GVW Range');
+  }
+  // Changing the vehicle class re-scopes Make and Model. A make that does not
+  // exist in the new class has to go, or the search runs with an impossible
+  // pairing (GCV + a two-wheeler-only make) and quietly returns nothing.
+  if (selVehicleType) selVehicleType.addEventListener('change', () => {
+    if (!vehicleMaster.length) return;
+    const makes = vmOptions('make');
+    if (selMake && selMake.value && makes.indexOf(selMake.value) < 0) {
+      selMake.value = '';
+      if (selModel) selModel.value = '';
+      if (selMake._syncCombo) selMake._syncCombo();
+      if (selModel && selModel._syncCombo) selModel._syncCombo();
+    }
+    const models = vmOptions('model');
+    if (selModel && selModel.value && models.indexOf(selModel.value) < 0) {
+      selModel.value = '';
+      if (selModel._syncCombo) selModel._syncCombo();
+    }
+  });
+
+  [selVehicleType, selBodyType, selLocation, selPolicyType, selInsurer, selMake, selModel, selGvw].filter(Boolean).forEach(sel => {
+    sel.addEventListener('change', populateSearchOptions);
+  });
+
+  // ── Searchable combobox over the (hidden) location select ──
+  // Any long dropdown gets the same searchable panel as Location. Make alone has
+  // 2,235 entries — scrolling that is unusable, and the list is already scoped
+  // to the chosen vehicle category, so search is the only thing missing.
+  function attachCombo(cfg){
+    const sel     = cfg.sel;
+    const field   = document.getElementById(cfg.field);
+    const display = document.getElementById(cfg.display);
+    const panel   = document.getElementById(cfg.panel);
+    const search  = document.getElementById(cfg.search);
+    const list    = document.getElementById(cfg.list);
+    const label   = cfg.placeholder || 'Select';
+    const emptyMsg = cfg.emptyMsg || 'Nothing to choose yet.';
+    if (!sel || !display) return;
+
+    function currentOptions(){
+      return [...sel.options].filter(o => o.value !== '');
+    }
+    function syncDisplay(){
+      const txt = display.querySelector('.txt');
+      const chosen = [...sel.options].find(o => o.value === sel.value && o.value !== '');
+      if (chosen){ txt.textContent = chosen.textContent; txt.classList.remove('placeholder'); }
+      else { txt.textContent = label; txt.classList.add('placeholder'); }
+    }
+    function renderList(query){
+      const q = (query||'').trim().toLowerCase();
+      // Someone reading a number plate types DL1C, which is no longer a code of
+      // its own. Match what it folds into as well, so a plate still finds its RTO.
+      const qc = q ? canonRto(q).toLowerCase() : '';
+      const opts = currentOptions().filter(o => {
+        if (!q) return true;
+        const t = o.textContent.toLowerCase();
+        return t.includes(q) || (qc !== q && t.includes(qc));
+      });
+      if (!opts.length){
+        list.innerHTML = '<div class="combo-empty">' +
+          (currentOptions().length ? 'Nothing matches that search.' : emptyMsg) +
+          '</div>';
+        return;
+      }
+      list.innerHTML = opts.map(o => {
+        // Colour the bracketed region part like the rest of the app
+        const m = o.textContent.match(/^([^(]+)(\(.+\))?$/);
+        const head = m ? m[1] : o.textContent;
+        const tail = m && m[2] ? `<span class="sub">${m[2]}</span>` : '';
+        return `<div class="combo-opt${o.value===sel.value?' selected':''}" data-value="${o.value.replace(/"/g,'&quot;')}">
+                  <span>${head}${tail}</span><span class="tick">✓</span>
+                </div>`;
+      }).join('');
+      const selEl = list.querySelector('.combo-opt.selected');
+      if (selEl) selEl.scrollIntoView({ block:'nearest' });
+    }
+    function open(){
+      panel.classList.add('open');
+      field.classList.add('combo-open');
+      search.value = '';
+      renderList('');
+      setTimeout(() => search.focus(), 0);
+    }
+    function close(){
+      panel.classList.remove('open');
+      field.classList.remove('combo-open');
+    }
+    function choose(value){
+      sel.value = value;
+      syncDisplay();
+      close();
+      sel.dispatchEvent(new Event('change', { bubbles:true }));
+    }
+
+    display.addEventListener('click', e => {
+      e.stopPropagation();
+      panel.classList.contains('open') ? close() : open();
+    });
+    search.addEventListener('input', () => renderList(search.value));
+    search.addEventListener('click', e => e.stopPropagation());
+    search.addEventListener('keydown', e => {
+      if (e.key === 'Escape'){ close(); }
+      if (e.key === 'Enter'){
+        const first = list.querySelector('.combo-opt');
+        if (first) choose(first.dataset.value);
+        e.preventDefault();
+      }
+    });
+    list.addEventListener('click', e => {
+      const opt = e.target.closest('.combo-opt');
+      if (!opt) return;
+      // Clicking the option that is already chosen clears it. Without this the
+      // only way out of a selection is Reset, which throws away every other
+      // field as well.
+      if (opt.dataset.value === sel.value) { choose(''); return; }
+      choose(opt.dataset.value);
+    });
+    document.addEventListener('click', e => {
+      if (!field.contains(e.target)) close();
+    });
+
+    // Let fillLocationSelect refresh the visible label after the options change
+    sel._syncCombo = () => { syncDisplay(); if (panel.classList.contains('open')) renderList(search.value); };
+    syncDisplay();
+  }
+
+  attachCombo({ sel: selLocation, field: 'f-location', display: 'loc-display',
+    panel: 'loc-panel', search: 'loc-search', list: 'loc-list',
+    placeholder: 'Select Location', emptyMsg: 'No locations in the loaded data yet.' });
+  attachCombo({ sel: selMake, field: 'f-make', display: 'make-display',
+    panel: 'make-panel', search: 'make-search', list: 'make-list',
+    placeholder: 'Select Make',
+    emptyMsg: 'Load the vehicle master to choose a make.' });
+  attachCombo({ sel: selModel, field: 'f-model', display: 'model-display',
+    panel: 'model-panel', search: 'model-search', list: 'model-list',
+    placeholder: 'Select Model', emptyMsg: 'Choose a make first.' });
+  attachCombo({ sel: selBodyType, field: 'f-bodyType', display: 'body-display',
+    panel: 'body-panel', search: 'body-search', list: 'body-list',
+    placeholder: 'Select Body Type', emptyMsg: 'No body types for this selection.' });
+
+  document.getElementById('resetSearchBtn').addEventListener('click', () => {
+    [selVehicleType, selBodyType, selLocation, selPolicyType, selInsurer, selMake, selModel, selGvw].filter(Boolean).forEach(s => s.value = '');
+    document.getElementById('regNumber').value = '';
+    document.getElementById('searchDate').value = '';
+    document.getElementById('resultsWrap').style.display = 'none';
+    populateSearchOptions();
+  });
+
+
+  // ── Declined / excluded business ────────────────────────────
+  // A grid says "decline", "not covered", "no business" or simply 0% for
+  // combinations an insurer will not write. Those rows must not be presented as
+  // a payout of zero alongside real quotes — that reads as "they pay nothing"
+  // when the truth is "they will not write it at all". They are separated out,
+  // so an insurer that DOES cover the vehicle is the one you see.
+  const DECLINE_RE = /\b(decline[d]?|declining|not\s*covered|no\s*cover|excluded?|exclusion|block(ed)?|no\s*business|nb\s*stop|stopped|restricted|prohibit)/i;
+
+  // Is the chosen make on this row's exclusion list?
+  // An exclusion list can name MODELS as well as makes. IndusInd prices
+  // "Tata/Maruti/Mahindra (Mahindra Below 2T other than Jeeto & Supro)", and
+  // Jeeto and Supro are Mahindra models, not manufacturers — 21,264 rows carry
+  // exactly that list. Testing it against the make alone never matched, so the
+  // portal paid out on the two vehicles the grid had carved out.
+  function excludedBy(listText, name){
+    const raw = clean(listText);
+    const want = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!raw || !want) return false;
+    return raw.split(/\s*[,;/|]\s*|\s+&\s+|\s+and\s+/i).some(x => {
+      const k = String(x).toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!k) return false;
+      if (k === want) return true;
+      // "Tata" must match "Tata Motors", and the reverse — but a prefix rule on
+      // a two- or three-letter name matches half the catalogue, so short names
+      // have to be exact.
+      if (k.length < 4 || want.length < 4) return false;
+      return want.indexOf(k) === 0 || k.indexOf(want) === 0;
+    });
+  }
+
+  function isMakeExcluded(r, make){ return excludedBy(r && r.excludeMake, make); }
+
+  function isDeclined(r){
+    // Only explicit wording counts. A bare 0% is a real, useful answer — this
+    // insurer pays nothing here — and hiding it looks the same as having no
+    // grid for them at all, which is a different thing entirely.
+    // Only the VALUES can declare a decline. JSON.stringify on the extra columns
+    // also serialises their NAMES, so a grid carrying an "Exclusions" column
+    // marked every one of its rows declined — which is why entire insurers
+    // disappeared from a search with no filters at all.
+    const parts = [r.payout, r.remarks, r.discount, r.condition];
+    if (r._extra && typeof r._extra === 'object') {
+      Object.keys(r._extra).forEach(k => parts.push(r._extra[k]));
+    }
+    const txt = parts.map(x => String(x == null ? '' : x)).join(' ');
+    return DECLINE_RE.test(txt);
+  }
+
+  function parsePayoutNumber(v){
+    if (v == null || v === '') return null;
+    if (typeof v === 'number') return v > 0 && v <= 1 ? v * 100 : v;
+    const m = String(v).match(/-?\d+(?:\.\d+)?/);
+    if (!m) return null;
+    let n = parseFloat(m[0]);
+    if (n > 0 && n <= 1 && /^0?\./.test(String(v).trim())) n *= 100;
+    return n;
+  }
+
+  let lastDeclined = [];
+
+  function renderDeclinedNote(){
+    const box = document.getElementById('declinedNote');
+    if (!box) return;
+    if (!lastDeclined.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+    const byIns = {};
+    lastDeclined.forEach(r => {
+      const k = r.company || 'Unknown';
+      if (!byIns[k]) byIns[k] = new Set();
+      byIns[k].add('declined');
+    });
+    const names = Object.keys(byIns).sort().map(k => '<b>' + k + '</b>').join(' · ');
+    box.style.display = 'block';
+    box.innerHTML = 'Not shown above — these insurers decline this combination outright: ' + names +
+      '. Insurers quoting <b>0%</b> DO appear in the results: that means they will write it ' +
+      'but pay no commission, which is not the same as refusing it.';
+  }
+
+  // No one reads a hundred thousand cards. Past this, the rest are held back
+  // and the search bar says so, rather than locking the tab up building them.
+  const RESULT_CAP = 20000;
+  let resultsTruncated = 0;
+
+  function runSearch(opts){
+    opts = opts || {};
+    if (!store.n){
+      if (!opts.keepScroll) alert('No payout data loaded yet. Go to "Upload & Manage Data" first.');
+      return;
+    }
+    const f = currentFilters();
+    // Every top-bar field is optional — only filter on whatever the person
+    // actually filled in. A grid row often covers several vehicles/fuels/ages at
+    // once ("Petrol, Diesel, CNG, LPG"), so matching asks whether the selected
+    // value is contained within the row's value, not that they are identical.
+    // The work happens over the columns; only the rows that survive are ever
+    // rebuilt as objects.
+    const tests = buildTests(f);
+    // A region covers hundreds of RTOs and the parser's export repeats each rule
+    // once per code, so the same answer can arrive 276 times. Those copies are
+    // folded together HERE rather than in the renderer, so that the cap below
+    // counts rules and not repetitions — otherwise picking "Delhi NCR" filled
+    // the page with copies of the first few rules and held back all the rest.
+    const sigCols = store.keys
+      .filter(k => k !== 'location' && k !== 'state' && k !== 'city')
+      .map(k => store.cols.get(k));
+    const locCol = store.cols.get('location');
+    const bySig = new Map(), droppedSigs = new Set();
+    const keep = [], counts = [], wheres = [], declinedIdx = [];
+    resultsTruncated = 0;
+
+    const sameRule = (a, b) => {
+      for (let c = 0; c < sigCols.length; c++) if (sigCols[c].codes[a] !== sigCols[c].codes[b]) return false;
+      return true;
+    };
+
+    outer: for (let i = 0; i < store.n; i++){
+      for (let t = 0; t < tests.length; t++) if (!tests[t].test(i)) continue outer;
+      // Insurers that will not write this combination are reported separately.
+      if (declinedBits && declinedBits[i]){ if (declinedIdx.length < 500) declinedIdx.push(i); continue; }
+
+      let h = 2166136261;
+      for (let j = 0; j < sigCols.length; j++){ h ^= sigCols[j].codes[i]; h = Math.imul(h, 16777619); }
+      h = h >>> 0;
+
+      const prior = bySig.get(h);
+      let slot = -1;
+      if (prior !== undefined){
+        const list = typeof prior === 'number' ? [prior] : prior;
+        for (let j = 0; j < list.length; j++){
+          if (sameRule(keep[list[j]], i)){ slot = list[j]; break; }
+        }
+      }
+      if (slot >= 0){
+        counts[slot]++;
+        if (locCol && wheres[slot].size < 8){ const w = clean(locCol.get(i)); if (w) wheres[slot].add(w); }
+        continue;
+      }
+      if (keep.length >= RESULT_CAP){
+        if (!droppedSigs.has(h)){ droppedSigs.add(h); resultsTruncated++; }
+        continue;
+      }
+      const s = keep.length;
+      keep.push(i); counts.push(1);
+      const w = new Set();
+      if (locCol){ const v = clean(locCol.get(i)); if (v) w.add(v); }
+      wheres.push(w);
+      if (prior === undefined) bySig.set(h, s);
+      else if (typeof prior === 'number') bySig.set(h, [prior, s]);
+      else prior.push(s);
+    }
+
+    currentMatches = keep.map((i, s) => {
+      const r = dbRow(i);
+      if (counts[s] > 1){ r.__preCount = counts[s]; r.__preWhere = [...wheres[s]]; }
+      return r;
+    });
+    lastDeclined = declinedIdx.map(dbRow);
+
+    // Editing a chip keeps the sidebar filters; a fresh search from the form clears them
+    if (!opts.keepFilters) sidebarFilterState = {};
+    renderSummaryBar(f);
+    renderFilterPanel();
+    if (opts.keepFilters) restoreFilterChecks();
+    applySidebarAndRender();
+    renderDeclinedNote();
+    document.getElementById('resultsWrap').style.display = 'block';
+    if (!opts.keepScroll){
+      document.getElementById('resultsWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // Re-tick the sidebar boxes after the panel is rebuilt, so filters survive a chip edit
+  function restoreFilterChecks(){
+    const s = sidebarFilterState || {};
+    const tick = (cls, store) => {
+      if (!store) return;
+      document.querySelectorAll('.'+cls).forEach(cb => {
+        const set = store[cb.dataset.field];
+        if (set && set.has(cb.value)) cb.checked = true;
+      });
+    };
+    tick('fp-fixed', s.fixed);
+    tick('fp-range', s.range);
+    tick('fp-extra', s.extra);
+    const ncb = document.getElementById('fp-ncb'); if (ncb) ncb.checked = !!s.ncb;
+    const cpa = document.getElementById('fp-cpa'); if (cpa) cpa.checked = !!s.cpa;
+  }
+
+  document.getElementById('searchBtn').addEventListener('click', () => runSearch());
+
+  // The summary bar doubles as the search bar: each chip carries a real <select>
+  // mirroring the form field above, so a selection can be changed here without
+  // scrolling back up, and every other selection is preserved.
+  const SUMMARY_CHIPS = [
+    { tag:'You searched for', key:'vehicleType', sel:() => selVehicleType, empty:'Any Vehicle' },
+    { tag:'body',             key:'bodyType',    sel:() => selBodyType,    empty:'Any Body Type' },
+    { tag:'of',               key:'make',        sel:() => selMake,        empty:'Any Make' },
+    { tag:'of',               key:'model',       sel:() => selModel,       empty:'Any Model' },
+    { tag:'in',               key:'location',    sel:() => selLocation,    empty:'Any Location' },
+    { tag:'with',             key:'policyType',  sel:() => selPolicyType,  empty:'Any Policy Type' },
+    { tag:'for',              key:'insurer',     sel:() => selInsurer,     empty:'Any Insurer' }
+  ];
+
+  function renderSummaryBar(f){
+    const dateVal = document.getElementById('searchDate').value;
+    const dateDisplay = dateVal ? new Date(dateVal + 'T00:00:00').toLocaleDateString('en-GB') : '—';
+    const reg = document.getElementById('regNumber').value.trim();
+    const bar = document.getElementById('summaryBar');
+
+    const html = SUMMARY_CHIPS.map(c => {
+      const source = c.sel();
+      const chosen = [...source.options].find(o => o.value === source.value && o.value !== '');
+      const label = chosen ? chosen.textContent : c.empty;
+      const opts = [`<option value="">${c.empty}</option>`].concat(
+        [...source.options].filter(o => o.value !== '').map(o =>
+          `<option value="${o.value.replace(/"/g,'&quot;')}"${o.value===source.value?' selected':''}>${o.textContent}</option>`)
+      ).join('');
+      return `<div class="chip editable">
+                <div class="tag">${c.tag}</div>
+                <div class="val${chosen?'':' dim'}">${label}</div>
+                <select data-chip="${c.key}">${opts}</select>
+              </div>`;
+    }).join('') +
+    `<div class="chip"><div class="tag">with</div><div class="val${reg?'':' dim'}">${reg || '—'}</div></div>`;
+
+    bar.innerHTML = html;
+
+    // Changing a chip updates the matching form field and re-runs the search,
+    // keeping every other selection exactly as it was.
+    bar.querySelectorAll('select[data-chip]').forEach(chipSel => {
+      chipSel.addEventListener('change', () => {
+        const target = (SUMMARY_CHIPS.find(c => c.key === chipSel.dataset.chip)||{}).sel();
+        if (!target) return;
+        target.value = chipSel.value;
+        target.dispatchEvent(new Event('change', { bubbles:true }));
+        runSearch({ keepScroll:true, keepFilters:true });
+      });
+    });
+
+    // The calendar box shows the grid's own "Effective From" when the data has
+    // one — that's the date the payouts actually apply from. Only when no such
+    // column exists does it fall back to the date picked in the search form.
+    const EFF_KEY = /effective|eff\s*(date|from)|valid\s*from/i;
+    const effDates = new Set();
+    currentMatches.forEach(r => {
+      Object.entries(r._extra || {}).forEach(([k,v]) => {
+        if (EFF_KEY.test(k) && String(v||'').trim()) effDates.add(String(v).trim());
+      });
+    });
+    const dateEl = document.getElementById('resultsDate');
+    const labelEl = document.getElementById('resultsDateLabel');
+    if (effDates.size === 1){
+      labelEl.textContent = 'Effective from';
+      dateEl.textContent = [...effDates][0];
+    } else if (effDates.size > 1){
+      labelEl.textContent = 'Effective from';
+      dateEl.textContent = effDates.size + ' dates';
+      dateEl.title = [...effDates].join(', ');
+    } else {
+      labelEl.textContent = 'Date';
+      dateEl.textContent = dateDisplay;
+    }
+  }
+
+  // ---- Sidebar filters: fixed named groups (Condition, Vehicle Age, OD/TP Term, No. of Wheels, NCB, CPA)
+  //      plus any leftover unmapped columns shown as extra dynamic groups. ----
+
+
+  // Fields already selectable in the top bar — never repeat them in the sidebar,
+  // which is reserved for the extra criteria that have no dropdown up there.
+  const TOPBAR_FIELDS = /^(vehicle\s*type|make|model|location|rto|policy\s*type|insurer|company|payout)$/i;
+
+  // Fields that must never become a sidebar filter group — either they're
+  // already a top-bar dropdown, or they're file bookkeeping rather than a
+  // payout driver. Volume Slab and GVW still show as tags on the cards.
+  const NO_FILTER_FIELDS = /volume\s*slab|gvw|tonnage|source\s*file|file\s*name|effective|eff\s*(date|from|to)|valid\s*(from|till|to)|grid\s*geography|geography|broker\s*category|remark|note|updated|version|sheet|^state$|^city$|zone|region|cubic|^cc$/i;
+
+  function collectExtraGroups(){
+    const groups = {};
+    currentMatches.forEach(r => {
+      Object.entries(r._extra || {}).forEach(([k,v]) => {
+        if (v === '' || v === undefined || v === null) return;
+        if (!groups[k]) groups[k] = new Set();
+        groups[k].add(String(v));
+      });
+    });
+    const usable = {};
+    Object.entries(groups).forEach(([k, set]) => {
+      const key = String(k).trim();
+      if (TOPBAR_FIELDS.test(key)) return;
+      if (NO_FILTER_FIELDS.test(key)) return;
+      if (set.size > 1 && set.size <= 12) usable[k] = [...set].sort();
+    });
+    return usable;
+  }
+
+  function renderFilterPanel(){
+    // Every group is built from the values actually present in the results, so
+    // the options always match the file and selecting one is an exact match.
+    // NCB and CPA are handled as toggles below, not as value lists
+    // NCB/CPA are toggles; OD and TP Term use fixed range buckets (below)
+    // Tonnage, Fuel and Wheels belong here, alongside the other narrowing
+    // options — not as dropdowns in the search form, which is for identifying
+    // the vehicle rather than trimming the result set.
+    const DATA_GROUPS = ['policyType','fuel','condition',
+                         'zeroDep','noOfWheels','gvwRange'];
+    const NOISE_VALUE = /^(n\/?a|na|nil|none|-|--|blank|null)$/i;
+    DATA_GROUPS.forEach(field => {
+      const raw = (MULTI_VALUE.has(field)
+          ? currentMatches.flatMap(r => splitMulti(r[field]))
+          : currentMatches.map(r => field === 'policyType' ? canonPolicyType(r[field])
+                                  : field === 'noOfWheels' ? normWheeler(r[field])
+                                  : r[field]))
+          .map(v => String(v ?? '').trim())
+          .filter(v => v && !NOISE_VALUE.test(v));
+      let vals = [...new Set(raw)];
+      if (field === 'noOfWheels') vals = WHEELER_ORDER.filter(w => vals.indexOf(w) >= 0);
+      else if (field === 'gvwRange'){
+        // The insurers' 50 overlapping bands collapse to the standard slabs.
+        const raw = vals.slice();
+        vals = GVW_SLABS.filter(sl => raw.some(b => gvwMatchesSlab(b, sl.label))).map(sl => sl.label);
+      }
+      else vals.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+      const group = document.getElementById('fp-' + field + '-group');
+      const opts  = document.getElementById('fp-' + field + '-opts');
+      if (!group || !opts) return;
+      // Show the group whenever the data has a value for it. A single value is
+      // not a choice, but hiding it makes the filter look broken — you cannot
+      // tell "every row is Diesel" apart from "fuel was never mapped". The lone
+      // option is rendered disabled so it reads as information, not a control.
+      group.style.display = vals.length ? 'block' : 'none';
+      group.dataset.single = vals.length === 1 ? '1' : '';
+      const lone = vals.length === 1;
+      opts.innerHTML = vals.map(v => `
+        <label class="fp-check"${lone ? ' style="opacity:.6"' : ''}>
+          <input type="checkbox" class="fp-fixed" data-field="${field}" value="${v.replace(/"/g,'&quot;')}"${lone ? ' disabled' : ''}>
+          <span>${v}${lone ? ' <em style="font-style:normal;color:#94a3b8">(all rows)</em>' : ''}</span>
+        </label>`).join('');
+    });
+
+    // Vehicle Age, OD Term and TP Term use fixed buckets and match by range
+    // overlap, so however the file writes it — "4+", "<5", "1 to 2", "All
+    // Years" — the row still lands in the right band.
+    ['vehicleAge','odTerm','tpTerm'].forEach(field => {
+      const has = currentMatches.some(r => String(r[field] ?? '').trim());
+      const group = document.getElementById('fp-' + field + '-group');
+      if (group) group.style.display = has ? 'block' : 'none';
+      if (!has) group?.querySelectorAll('input').forEach(cb => cb.checked = false);
+    });
+
+    // NCB / CPA presence toggles.
+    // ON  → only rows that actually carry an NCB (or CPA) value.
+    // OFF → no filtering at all, so with-NCB and without-NCB rows both show.
+    // A toggle only appears when the data has a mix; if every row has NCB (or
+    // none do) the switch would do nothing, so it stays hidden.
+    [['ncb','fp-ncb-row'], ['cpa','fp-cpa-row']].forEach(([field, rowId]) => {
+      const withVal = currentMatches.filter(r => hasBenefit(r[field])).length;
+      const useful  = withVal > 0 && withVal < currentMatches.length;
+      const row = document.getElementById(rowId);
+      if (row) row.style.display = useful ? 'flex' : 'none';
+      if (!useful){
+        const box = document.getElementById('fp-' + field);
+        if (box) box.checked = false;
+      }
+    });
+    const togglesGroup = document.getElementById('fp-toggles-group');
+    if (togglesGroup){
+      const anyVisible = ['fp-ncb-row','fp-cpa-row']
+        .some(id => (document.getElementById(id)||{}).style?.display === 'flex');
+      togglesGroup.style.display = anyVisible ? 'block' : 'none';
+    }
+
+    // Dynamic extras (anything left unmapped)
+    const groups = collectExtraGroups();
+    const container = document.getElementById('fpDynamic');
+    const keys = Object.keys(groups);
+    container.innerHTML = keys.map(k => {
+      return `
+        <div class="fp-group" data-key="${k}">
+          <div class="fp-title">${k}</div>
+          ${groups[k].map(v => `
+            <label class="fp-check">
+              <input type="checkbox" class="fp-extra" data-field="${k}" value="${v}">
+              <span>${v}</span>
+            </label>`).join('')}
+        </div>`;
+    }).join('');
+  }
+
+  document.getElementById('applyFiltersBtn').addEventListener('click', () => {
+    sidebarFilterState = { fixed: {}, range: {}, extra: {}, ncb: false, cpa: false };
+    document.querySelectorAll('.fp-fixed:checked').forEach(cb => {
+      const g = cb.dataset.field;
+      if (!sidebarFilterState.fixed[g]) sidebarFilterState.fixed[g] = new Set();
+      sidebarFilterState.fixed[g].add(cb.value);
+    });
+    document.querySelectorAll('.fp-range:checked').forEach(cb => {
+      const g = cb.dataset.field;
+      if (!sidebarFilterState.range[g]) sidebarFilterState.range[g] = new Set();
+      sidebarFilterState.range[g].add(cb.value);
+    });
+    document.querySelectorAll('.fp-extra:checked').forEach(cb => {
+      const g = cb.dataset.field;
+      if (!sidebarFilterState.extra[g]) sidebarFilterState.extra[g] = new Set();
+      sidebarFilterState.extra[g].add(cb.value);
+    });
+    sidebarFilterState.ncb = document.getElementById('fp-ncb').checked;
+    sidebarFilterState.cpa = document.getElementById('fp-cpa').checked;
+    applySidebarAndRender();
+  });
+
+  document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+    document.querySelectorAll('.filters-panel input[type=checkbox]').forEach(cb => cb.checked = false);
+    sidebarFilterState = {};
+    applySidebarAndRender();
+  });
+
+  // Is this benefit actually granted on the row? Grids express it many ways:
+  // "Yes", "20%", "20/25/35", "With NCB", "Applicable". Anything explicitly
+  // negative or empty counts as not granted.
+  function hasBenefit(v){
+    const s = String(v ?? '').trim();
+    if (!s) return false;
+    if (/^(n|no|nil|none|na|n\/a|false|0|0%|without|not applicable|excluded)$/i.test(s)) return false;
+    if (/\bwithout\b|\bno\s*(ncb|cpa)\b|not\s*applicable/i.test(s)) return false;
+    return true;
+  }
+
+  // ── One cell, several values ────────────────────────────────
+  // A grid writes "Diesel/CNG/LPG" on a rule that covers all three, and the
+  // parser writes "Rollover/Renewal" on an old-vehicle rule that covers both
+  // business types. Listing each spelling as its own filter line gave eleven
+  // fuel options for six actual fuels — "Petrol/Diesel/CNG/LPG" sitting beside
+  // "Petrol" as though it were a different fuel. These fields are split into
+  // their parts: the sidebar lists the parts, and a rule matches when ANY of
+  // its parts is ticked, so ticking Diesel still finds the Diesel/CNG/LPG rule.
+  const MULTI_VALUE = new Set(['fuel', 'condition']);
+  const MULTI_CANON = new Map([
+    ['ev','EV'], ['electric','EV'], ['e-vehicle','EV'], ['battery','EV'],
+    ['cng','CNG'], ['lpg','LPG'], ['petrol','Petrol'], ['diesel','Diesel'],
+    ['hybrid','Hybrid'], ['bi-fuel','Bi-Fuel'], ['bifuel','Bi-Fuel'],
+    ['rollover','Rollover'], ['roll over','Rollover'], ['roll-over','Rollover'],
+    ['renewal','Renewal'], ['renew','Renewal'], ['new','New']
+  ]);
+  function splitMulti(v){
+    const t = String(v == null ? '' : v).trim();
+    if (!t) return [];
+    return t.split(/\s*(?:[\/,&+|]|\band\b)\s*/i)
+            .map(x => x.trim())
+            .filter(Boolean)
+            .map(x => MULTI_CANON.get(x.toLowerCase()) || x)
+            // the same part twice ("Petrol/Petrol") is one option, not two
+            .filter((x, i, a) => a.indexOf(x) === i);
+  }
+
+  function applySidebarAndRender(){
+    let final = currentMatches;
+    const s = sidebarFilterState;
+
+    // Exact match: picking "0-5" shows only rows whose value IS "0-5".
+    // Policy type compares canonically so COMP/Comprehensive/Package all agree.
+    if (s.fixed) Object.entries(s.fixed).forEach(([field, valueSet]) => {
+      if (!valueSet.size) return;
+      // Weight is offered as one standard set of slabs, not each insurer's own
+      // band, so ticking a slab keeps every rule whose band overlaps it.
+      if (field === 'gvwRange'){
+        final = final.filter(r => [...valueSet].some(sl => gvwMatchesSlab(r[field], sl)));
+        return;
+      }
+      // Ticking Diesel keeps the "Diesel/CNG/LPG" rule; ticking Renewal keeps
+      // the "Rollover/Renewal" rule. Any part matching is enough.
+      if (MULTI_VALUE.has(field)){
+        final = final.filter(r => splitMulti(r[field]).some(t => valueSet.has(t)));
+        return;
+      }
+      final = final.filter(r => {
+        // Wheels are offered as bands ("6W"), so the row's raw value has to be
+        // banded the same way here or ticking a band would match nothing.
+        const v = field === 'policyType' ? canonPolicyType(r[field])
+                : field === 'noOfWheels' ? normWheeler(r[field])
+                : r[field];
+        return valueSet.has(String(v ?? '').trim());
+      });
+    });
+    if (s.range) Object.entries(s.range).forEach(([field, valueSet]) => {
+      if (!valueSet.size) return;
+      final = final.filter(r => [...valueSet].some(bucket => rangeOverlaps(r[field], bucket)));
+    });
+    if (s.extra) Object.entries(s.extra).forEach(([field, valueSet]) => {
+      if (!valueSet.size) return;
+      final = final.filter(r => valueSet.has(String(r._extra?.[field] ?? '')));
+    });
+    // Toggle ON → only rows where the benefit is given. OFF → no filtering.
+    if (s.ncb) final = final.filter(r => hasBenefit(r.ncb));
+    if (s.cpa) final = final.filter(r => hasBenefit(r.cpa));
+
+    final = final.slice().sort((a,b) => (parseFloat(b.payout)||0) - (parseFloat(a.payout)||0));
+    const insurerCount = new Set(final.map(r => r.company).filter(Boolean)).size;
+    document.getElementById('resultsCount').textContent =
+      `Showing ${final.length.toLocaleString()} result${final.length === 1 ? '' : 's'}` +
+      (insurerCount > 1 ? ` across ${insurerCount} insurers` : '') +
+      (resultsTruncated ? ` — ${resultsTruncated.toLocaleString()} more rules match; narrow the search to see them` : '');
+
+    // If several results are indistinguishable, say so plainly — otherwise it
+    // looks like a bug rather than repeated rows in the source grid.
+    const noteEl = document.getElementById('identicalNote');
+    if (noteEl){
+      const sig = r => JSON.stringify([r.company, r.payout,
+        Object.keys(r).filter(k => k !== '_extra').sort().map(k => r[k]),
+        Object.keys(r._extra||{}).sort().map(k => k + '=' + r._extra[k])]);
+      const groups = {};
+      final.forEach(r => { const k = sig(r); groups[k] = (groups[k]||0) + 1; });
+      const repeated = Object.values(groups).filter(c => c > 1).length;
+      if (repeated){
+        noteEl.style.display = 'block';
+        noteEl.textContent = repeated === 1
+          ? 'Some results below are identical in every field — the source grid lists that same combination more than once.'
+          : `${repeated} sets of results below are identical in every field — the source grid lists those combinations more than once.`;
+      } else {
+        noteEl.style.display = 'none';
+      }
+    }
+    renderResultCards(final);
+  }
+
+  document.getElementById('saveSearchBtn').addEventListener('click', () => {
+    const f = currentFilters();
+    const blob = new Blob([JSON.stringify({ savedAt: new Date().toISOString(), filters: f, resultCount: currentMatches.length }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'saved-search.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  const badgeColors = ['#2F5DA8','#B23B7A','#1E7A4C','#C97A1E','#5B4EA6','#1E9CA8'];
+  function badgeColor(name){
+    let h = 0;
+    for (let i=0;i<name.length;i++) h = name.charCodeAt(i) + ((h << 5) - h);
+    return badgeColors[Math.abs(h) % badgeColors.length];
+  }
+  function initials(name){
+    return name.split(/\s+/).filter(Boolean).slice(0,2).map(w => w[0].toUpperCase()).join('');
+  }
+
+  function renderResultCards(matches){
+    const list = document.getElementById('resultsList');
+    if (!matches.length){
+      list.innerHTML = '<div class="empty-state">No payout entries match this combination. Try loosening a filter.</div>';
+      return;
+    }
+    // Never shown, even if the value varies — these are file bookkeeping, not
+    // reasons a payout differs. Effective dates surface in the Date box instead.
+    const HARD_HIDE = /source\s*file|file\s*name|effective|eff\s*(date|from|to)|valid\s*(from|till|to)|grid\s*geography|geography|broker\s*category|^state$|^city$|zone|region|remark|note|updated|version|sheet/i;
+    // Hidden only while identical on every row; shown if it turns out to differ.
+    const NOISE_FIELD = /insurer|company|product\s*line|grid\s*type/i;
+    // Values that carry no information
+    // NB: "0" is NOT noise — vehicle age 0 means a brand-new vehicle.
+    const NOISE_VALUE = /^(n\/?a|na|nil|none|-|--|blank|null)$/i;
+    const meaningful = v => {
+      const s = String(v ?? '').trim();
+      return s !== '' && !NOISE_VALUE.test(s);
+    };
+
+    // A tag only explains a payout difference if it isn't the same on every
+    // result. Fields that vary get highlighted; constant ones stay muted.
+    const varies = {};
+    const collect = (key, getter) => {
+      const vals = new Set(matches.map(getter).map(v => String(v ?? '').trim()));
+      varies[key] = vals.size > 1;
+    };
+    // Any mapped dimension can be the reason two payouts differ, so all of them
+    // are candidates. Four identical-looking cards meant the distinguishing
+    // field — usually Make, Model or Vehicle Category — simply wasn't listed
+    // here, so it was never rendered.
+    const TAG_FIELDS = [
+      ['vehicleType','Vehicle Category'], ['make','Make'], ['model','Model'],
+      ['excludeMake','Excluded Makes'], ['seating','Seating'],
+      ['fuel','Fuel Type'], ['policyType','Policy Type'], ['vehicleAge','Vehicle Age'],
+      ['bodyType','Body Type'],
+      ['ncb','NCB'], ['condition','Condition'], ['zeroDep','Zero Dep'],
+      ['gvwRange','GVW Range'], ['noOfWheels','No. Of Wheels'],
+      ['odTerm','OD Term'], ['tpTerm','TP Term'], ['cpa','CPA'], ['discount','Discount']
+    ];
+    TAG_FIELDS.forEach(([k]) => collect(k, r => r[k]));
+    // A "metadata" field is only noise while it's the same on every row. If it
+    // actually varies, it IS the reason the payouts differ, so it must be shown.
+    const allExtraKeys = [...new Set(matches.flatMap(r => Object.keys(r._extra||{})))]
+      .filter(k => !HARD_HIDE.test(k));
+    allExtraKeys.forEach(k => collect('_x_'+k, r => (r._extra||{})[k]));
+    const extraKeys = allExtraKeys.filter(k => !NOISE_FIELD.test(k) || varies['_x_'+k]);
+    extraKeys.forEach(k => collect('_x_'+k, r => (r._extra||{})[k]));
+
+    // Rows that are identical on everything the card SHOWS render as identical
+    // cards. That happens when they differ only in hidden bookkeeping — source
+    // file, grid geography, remarks — which is real but is not a reason the
+    // payout differs. Collapse them into one card and say how many there were,
+    // rather than repeating the same answer several times.
+    const visSig = r => {
+      // Two rows at the same net rate can still split OD and TP differently.
+      // Those are different answers, so they must not collapse into one card.
+      const parts = [r.company, r.payout, r.odPayout, r.tpPayout];
+      TAG_FIELDS.forEach(([k]) => parts.push(String(r[k] ?? '').trim()));
+      extraKeys.forEach(k => parts.push(String((r._extra || {})[k] ?? '').trim()));
+      return parts.join('\u0001');
+    };
+    const groups = new Map();
+    matches.forEach(r => {
+      const k = visSig(r);
+      if (!groups.has(k)) groups.set(k, { row: r, count: 0, where: new Set() });
+      const g = groups.get(k);
+      // Copies already folded together by the search (one rule repeated across
+      // every RTO of a region) bring their own count and their own list of
+      // where they applied.
+      g.count += (r.__preCount || 1);
+      if (r.__preWhere) r.__preWhere.forEach(w => { if (w) g.where.add(String(w).trim()); });
+      // The RTO code, not the grid's own wording. Printing the geography column
+      // verbatim put "Delhi / All RTOs in DL NCR (52.5)" on the card, which
+      // reads like a stray remark rather than saying where the rate applies.
+      const w = r.location ||
+                (r._extra && (r._extra['Grid Geography (as written)'] || r._extra['Grid Geography'])) || '';
+      if (w) g.where.add(String(w).trim());
+    });
+    const collapsed = [...groups.values()];
+    matches = collapsed.map(g => {
+      if (g.count > 1) {
+        const r = Object.assign({}, g.row);
+        r.__dupCount = g.count;
+        r.__dupWhere = [...g.where].slice(0, 4).join(' · ') + (g.where.size > 4 ? ' …' : '');
+        return r;
+      }
+      return g.row;
+    });
+
+    list.innerHTML = matches.map(r => {
+      const tag = (label, value, key) =>
+        `<span class="tag${varies[key] ? ' tag-diff' : ''}">${label}: ${value}</span>`;
+      // A payout of zero is a real answer — Chola prints a dash and Digit a "D"
+      // where they pay nothing, and both arrive here as 0. A plain `||` test
+      // treats that as missing and shows a dash, which reads as "no rate found"
+      // — a different fact, and the one this number must not blur.
+      function payoutText(v) {
+        if (v === null || v === undefined || String(v).trim() === '') return '—';
+        const n = parseFloat(String(v).replace('%', ''));
+        return isNaN(n) ? String(v) : n + '%';
+      }
+      // The OD and TP legs sit under the headline rate. A leg of 0 is printed,
+      // because "they pay nothing on TP" is a real answer and must not look
+      // like "no TP rate was quoted".
+      function splitLegs(row) {
+        const leg = v => {
+          const s = String(v ?? '').trim();
+          if (s === '') return null;
+          const n = parseFloat(s.replace('%', ''));
+          return isNaN(n) ? null : n;
+        };
+        const od = leg(row.odPayout), tp = leg(row.tpPayout);
+        if (od === null && tp === null) return '';
+        const part = (lab, n) => n === null
+          ? `<span style="opacity:.45">${lab} —</span>`
+          : `<span>${lab} <b style="color:var(--text)">${n}%</b></span>`;
+        return `<div style="margin-top:3px;font-size:10px;color:var(--text-soft);
+                     display:flex;gap:8px;justify-content:flex-end;white-space:nowrap">
+                  ${part('OD', od)}${part('TP', tp)}
+                </div>`;
+      }
+      const tags = TAG_FIELDS
+        .filter(([k]) => meaningful(r[k]))
+        .map(([k,label]) => tag(label, r[k], k))
+        .join('');
+      const extraTags = extraKeys
+        .filter(k => meaningful((r._extra||{})[k]))
+        .map(k => tag(k, r._extra[k], '_x_'+k))
+        .join('');
+      return `
+        <div class="result-card">
+          <div class="rc-strip"></div>
+          <div class="rc-top">
+            <div class="rc-insurer">
+              <div class="rc-badge" style="background:${badgeColor(r.company)};">${initials(r.company)}</div>
+              <div class="name-block">
+                <div class="lbl">Insured By</div>
+                <div class="name">${r.company}</div>
+              </div>
+            </div>
+            <div class="rc-payout">
+              <div class="lbl">Payout</div>
+              <div class="val">${payoutText(r.payout)}</div>
+              ${splitLegs(r)}
+            </div>
+          </div>
+          ${tags || extraTags ? `<div class="rc-tags">${tags}${extraTags}</div>` : ''}
+          ${r.__dupCount ? `<div class="rc-dup" style="margin-top:8px;font-size:12px;color:#64748b">
+              Same payout on ${r.__dupCount} grid rows${r.__dupWhere ? ` — ${r.__dupWhere}` : ''}
+            </div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  // Bring back a previously saved vehicle master, so it does not have to be
+  // uploaded again every session.
+  renderVehicleMasterStatus();
+  restoreVehicleMaster().then(ok => {
+    if (ok) populateSearchOptions();
+    renderVehicleMasterStatus();
+  });
+
+  refreshDbSummary();
+  // Then bring back the payout grids themselves. Asynchronous, so the page is
+  // usable immediately and fills in once the rows are read back; refreshDbSummary
+  // and populateSearchOptions run again inside, with persistence armed only
+  // afterwards so the restore cannot overwrite itself.
+  restorePayoutData();
+})();
+</script>
+</body>
+</html>
