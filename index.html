@@ -185,28 +185,30 @@
   }
   .results-toolbar .date-box b{display:block;font-size:10px;color:var(--text-soft);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
 
-  .results-body{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start;}
+  .results-body{display:grid;grid-template-columns:190px 1fr;gap:16px;align-items:start;}
   @media (max-width:800px){.results-body{grid-template-columns:1fr;}}
 
-  .filters-panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;position:sticky;top:74px;max-height:calc(100vh - 92px);overflow-y:auto;}
-  .filters-panel .fp-head{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:15px;color:var(--navy);font-weight:700;margin-bottom:14px;}
-  .fp-group{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #EEF0F5;}
+  /* The filter rail is a reference column, not the main event: it is kept
+     compact so more of the width and height goes to the payout cards. */
+  .filters-panel{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 11px;position:sticky;top:74px;max-height:calc(100vh - 92px);overflow-y:auto;}
+  .filters-panel .fp-head{display:flex;align-items:center;gap:6px;font-family:var(--display);font-size:13px;color:var(--navy);font-weight:700;margin-bottom:9px;}
+  .fp-group{margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid #EEF0F5;}
   .fp-group:last-of-type{border-bottom:none;}
-  .fp-group .fp-title{font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
-  .fp-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-  .fp-toggle-row span{font-size:13px;font-weight:600;}
-  .switch{position:relative;display:inline-block;width:38px;height:20px;flex-shrink:0;}
+  .fp-group .fp-title{font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+  .fp-toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+  .fp-toggle-row span{font-size:12px;font-weight:600;}
+  .switch{position:relative;display:inline-block;width:32px;height:17px;flex-shrink:0;}
   .switch input{opacity:0;width:0;height:0;}
   .switch .slider{position:absolute;cursor:pointer;inset:0;background:#D8DCE6;border-radius:20px;transition:.15s;}
-  .switch .slider:before{content:"";position:absolute;height:14px;width:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;}
+  .switch .slider:before{content:"";position:absolute;height:11px;width:11px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;}
   .switch input:checked + .slider{background:var(--blue);}
-  .switch input:checked + .slider:before{transform:translateX(18px);}
-  .fp-check{display:flex;align-items:center;gap:9px;margin-bottom:9px;font-size:13px;color:var(--text);cursor:pointer;}
-  .fp-check input{width:16px;height:16px;accent-color:var(--blue);cursor:pointer;}
-  .fp-empty{font-size:12px;color:var(--text-soft);}
-  .fp-actions{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
-  .fp-actions button.btn{padding:9px 16px;font-size:12px;}
-  .fp-clear{background:none;border:none;color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;}
+  .switch input:checked + .slider:before{transform:translateX(15px);}
+  .fp-check{display:flex;align-items:center;gap:7px;margin-bottom:5px;font-size:12px;line-height:1.3;color:var(--text);cursor:pointer;}
+  .fp-check input{width:13px;height:13px;flex-shrink:0;accent-color:var(--blue);cursor:pointer;}
+  .fp-empty{font-size:11px;color:var(--text-soft);}
+  .fp-actions{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+  .fp-actions button.btn{padding:6px 11px;font-size:11px;}
+  .fp-clear{background:none;border:none;color:var(--blue);font-size:11px;font-weight:600;cursor:pointer;}
 
   .result-card{
     border:1px solid var(--border);border-radius:10px;background:#fff;margin-bottom:9px;overflow:hidden;
@@ -243,7 +245,6 @@
       <p>Upload once, search anytime.</p>
     </div>
     <div class="db-status" id="dbStatus">No data loaded yet</div>
-    <div id="persistNote" style="font-size:11px;margin-top:4px;color:var(--text-soft)"></div>
   </div>
 </header>
 
@@ -262,27 +263,28 @@
     <div class="card">
       <h2>Load a previously saved master file</h2>
       <p class="sub">If you've already built your database before, load the master JSON file here instead of re-uploading every company's grid.</p>
-      <input type="file" id="loadMasterInput" accept=".pgdb,.json">
+      <input type="file" id="loadMasterInput" accept=".json">
       <div class="btn-row">
-        <button class="btn ghost" onclick="document.getElementById('loadMasterInput').click()">Choose master file</button>
+        <button class="btn ghost" onclick="document.getElementById('loadMasterInput').click()">Choose master file (.json)</button>
       </div>
     </div>
 
     <div class="card">
       <h2>Add a company payout grid</h2>
-      <p class="sub">Upload one company's file at a time (CSV or Excel). You'll map its columns next, then add it to your database.</p>
+      <p class="sub">Select one or many files at once (CSV or Excel). You map the columns once and that mapping is applied to every file picked together; add more files later and you'll be asked again.</p>
       <div id="dropzone">
         <div class="glyph">⤓</div>
-        <div class="primary">Drop a payout grid file here, or click to browse</div>
+        <div class="primary">Drop payout grid files here, or click to browse (you can pick several)</div>
       <div id="importProgress" style="display:none;margin-top:10px;padding:9px 12px;border-radius:8px;background:#eff6ff;border:1px solid #bfdbfe;font-size:13px;color:#1e3a8a"></div>
       <div id="vmStatus" style="margin-top:10px;padding:10px 12px;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;font-size:13px;color:#0f172a"></div>
         <div class="secondary">.CSV · .XLSX · .XLS</div>
       </div>
-      <input type="file" id="fileInputUpload" accept=".csv,.xlsx,.xls">
+      <input type="file" id="fileInputUpload" accept=".csv,.xlsx,.xls" multiple>
     </div>
 
     <div class="card" id="mappingCard" style="display:none;">
       <h2>Map columns</h2>
+      <div id="queueInfo" style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:8px;background:#eff6ff;border:1px solid #bfdbfe;font-size:13px;color:#1e3a8a"></div>
       <p class="sub">Tell us which column in your file corresponds to each field. Anything left unmapped is still kept and shown as a tag on results.</p>
 
       <div class="company-input">
@@ -317,7 +319,7 @@
         <tbody id="filesTableBody"></tbody>
       </table>
       <div class="btn-row">
-        <button class="btn primary" id="downloadMasterBtn" disabled>Download master file</button>
+        <button class="btn primary" id="downloadMasterBtn" disabled>Download master file (.json)</button>
         <button class="btn ghost" id="clearDbBtn" disabled>Clear database</button>
       </div>
     </div>
@@ -394,14 +396,6 @@
            cascading-filter logic has a value to read. -->
       <select id="sel-gvwRange" style="display:none;"><option value="">Select GVW Range</option></select>
 
-      <div class="field" style="max-width:260px;">
-        <label>Date</label>
-        <input type="date" id="searchDate">
-      </div>
-        
-        
-        
-
       <div class="search-actions">
         <button class="btn primary" id="searchBtn">Search payout</button>
         <button class="btn ghost" id="resetSearchBtn">Reset</button>
@@ -468,17 +462,20 @@
           </div>
 
           <div class="fp-group" id="fp-odTerm-group">
-            <div class="fp-title">OD Term</div>
-            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="0-1"><span>0-1</span></label>
-            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="2-5"><span>2-5</span></label>
-            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="6-10+"><span>6-10+</span></label>
+            <div class="fp-title">OD Term (in years)</div>
+            <!-- A policy term is 1, 3 or 5 years — never 6 to 10. These three
+                 buckets used to be Vehicle Age's, which is where "6-10+" came
+                 from: a motor cover that long does not exist. -->
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="1"><span>1 Year</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="2-3"><span>2-3 Years</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="odTerm" value="4-5"><span>4-5 Years</span></label>
           </div>
 
           <div class="fp-group" id="fp-tpTerm-group">
-            <div class="fp-title">TP Term</div>
-            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="0-1"><span>0-1</span></label>
-            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="2-5"><span>2-5</span></label>
-            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="6-10+"><span>6-10+</span></label>
+            <div class="fp-title">TP Term (in years)</div>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="1"><span>1 Year</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="2-3"><span>2-3 Years</span></label>
+            <label class="fp-check"><input type="checkbox" class="fp-range" data-field="tpTerm" value="4-5"><span>4-5 Years</span></label>
           </div>
 
           <div class="fp-group" id="fp-zeroDep-group">
@@ -547,173 +544,14 @@
     { key: 'cpa', label: 'CPA' },
     { key: 'zeroDep', label: 'Zero Dep' },
     { key: 'discount', label: 'Discount Range' },
-    { key: 'payout', label: 'Payout (%)' },
-    // A rate can be quoted separately for own-damage and third-party premium.
-    // New India publishes every motor rate that way, and United India writes
-    // "OD - 10%, TP - 0%" on large passenger vehicles.
-    { key: 'odPayout', label: 'OD Payout (%)' },
-    { key: 'tpPayout', label: 'TP Payout (%)' }
+    { key: 'payout', label: 'Payout (%)' }
   ];
 
   // small helper the rest of this file relies on
   const clean = v => String(v == null ? '' : v).trim();
-
-  // ── How the loaded grids are held ───────────────────────────
-  // A parser export carries one row per RTO, so a rule covering 274 codes
-  // arrives 274 times: two exports alone are 1.3 million rows of 32 columns.
-  // Held the old way — one object per row, one string per cell — that is forty
-  // million strings and properties. It is why SheetJS refused the 148 MB export
-  // ("Too many properties to enumerate"), and why every dropdown change took
-  // seconds: each one re-scanned every row six times over.
-  //
-  // So each column now keeps only the DISTINCT values it ever held, plus one
-  // integer per row pointing into that list. "Digit Insurance" is stored once
-  // instead of 516,904 times, and a filter is answered by testing a few hundred
-  // distinct values and then scanning a block of integers.
-  function Col(){
-    this.vals  = [''];
-    this.map   = new Map([['', 0]]);   // value -> index; only needed while importing
-    this.codes = new Int32Array(4096);
-    this.n     = 0;
-  }
-  Col.prototype.ensure = function(n){
-    if (n <= this.codes.length) return;
-    let cap = this.codes.length || 4096;
-    while (cap < n) cap *= 2;
-    const bigger = new Int32Array(cap);
-    bigger.set(this.codes);
-    this.codes = bigger;
-  };
-  Col.prototype.setAt = function(i, v){
-    this.ensure(i + 1);
-    let c = this.map.get(v);
-    if (c === undefined){ c = this.vals.length; this.vals.push(v); this.map.set(v, c); }
-    this.codes[i] = c;
-    if (i >= this.n) this.n = i + 1;
-  };
-  Col.prototype.get = function(i){ return this.vals[this.codes[i]]; };
-  Col.prototype.rebuildMap = function(){
-    this.map = new Map();
-    for (let i = 0; i < this.vals.length; i++) this.map.set(this.vals[i], i);
-  };
-
-  const store = { n: 0, keys: [], cols: new Map(), extraKeys: [] };
-  let declinedBits = null;      // one byte per row, filled after each import
-  let codeInfo = new Map();     // RTO code -> { city, state }, for the dropdown labels
-
-  function storeCol(key){
-    let c = store.cols.get(key);
-    if (!c){
-      c = new Col();
-      c.ensure(store.n || 1);
-      c.n = store.n;                  // rows already loaded simply have no value here
-      store.cols.set(key, c);
-      store.keys.push(key);
-    }
-    if (!c.map) c.rebuildMap();       // restored from storage without one
-    return c;
-  }
-  function dbCount(){ return store.n; }
-
-  // One row, rebuilt as the plain object the rest of the page expects. Only ever
-  // called for rows that are going on screen or into a download.
-  function dbRow(i){
-    const rec = { _extra: {}, _i: i };
-    for (let k = 0; k < STD_FIELDS.length; k++){
-      const c = store.cols.get(STD_FIELDS[k].key);
-      rec[STD_FIELDS[k].key] = c ? c.get(i) : '';
-    }
-    for (let k = 0; k < store.extraKeys.length; k++){
-      const c = store.cols.get('x:' + store.extraKeys[k]);
-      rec._extra[store.extraKeys[k]] = c ? c.get(i) : '';
-    }
-    return rec;
-  }
-
-  function storeClear(){
-    store.n = 0; store.keys = []; store.cols = new Map(); store.extraKeys = [];
-    declinedBits = null; codeInfo = new Map(); clusters = new Map(); clusterAlias = new Map();
-  }
-
-  // Dropping a file drops its rows. The distinct-value lists stay as they are —
-  // a few unused entries cost nothing — and only the integers move.
-  function storeKeep(keep){
-    let m = 0;
-    for (let i = 0; i < store.n; i++) if (keep[i]) m++;
-    store.cols.forEach(c => {
-      const nc = new Int32Array(Math.max(m, 1));
-      let j = 0;
-      for (let i = 0; i < store.n; i++) if (keep[i]) nc[j++] = c.codes[i];
-      c.codes = nc; c.n = m;
-    });
-    store.n = m;
-  }
-
-  // "Won't write this" is read off four standard columns and every extra one.
-  // Testing the distinct values once each and then walking integers turns what
-  // was a regex over 1.3 million joined strings into a few thousand tests.
-  function computeDeclined(){
-    declinedBits = new Uint8Array(store.n);
-    const cols = [];
-    ['payout','remarks','discount','condition'].forEach(k => {
-      const c = store.cols.get(k); if (c) cols.push(c);
-    });
-    store.extraKeys.forEach(k => {
-      const c = store.cols.get('x:' + k); if (c) cols.push(c);
-    });
-    cols.forEach(c => {
-      const hit = new Uint8Array(c.vals.length);
-      for (let v = 0; v < c.vals.length; v++) if (DECLINE_RE.test(c.vals[v])) hit[v] = 1;
-      const codes = c.codes;
-      for (let i = 0; i < store.n; i++) if (hit[codes[i]]) declinedBits[i] = 1;
-    });
-  }
-
-  // Distinct values of one column, optionally restricted to a set of rows.
-  function uniqueValsMasked(mask, key, transform){
-    const c = store.cols.get(key);
-    if (!c) return [];
-    const seen = new Uint8Array(c.vals.length);
-    const codes = c.codes;
-    if (mask){ for (let i = 0; i < store.n; i++){ if (mask[i]) seen[codes[i]] = 1; } }
-    else     { for (let i = 0; i < store.n; i++){ seen[codes[i]] = 1; } }
-    const out = new Set();
-    for (let v = 0; v < c.vals.length; v++){
-      if (!seen[v]) continue;
-      const val = transform ? transform(c.vals[v]) : c.vals[v];
-      if (val && String(val).trim()) out.add(val);
-    }
-    return [...out].sort();
-  }
-  function distinctCount(key){ return uniqueValsMasked(null, key).length; }
-
-  // The first city and state seen for each RTO code — enough to label it.
-  function rebuildCodeInfo(){
-    codeInfo = new Map();
-    const loc = store.cols.get('location');
-    if (!loc) return;
-    const city = store.cols.get('city'), st = store.cols.get('state');
-    const done = new Uint8Array(loc.vals.length);
-    for (let i = 0; i < store.n; i++){
-      const lv = loc.codes[i];
-      if (done[lv]) continue;
-      done[lv] = 1;
-      const code = clean(loc.vals[lv]);
-      if (!code) continue;
-      // Several old codes now share one: keep the first entry that names a city,
-      // so DL01 reads "New Delhi, Delhi" rather than whichever row came last.
-      const prev = codeInfo.get(code);
-      if (prev && clean(prev.city)) continue;
-      codeInfo.set(code, { city: city ? city.get(i) : '', state: st ? st.get(i) : '' });
-    }
-  }
-  // code → state, learned from whatever rows DO name both. Rebuilt whenever the
-  // store changes, so a grid loaded later can resolve an earlier row's state.
-  // Declared up here because refreshDbSummary() rebuilds it and is defined long
-  // before the geography helpers further down.
-  let codeStateMap = new Map();
+  let database = [];
   // The Vehicle Master is a REFERENCE list of vehicles, not payout rows. Merging
-  // it into the payout store is what emptied the Make/Model dropdowns: those read from
+  // it into `database` is what emptied the Make/Model dropdowns: those read from
   // payout rows, where make is usually blank because a blank means "all makes".
   // Kept here instead, and used to populate the vehicle dropdowns.
   let vehicleMaster = [];          // { make, model, bodyType, vehicleType, fuel, cc, gvw, wheels }
@@ -722,17 +560,15 @@
   let vmBodyByMakeModel = new Map(); // make|model -> [body types]
   let loadedFiles = [];
   let pendingHeaders = [];
-  let pendingSource = null;   // { kind:"csv", file } or { kind:"rows", rows }
+  let pendingRows = [];
   let pendingFileName = '';
+  let pendingFileLabel = '';       // the file's name as picked, extension included
   let currentMatches = [];
   let sidebarFilterState = {}; // { groupKey: Set(values) }
   let savedMappings = {}; // { headerSignature: { field: headerName|null } }
 
   function headerSignature(headers){
-    // The trailing marker is the version of the auto-mapping rules. Bumping it
-    // retires mappings remembered before those rules were corrected, rather
-    // than silently reapplying a wrong one to a familiar-looking file.
-    return headers.map(h => String(h).trim().toLowerCase()).slice().sort().join('||') + '##m2';
+    return headers.map(h => String(h).trim().toLowerCase()).slice().sort().join('||');
   }
 
   // ---- Tabs ----
@@ -754,167 +590,114 @@
   dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
   dropzone.addEventListener('drop', e => {
     e.preventDefault(); dropzone.classList.remove('dragover');
-    if (e.dataTransfer.files.length) handleUploadFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files.length) handleUploadFiles(e.dataTransfer.files);
   });
   fileInputUpload.addEventListener('change', e => {
-    if (e.target.files.length) handleUploadFile(e.target.files[0]);
+    if (e.target.files.length) handleUploadFiles(e.target.files);
   });
 
-  // ── Reading a CSV without SheetJS ───────────────────────────
-  // SheetJS builds one JavaScript object property per cell. The 148 MB export
-  // is 643,534 rows of 32 columns — 20.6 million cells — and V8 refuses to
-  // enumerate an object that large, which is the "Too many properties to
-  // enumerate" this file used to fail with. A CSV needs none of that: it is
-  // read straight through, a chunk at a time, and every value is looked up in a
-  // table of the ones already seen so repeated text is stored once rather than
-  // half a million times.
-  function makeCsvParser(onRow){
-    let field = '', row = [], inQuotes = false, carry = '', first = true;
-    const pool = new Map();
-    const intern = t => { const hit = pool.get(t); if (hit !== undefined) return hit; pool.set(t, t); return t; };
-    function endField(){ row.push(intern(field)); field = ''; }
-    function endRow(){ endField(); onRow(row); row = []; }
-    return {
-      // `hasMore` holds back the final character, because the only lookahead
-      // this parser does — telling a doubled "" from a closing quote — must not
-      // fall off the end of a chunk.
-      write(text, hasMore){
-        if (first){ first = false; if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1); }
-        text = carry + text; carry = '';
-        let end = text.length;
-        if (hasMore && end > 0){ carry = text.charAt(end - 1); end--; }
-        let i = 0;
-        while (i < end){
-          if (inQuotes){
-            const start = i;
-            while (i < end && text.charCodeAt(i) !== 34) i++;
-            if (i > start) field += text.slice(start, i);
-            if (i < end){
-              if (text.charCodeAt(i + 1) === 34){ field += '"'; i += 2; }
-              else { inQuotes = false; i++; }
-            }
-            continue;
-          }
-          const start = i;
-          let c = 0;
-          while (i < end){
-            c = text.charCodeAt(i);
-            if (c === 44 || c === 10 || c === 13 || c === 34) break;
-            i++;
-          }
-          if (i > start) field += text.slice(start, i);
-          if (i >= end) break;
-          if (c === 34){ inQuotes = true; i++; }
-          else if (c === 44){ endField(); i++; }
-          else if (c === 10){ endRow(); i++; }
-          else { i++; if (text.charCodeAt(i) === 10) i++; endRow(); }   // \r or \r\n
-        }
-      },
-      end(){
-        if (carry){ const t = carry; carry = ''; this.write(t, false); }
-        if (field !== '' || row.length) endRow();
-      }
-    };
+  // ---- Several files at once: a queue, handled one after another ----
+  // Each file still gets its own mapping (or one-click saved mapping), because
+  // every insurer names its columns differently. The next file opens by itself
+  // as soon as the previous one is added, skipped, or turns out to be the
+  // vehicle master / an unreadable file.
+  let uploadQueue = [], queueTotal = 0;
+
+  function handleUploadFiles(fileList){
+    const files = Array.from(fileList).filter(f => /\.(csv|xlsx|xls)$/i.test(f.name));
+    if (!files.length) { alert('Please choose .csv, .xlsx or .xls files.'); fileInputUpload.value = ''; return; }
+    uploadQueue = files;
+    queueTotal = files.length;
+    nextUpload();
   }
 
-  // Walk the whole file through that parser, yielding to the browser between
-  // chunks so the page keeps painting and the progress line keeps moving.
-  async function streamCsv(file, onRow, onProgress){
-    const parser = makeCsvParser(onRow);
-    if (file.stream && window.TextDecoder){
-      const reader = file.stream().getReader();
-      const dec = new TextDecoder('utf-8');
-      let read = 0, sinceYield = 0;
-      for(;;){
-        const { done, value } = await reader.read();
-        if (done) break;
-        read += value.byteLength;
-        parser.write(dec.decode(value, { stream: true }), true);
-        sinceYield += value.byteLength;
-        if (sinceYield > (1 << 21)){
-          sinceYield = 0;
-          if (onProgress) onProgress(read, file.size);
-          await new Promise(r => setTimeout(r, 0));
-        }
-      }
-      parser.write(dec.decode(), false);
-      if (onProgress) onProgress(file.size, file.size);
+  function queueUi(current){
+    const info = document.getElementById('queueInfo');
+    if (!info) return;
+    if (queueTotal > 1 && current) {
+      info.style.display = 'block';
+      info.textContent = queueTotal + ' files selected together. Confirm the mapping once for ' + current.name +
+        ' — it is then applied to all ' + queueTotal + ' files and they are added in one go.';
     } else {
-      parser.write(await file.text(), false);
+      info.style.display = 'none';
     }
-    parser.end();
+  }
+
+  function nextUpload(){
+    if (!uploadQueue.length) {
+      queueTotal = 0;
+      queueUi(null);
+      fileInputUpload.value = '';
+      return;
+    }
+    const file = uploadQueue.shift();
+    queueUi(file);
+    handleUploadFile(file);
+  }
+
+  // Reads one workbook / CSV into an array of non-empty rows. Calls back with
+  // (error, rows) after letting the page paint, since the parse is synchronous.
+  function readRows(file, cb){
+    const reader = new FileReader();
+    reader.onerror = () => cb(new Error('the file could not be read'));
+    reader.onload = (e) => {
+      setTimeout(() => {
+        let rows = null, error = null;
+        try{
+          const data = new Uint8Array(e.target.result);
+          // raw:true stops SheetJS type-guessing the cell TEXT. Without it an
+          // age band of "3-4" was parsed as 4 March 2001 and arrived as
+          // 36954.00011574074, so every Digit age band became a date serial and
+          // identical payouts looked like different rows. cellDates:true still
+          // converts cells that are genuinely stored as dates.
+          // dense + no styles/formulas/formatted text: the parts of a workbook this
+          // page never uses, and the bulk of the time on a large file.
+          const wb = XLSX.read(data, { type: 'array', raw: true, cellDates: true,
+            dense: true, cellStyles: false, cellFormula: false, cellHTML: false,
+            cellNF: false, cellText: false, bookVBA: false, sheets: 0 });
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          const json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
+          rows = json.filter(r => r.some(c => String(c).trim() !== ''));
+        } catch(err){ error = err; }
+        cb(error, rows);
+      }, 30);
+    };
+    reader.readAsArrayBuffer(file);
   }
 
   function handleUploadFile(file){
-    if (/\.csv$/i.test(file.name)) { handleCsvUpload(file); return; }
-    handleWorkbookUpload(file);
-  }
-
-  function beginMapping(headers, source, fileName){
-    pendingHeaders = headers.map(h => String(h).trim());
-    pendingSource = source;
-    pendingFileName = fileName.replace(/\.[^/.]+$/, '');
-    document.getElementById('companyNameInput').value = pendingFileName;
-    const sig = headerSignature(pendingHeaders);
-    if (savedMappings[sig]) renderQuickAdd(sig); else renderMapping();
-  }
-
-  async function handleCsvUpload(file){
-    try{
-      // Only the head of the file is needed to show the column mapping. The
-      // rest is read when the rows are actually added, so a 148 MB export never
-      // has to sit in memory twice.
-      const HEAD = 1 << 21;
-      const partial = file.size > HEAD;
-      const sample = [];
-      const p = makeCsvParser(r => { if (sample.length < 80) sample.push(r); });
-      p.write(await file.slice(0, HEAD).text(), partial);
-      if (!partial) p.end();
-      const rows = sample.filter(r => r.some(c => c !== ''));
-      if (!rows.length){ alert('This file looks empty.'); return; }
-
-      // Fork BEFORE the mapping screen: a file with Make + Model +
-      // Variant/Cubic Capacity is the vehicle master, never an insurer grid.
-      if (looksLikeVehicleMaster(rows[0])){
-        const all = [];
-        await streamCsv(file, r => { if (r.some(c => c !== '')) all.push(r); },
-                        (d, t) => showImportProgress(d, t, 'bytes'));
-        showImportProgress(0, 0);
-        loadVehicleMaster(all, file.name);
-        return;
-      }
-      if (rows.length < 2){ alert('This file needs a header row and at least one data row.'); return; }
-      beginMapping(rows[0], { kind: 'csv', file }, file.name);
-    } catch(err){
-      showImportProgress(0, 0);
-      alert('Could not read this file: ' + err.message);
-    }
-  }
-
-  function handleWorkbookUpload(file){
-    const reader = new FileReader();
-    reader.onload = (e) => {
+    showImportProgress(0, 1);
+    const pb = document.getElementById('importProgress');
+    if (pb) pb.textContent = 'Reading ' + file.name + '…';
+    readRows(file, (err, rows) => {
+      let advance = false;   // true when this file needs no mapping screen
       try{
-        const data = new Uint8Array(e.target.result);
-        const wb = XLSX.read(data, { type: 'array', cellDates: true });
-        const sheet = wb.Sheets[wb.SheetNames[0]];
-        const json = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
-        const rows = json.filter(r => r.some(c => String(c).trim() !== ''));
-
+        if (err) { alert('Could not read ' + file.name + ': ' + err.message); advance = true; return; }
+        // Fork BEFORE the mapping screen: a workbook with Make + Model +
+        // Variant/Cubic Capacity is the vehicle master, never an insurer grid.
         if (looksLikeVehicleMaster(rows[0] || [])) {
           loadVehicleMaster(rows, file.name);
+          advance = true;
           return;
         }
-        if (rows.length < 2){ alert('This file needs a header row and at least one data row.'); return; }
-        beginMapping(rows[0].map(h => String(h).trim()), { kind: 'rows', rows: rows.slice(1) }, file.name);
-      } catch(err){
-        const tooBig = /propert|enumerate|Invalid string length|out of memory/i.test(err.message || '');
-        alert('Could not read this file: ' + err.message +
-              (tooBig ? '\n\nAn Excel file this large cannot be opened inside a browser. ' +
-                        'Save it as CSV and upload that instead — CSV is read directly, at any size.' : ''));
+        if (rows.length < 2){ alert(file.name + ': this file needs a header row and at least one data row.'); advance = true; return; }
+        pendingHeaders = rows[0].map(h => String(h).trim());
+        pendingRows = rows.slice(1);
+        pendingFileName = file.name.replace(/\.[^/.]+$/, '');
+        pendingFileLabel = file.name;
+        document.getElementById('companyNameInput').value = pendingFileName;
+
+        const sig = headerSignature(pendingHeaders);
+        if (savedMappings[sig]){
+          renderQuickAdd(sig);
+        } else {
+          renderMapping();
+        }
+      } finally {
+        showImportProgress(0, 0);
+        if (advance) nextUpload();
       }
-    };
-    reader.readAsArrayBuffer(file);
+    });
   }
 
   // ── The vehicle master persists between visits ──────────────
@@ -923,75 +706,44 @@
   // combinations — a fraction of the raw rows, and all the dropdowns need.
   const VM_KEY = 'payoutPortal.vehicleMaster.v1';
 
-  // The master is kept in IndexedDB, not localStorage. A real master compacts to
-  // roughly 3 MB and localStorage caps out around 5, so a large one threw
-  // QuotaExceededError, the catch below swallowed it, and the master silently
-  // failed to persist — while the screen still said it would stay loaded. The
-  // old localStorage copy is still READ, once, so an existing save migrates.
-  const VM_IDB_KEY = 'vehicleMaster.v1';
-  let vmSaveState = 'none';          // none | saved | failed
-
-  function compactVehicleMaster(fileName){
-    const seen = new Set(), compact = [];
-    vehicleMaster.forEach(v => {
-      const rec = [vmClass(v), v.make, v.model, vmBody(v), v.vehicleType, v.fuel];
-      const k = rec.join('\u0001');
-      if (seen.has(k)) return;
-      seen.add(k);
-      compact.push(rec);
-    });
-    return { savedAt: new Date().toISOString(), fileName: fileName || '',
-             rawRows: vehicleMaster.length, rows: compact };
-  }
-
-  // Resolves only once the master is genuinely stored, so the status line can
-  // tell the truth instead of promising a save that never happened.
   function saveVehicleMaster(fileName){
-    const payload = compactVehicleMaster(fileName);
-    return idbWrite(payload, VM_IDB_KEY)
-      .then(() => { vmSaveState = 'saved'; renderVehicleMasterStatus(); })
-      .catch(e => {
-        vmSaveState = 'failed';
-        console.warn('vehicle master not saved:', e && e.message);
-        renderVehicleMasterStatus();
+    try {
+      const seen = new Set(), compact = [];
+      vehicleMaster.forEach(v => {
+        const rec = [vmClass(v), v.make, v.model, vmBody(v), v.vehicleType, v.fuel];
+        const k = rec.join('\u0001');
+        if (seen.has(k)) return;
+        seen.add(k);
+        compact.push(rec);
       });
-  }
-
-  function applyVehicleMasterPayload(p){
-    if (!p || !Array.isArray(p.rows) || !p.rows.length) return false;
-    vehicleMaster = p.rows.map(r => ({
-      _class: r[0], make: r[1], model: r[2], bodyType: r[3],
-      vehicleType: r[4], fuel: r[5], variant: '', cc: '', gvw: '', wheels: '', seats: ''
-    }));
-    buildVehicleIndexes();
-    vmSavedInfo = { fileName: p.fileName || 'vehicle master',
-                    savedAt: p.savedAt || '', rawRows: p.rawRows || vehicleMaster.length };
-    vmSaveState = 'saved';
-    return true;
+      localStorage.setItem(VM_KEY, JSON.stringify({
+        savedAt: new Date().toISOString(), fileName: fileName || '',
+        rawRows: vehicleMaster.length, rows: compact
+      }));
+    } catch (e) {
+      // Quota is the likely failure; the master still works for this session.
+      console.warn('vehicle master not saved:', e && e.message);
+    }
   }
 
   function restoreVehicleMaster(){
-    return idbRead(VM_IDB_KEY)
-      .then(p => {
-        if (applyVehicleMasterPayload(p)) return true;
-        // Nothing in IndexedDB — fall back to a master saved by an older build,
-        // then write it across so the size limit stops applying to it.
-        try {
-          const raw = localStorage.getItem(VM_KEY);
-          if (!raw) return false;
-          if (!applyVehicleMasterPayload(JSON.parse(raw))) return false;
-          idbWrite(compactVehicleMaster(vmSavedInfo.fileName), VM_IDB_KEY)
-            .then(() => { try { localStorage.removeItem(VM_KEY); } catch (e) {} })
-            .catch(() => {});
-          return true;
-        } catch (e) { return false; }
-      })
-      .catch(() => false);
+    try {
+      const raw = localStorage.getItem(VM_KEY);
+      if (!raw) return false;
+      const p = JSON.parse(raw);
+      if (!p || !Array.isArray(p.rows) || !p.rows.length) return false;
+      vehicleMaster = p.rows.map(r => ({
+        _class: '', make: r[1], model: r[2], bodyType: r[3],
+        vehicleType: r[4], fuel: r[5], variant: '', cc: '', gvw: '', wheels: '', seats: ''
+      }));
+      buildVehicleIndexes();
+      vmSavedInfo = { fileName: p.fileName || 'vehicle master',
+                      savedAt: p.savedAt || '', rawRows: p.rawRows || vehicleMaster.length };
+      return true;
+    } catch (e) { return false; }
   }
 
   function forgetVehicleMaster(){
-    vmSaveState = 'none';
-    idbWrite(null, VM_IDB_KEY).catch(() => {});
     try { localStorage.removeItem(VM_KEY); } catch (e) {}
     vehicleMaster = []; vmSavedInfo = null;
     buildVehicleIndexes();
@@ -1011,16 +763,9 @@
     }
     const when = vmSavedInfo && vmSavedInfo.savedAt
       ? new Date(vmSavedInfo.savedAt).toLocaleDateString() : 'this session';
-    // Only promise it will survive when the save actually succeeded.
-    const keepNote = vmSaveState === 'saved'
-      ? ' (saved ' + when + '). It stays loaded; upload again only when makes or models change. '
-      : vmSaveState === 'failed'
-        ? '. <b style="color:#b91c1c">Not saved to this browser</b> — it will be gone when you ' +
-          'close the tab, so keep the file handy. '
-        : '. ';
     box.innerHTML = '<b>Vehicle master ready</b> — ' + vmMakes.length.toLocaleString() +
       ' makes from ' + (vmSavedInfo && vmSavedInfo.rawRows ? vmSavedInfo.rawRows.toLocaleString() : vehicleMaster.length.toLocaleString()) +
-      ' rows' + keepNote +
+      ' rows (saved ' + when + '). It stays loaded; upload again only when makes or models change. ' +
       '<a href="#" id="vmForget" style="color:#b91c1c">Remove</a>';
     const a = document.getElementById('vmForget');
     if (a) a.onclick = function(e){ e.preventDefault(); forgetVehicleMaster(); };
@@ -1056,15 +801,14 @@
     }
     vehicleMaster = out;
     buildVehicleIndexes();
+    saveVehicleMaster(fileName);
     populateSearchOptions();
     vmSavedInfo = { fileName: fileName || '', savedAt: new Date().toISOString(), rawRows: out.length };
-    vmSaveState = 'none';
     renderVehicleMasterStatus();
-    // The status line is rewritten again when the save resolves, so what it
-    // says about persistence reflects what actually happened.
-    // Nothing is written to #dbStatus: that box reports the payout database and
-    // is rewritten by refreshDbSummary, which would wipe this message anyway.
-    saveVehicleMaster(fileName);
+    const box = document.getElementById('dbStatus');
+    if (box) box.textContent =
+      'Vehicle master loaded — ' + out.length.toLocaleString() + ' vehicles, ' +
+      vmMakes.length.toLocaleString() + ' makes. It will stay loaded next time.';
   }
 
   // Wheel counts arrive as "6", "6W", "6 Wheeler", "12 & above". Normalise them
@@ -1122,28 +866,50 @@
     const b = (v.bodyType || '').toLowerCase(), t = (v.vehicleType || '').toLowerCase();
     if (/scooter|moped|scooty/.test(b) || /scooter/.test(t)) return 'Scooter';
     if (/motor\s*cycle|motorcycle|\bbike\b/.test(b) || /motorbike/.test(t)) return 'Bike';
+    // A tractor is two different machines and the grids price them apart: the
+    // farm tractor (filed under Misc-D here) and the haulage tractor that
+    // pulls a trailer (filed under goods). Name them the way the grids do, or
+    // the body chosen here can never match the body on a payout row.
+    // A tractor loader or dozer is an earth mover, priced with the rest of the
+    // construction equipment; only the farm and haulage tractors are tractor
+    // business. "TRACTOR / TRAILER" is the haulage prime mover.
+    if (/tractor/.test(b)) {
+      if (/loader/.test(b)) return 'Tractor Loader';
+      if (/dozer/.test(b))  return 'Tractor Dozer';
+      if (/trailer/.test(b)) return 'Commercial Tractor with Trailer';
+      return 'Agricultural Tractor';
+    }
     return v.bodyType || '';
   }
 
   // Which vehicle-type filter does a master row answer to?
+  // Makes that build tractors and nothing else, so any row under them is tractor
+  // business even if the master forgot to write "tractor" in the body type.
+  const TRACTOR_MAKES = /^(sonalika|swaraj|tafe|massey\s*ferguson|john\s*deere|new\s*holland|kubota|escorts|farmtrac|powertrac|preet|indo\s*farm|vst|solis|same\s*deutz)/i;
+
   function vmClass(v){
-    if (v._class) return v._class;
+    // _class is deliberately NOT trusted: a master saved by an older version of
+    // this page carries the old class (tractors filed under GCV), which left
+    // GCV - Tractor with no makes or models. The class is worked out afresh.
     const t = (v.vehicleType || '').toLowerCase();
     const b = (v.bodyType || '').toLowerCase();
-    // A tractor is a GCV whose body is "Tractor" — there is no Tractor class,
-    // so a master row filed under a tractor vehicle type answers to GCV and
-    // keeps Tractor where it belongs, in Body Type.
-    if (/\btractor\b/.test(t) && !/trailer|head|truck|haul/.test(t)) return 'GCV';
+    const m = (v.model || '').toLowerCase();
+    // The master files farm tractors under goods vehicles — 981 of them, all
+    // between 1.9 and 5 tonnes — which is why Tractor kept appearing inside
+    // GCV. Tractors are their own class; loaders and dozers stay with plant.
+    // The word may sit in the body, the vehicle type or the model, or the make
+    // may be a tractor-only maker.
+    if (/tractor/.test(b) || /tractor/.test(t) || /tractor/.test(m) || TRACTOR_MAKES.test(String(v.make || '').trim()))
+      return /loader|dozer/.test(b + ' ' + m) ? 'Misc-D vehicles' : 'GCV - Tractor';
     if (/goods/.test(t)) return 'GCV';
     if (/scooter|motorbike/.test(t)) return 'Two Wheeler';
     if (/trailer/.test(t)) return 'Trailer';
     if (/misc/.test(t)) return 'Misc-D vehicles';
     if (/passenger/.test(t)) {
-      // One vocabulary with the parser: a school bus is "School Bus", any other
-      // bus is "PCV Bus", and plain PCV is the passenger three-wheeler class.
-      if (/school/.test(b)) return 'School Bus';
-      if (/\bbus\b/.test(b)) return 'PCV Bus';
-      if (/taxi|cab/.test(b)) return 'Taxi';
+      if (/school\s*bus/.test(b)) return 'School Bus';
+      if (/\bbus\b/.test(b)) return 'Passenger Bus';
+      // A taxi is a permit on an ordinary passenger vehicle, not a class —
+      // it is PCV, and the master's handful of maxi-cab rows belong there.
       return 'PCV';
     }
     if (/vehicle/.test(t)) return 'Private Car';
@@ -1171,22 +937,107 @@
   // written on ordinary cars — a taxi is usually a Swift Dzire, not a
   // purpose-built vehicle — so PCV and Taxi draw on the private-car list too.
   const CLASS_POOL = {
-    // PCV is passenger business written on ordinary cars, so it draws on the
-    // private-car list. Taxi does NOT: a taxi is already inside PCV, and
-    // folding cars in again would duplicate the same makes under two headings.
-    'PCV':              ['PCV', 'Private Car'],
-    // A bus is a purpose-built vehicle — it never draws on the private-car list.
-    'PCV Bus':          ['PCV Bus'],
-    'School Bus':       ['School Bus', 'PCV Bus'],
-    'Taxi':             ['Taxi'],
-    'Kaali Peeli Taxi': ['Kaali Peeli Taxi', 'Taxi'],
+    // Passenger business is written on ordinary vehicles. A taxi is a permit
+    // and kaali peeli is a paint scheme — neither is a kind of vehicle, and
+    // any permitted passenger vehicle, three-wheeler or four, can be either.
+    // So all three offer the same makes, models and bodies: PCV's, in full.
+    // Only the VEHICLE list is shared. The payout still comes from the rows
+    // the insurer wrote under that heading, and a kaali peeli rate is priced
+    // separately from an ordinary taxi one.
+    // Taxi is not a class of its own: every grid prices it as PCV business by
+    // seating band ("PCV TAXI < 6 Seater", "PCCV 4W Upto 6+1"), names no body
+    // on any of its 3,999 rows, and names a make on barely one in ten. It is
+    // folded into PCV. Kaali peeli stays separate because it is priced
+    // separately, but the vehicle under the livery is any PCV.
+    'PCV':              ['PCV', 'Private Car', 'Taxi'],
+    'Kaali Peeli Taxi': ['Kaali Peeli Taxi', 'Taxi', 'PCV', 'Private Car'],
+    // vmClass now moves every tractor out of GCV and Misc-D into this class,
+    // so the makes and models come straight from it — no body-matching escape
+    // hatch needed any more.
+    'GCV - Tractor': ['GCV - Tractor'],
   };
+
+  // ── Tractor bodies carry two independent facts ──────────────────────────
+  // the KIND (agricultural or commercial) and whether a TRAILER is attached.
+  // A grid often states one and leaves the other open: IndusInd writes
+  // "Agricultural Tractor W/o Trailer", Magma writes only "TP-Tractor". A fact
+  // the grid did not state matches BOTH values rather than neither, so an
+  // unqualified rate is offered against every tractor search instead of
+  // disappearing from all of them.
+  const TRACTOR_BODIES = [
+    'Agricultural Tractor with Trailer', 'Agricultural Tractor without Trailer',
+    'Commercial Tractor with Trailer',   'Commercial Tractor without Trailer'
+  ];
+  function tractorFacets(b){
+    const s = String(b || '').toLowerCase();
+    // A tractor loader or dozer carries the word but is an earth mover, and
+    // states neither facet — left in, it would match all four choices.
+    if (!/tractor/.test(s) || /loader|dozer/.test(s)) return null;
+    // "without" contains "with", so it has to be tested first.
+    return {
+      kind:    /agri|farm/.test(s) ? 'agri'
+             : /commercial|goods|haulage|prime\s*mover/.test(s) ? 'comm' : '',
+      trailer: /without|w\/o|\bwo\b/.test(s) ? 'no'
+             : /\bwith\b|\/\s*trailer/.test(s) ? 'yes' : ''
+    };
+  }
+  function tractorBodyMatches(rowBody, picked){
+    const a = tractorFacets(rowBody), b = tractorFacets(picked);
+    if (!a || !b) return false;
+    if (a.kind    && b.kind    && a.kind    !== b.kind)    return false;
+    if (a.trailer && b.trailer && a.trailer !== b.trailer) return false;
+    return true;
+  }
 
   function classMatches(v, vt){
     if (!vt) return true;
     const c = vmClass(v);
     const allowed = CLASS_POOL[vt];
-    return allowed ? allowed.indexOf(c) >= 0 : c === vt;
+    if (!allowed) return c === vt;
+    if (Array.isArray(allowed)) return allowed.indexOf(c) >= 0;
+    // pool described by body as well as class
+    if (allowed.bodyRe && !allowed.bodyRe.test(v.bodyType || '')) return false;
+    return !allowed.classes || allowed.classes.indexOf(c) >= 0;
+  }
+
+  // ── Which bodies belong to which vehicle type ──────────────────────────
+  // The master is generous: it files a Truck under PCV, a forklift under GCV,
+  // "Cusomised" as a body. Offering all 52 of GCV's spellings made the Body
+  // Type list unusable. Four rules cover the whole master without a
+  // hand-maintained list per class:
+  //   1. a wheel count is not a body — Wheeler is its own filter
+  //   2. build placeholders are not bodies
+  //   3. plant and earth-moving machinery is Misc-D business wherever filed
+  //   4. a body that names another class's vehicle does not belong here
+  const BODY_JUNK  = /^(cusomised|customi[sz]able|fully\s*built|cabin|monocoque|mb|na|n\/a|other|others)$/i;
+  const BODY_PLANT = /crane|harvester|fork\s*lift|forklift|excavator|backhoe|bulldozer|dozer|grader|drilling|compressor|boom\s*lift|mobile\s*plant|road\s*(sweeper|surfacer|roller)|roller|tar\s*sprayer|recovery\s*vehicle|paver|compactor|earth\s*moving|suction|construction\s*equip|golf\s*cart|\bjcb\b|\bloader\b|tower\s*wagon/i;
+  const BODY_GOODS = /truck|tipper|dumper|tanker|bulker|deck\s*body|box\s*body|pick\s*up|trailer|open\s*body|closed\s*body|half\s*body|full\s*body|delivery\s*van|refrigerated|light\s*goods|plat\s*form|flat\s*bed|car\s*carrier|rock|mixer|garbage|e-?cart|lorry/i;
+  const BODY_CARLIKE = /^(suv|sedan|hatch|hatchback|muv|mpv|saloon|van|hard\s*top|quadricycle|vans?\s*\/\s*maxi\s*cab|station\s*wagon|convertible|coupe)$/i;
+  const BODY_PSGR  = /^(e-?rickshaw|auto\s*rickshaw|rickshaw|maxi\s*cab|employee\s*pick\s*up|omni\s*bus|mini\s*bus)$/i;
+  const BODY_2W    = /^(scooter|scooty|moped|motor\s*cycle|motorcycle|bike|motorbike)$/i;
+
+  function bodyAllowed(b, vt){
+    const t = String(b || '').trim();
+    if (!t) return false;
+    // "PCV -3W", "GCW - 3W", "3W", "2 Wheeler": a short prefix, then a wheel
+    // count. Digits are required, so real bodies ("Van", "Tipper") are safe.
+    if (/^[a-z]{0,4}\s*[-_ ]*\d+\s*(w|wh|wheeler)s?$/i.test(t)) return false;
+    if (BODY_JUNK.test(t)) return false;
+    const c = String(vt || '').trim();
+    if (!c) return true;                                  // nothing chosen yet
+    // A tractor body is offered under the tractor class and nowhere else; a
+    // tractor LOADER or DOZER is plant and is caught by the rule below.
+    if (/tractor/i.test(t) && !/loader|dozer/i.test(t)) return /tractor/i.test(c);
+    if (/tractor/i.test(c)) return /tractor/i.test(t);
+    if (c === 'Misc-D vehicles') return true;             // plant lives here
+    if (BODY_PLANT.test(t)) return false;
+    if (c === 'GCV' || c === 'Trailer') return BODY_GOODS.test(t);
+    if (c === 'Private Car')            return BODY_CARLIKE.test(t);
+    if (c === 'PCV' || c === 'Taxi' || c === 'Kaali Peeli Taxi' || c === 'Three Wheeler')
+      return BODY_CARLIKE.test(t) || BODY_PSGR.test(t);
+    if (c === 'Two Wheeler')            return BODY_2W.test(t);
+    if (/bus/i.test(c))                 return /bus/i.test(t);
+    return true;
   }
 
   function vmOptions(kind){
@@ -1194,25 +1045,19 @@
     const vt = selVehicleType ? selVehicleType.value : '';
     const make = selMake ? selMake.value : '';
     const model = selModel ? selModel.value : '';
-    const scoped = v => {
+    const pool = vehicleMaster.filter(v => {
+      if (!classMatches(v, vt)) return false;
       if (kind !== 'make' && make && v.make !== make) return false;
       if (kind !== 'model' && model && v.model !== model) return false;
       return true;
-    };
-    let pool = vehicleMaster.filter(v => classMatches(v, vt) && scoped(v));
-    if (!pool.length && vt) {
-      // The master may model the class as a BODY rather than a vehicle type —
-      // a tractor is filed as a goods vehicle whose body is "Tractor" — so look
-      // there before giving up. Choosing Tractor used to empty the Make and
-      // Model lists entirely; falling straight back to the whole master was the
-      // opposite mistake, offering hatchbacks under Tractor.
-      const re = new RegExp('\\b' + String(vt).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-      const asBody = vehicleMaster.filter(v => re.test(String(vmBody(v) || '')) && scoped(v));
-      pool = asBody.length ? asBody : vehicleMaster.filter(scoped);
-    }
+    });
     if (kind === 'make')  return [...new Set(pool.map(v => v.make))].filter(Boolean).sort();
     if (kind === 'model') return [...new Set(pool.map(v => v.model))].filter(Boolean).sort();
-    return [...new Set(pool.map(vmBody))].filter(Boolean).sort();
+    const bodies = [...new Set(pool.map(vmBody))].filter(b => bodyAllowed(b, vt)).sort();
+    // The master may not name a body on its tractor rows; offer the four the
+    // grids price so Body Type is never an empty list under GCV - Tractor.
+    if (!bodies.length && /tractor/i.test(vt)) return TRACTOR_BODIES.slice();
+    return bodies;
   }
 
   let usingSavedMappingSig = null;
@@ -1250,23 +1095,15 @@
   }
 
   function guessColumn(key, headers){
-    // Several of these are lists, tried in order, because a loose pattern kept
-    // taking the wrong column: a parser export puts "Product Line" (always
-    // "Motor") before "Policy Type", so /product/ matched first and the real
-    // Comprehensive / SATP / SAOD column was left unmapped — which is why
-    // filtering by policy type quietly did nothing.
     const patterns = {
       company: /^insurer$|insurance\s*co|^company$|insurer\s*name/i,
-      vehicleType: [/^vehicle\s*(type|category)$/i, /vehicle\s*type|veh\s*type/i, /category/i],
-      bodyType: [/^body\s*type$/i, /body\s*type|body\s*style|^body$/i],
-      policyType: [/^policy\s*type$/i, /policy\s*type/i, /^product(\s*(line|type))?$/i, /\bcover\b/i],
+      vehicleType: /vehicle\s*type|veh\s*type|category/i,
+      bodyType: /body\s*type|body\s*style|^body$/i,
+      policyType: /policy\s*type|product|cover/i,
       location: /^(rto|location|rto\s*code|region_code)$|rto.*code|location/i,
       state: /^state$|state.*name/i,
       city: /^city$|region_city|city\s*name/i,
-      // Mapped explicitly, or "Exclude Make" ends up as a spare column and the
-      // makes an insurer refuses stop blocking anything.
-      excludeMake: [/^exclude[sd]?\s*makes?$/i, /exclude[sd]?\s*makes?/i, /make.*exclu/i],
-      make: [/^make$/i, /^manufacturer$|^brand$/i, /(?<!exclude[sd]?\s)make|manufacturer|brand/i],
+      make: /make|manufacturer|brand/i,
       model: /model/i,
       fuel: /fuel/i,
       // Tonnage and GVW Range are the same dimension, so one column serves
@@ -1281,29 +1118,189 @@
       cpa: /\bcpa\b/i,
       zeroDep: /zero\s*dep|nil\s*dep/i,
       discount: /discount/i,
-      // The OD and TP legs are matched before the general payout pattern, and
-      // the general one explicitly refuses them — otherwise a column order that
-      // put "OD Payout %" first would have the net payout read the OD leg.
-      odPayout: /^\s*od\s*payout/i,
-      tpPayout: /^\s*tp\s*payout/i,
-      payout: /^(?!\s*(od|tp)\s*payout)(.*)(payout|commission|%|percent)/i
+      payout: /payout|commission|%|percent/i
     };
-    const re = patterns[key];
+    // Headers a pattern would otherwise swallow. "Product Line" is the worst
+    // offender: it matches the loose "product" in the policy-type pattern and
+    // sits earlier in a parser export than the real "Policy Type" column, so
+    // every row's policy type came out as the product line — "Motor".
+    const reject = { policyType: /product\s*line|^line\s*of\s*business$|^lob$/i };
+    const re = patterns[key], no = reject[key];
     if (!re) return -1;
-    const list = Array.isArray(re) ? re : [re];
-    for (let p = 0; p < list.length; p++){
-      const idx = headers.findIndex(h => list[p].test(h));
-      if (idx >= 0) return idx;
-    }
-    return -1;
+    const idx = headers.findIndex(h => re.test(h) && !(no && no.test(h)));
+    return idx;
   }
 
+  // Cancel drops this file AND any others picked together with it.
   document.getElementById('cancelMapBtn').addEventListener('click', () => {
     document.getElementById('mappingCard').style.display = 'none';
     document.getElementById('savedMapBanner').style.display = 'none';
     usingSavedMappingSig = null;
-    fileInputUpload.value = '';
+    uploadQueue = [];
+    nextUpload();            // queue is empty: resets the banner and the file input
   });
+
+  // A saved mapping is stored by header NAME. Turn it into column positions for
+  // a particular file. A header the file does not have is looked for by the
+  // usual guess; a field the person set to "None" stays unmapped.
+  function mappingFromNames(nameMap, headers){
+    const m = {};
+    STD_FIELDS.forEach(f => {
+      const name = nameMap[f.key];
+      if (name === null) { m[f.key] = -1; return; }
+      let idx = name === undefined ? -1 : headers.indexOf(name);
+      if (idx < 0) idx = guessColumn(f.key, headers);
+      m[f.key] = idx;
+    });
+    return m;
+  }
+  function namesFromMapping(mapping, headers){
+    const n = {};
+    Object.entries(mapping).forEach(([field, idx]) => { n[field] = idx >= 0 ? headers[idx] : null; });
+    return n;
+  }
+
+  // Turns one file's rows into database records using a column mapping.
+  // Calls onDone({ added, dupes, insurers }) when every row has been handled.
+  function importRows(headers, rows, mapping, companyName, onDone){
+    let addedCount = 0;
+    let dupCount = 0;
+    // Payout grids often repeat the same row many times (the same combination
+    // appearing on several sheets or blocks). Identical rows carry no extra
+    // information and would show up as several indistinguishable result cards,
+    // so keep only the first copy of each.
+    const seenRows = new Set();
+    const insurersSeen = new Set();
+    // Computed ONCE. These were being rebuilt for every column of every row —
+    // Object.values(mapping) on a 400k-row file is tens of millions of array
+    // allocations, which is what made a large upload look frozen.
+    const usedIdx = new Set(Object.values(mapping).filter(i => i >= 0));
+    const extraCols = headers
+      .map((h, i) => ({ h, i }))
+      .filter(x => !usedIdx.has(x.i));
+    const stdKeys = STD_FIELDS.map(f => ({ key: f.key, idx: mapping[f.key] === undefined ? -1 : mapping[f.key] }));
+
+    const buildRow = row => {
+      const rec = { _extra: {} };
+      for (let j = 0; j < stdKeys.length; j++) {
+        const k = stdKeys[j];
+        rec[k.key] = (k.idx >= 0 && row[k.idx] !== undefined) ? String(row[k.idx]).trim() : '';
+      }
+      // A parser export can hold several insurers in one file. When an Insurer
+      // column is mapped, each row keeps its own insurer; otherwise every row
+      // falls back to the name typed above.
+      if (!rec.company) rec.company = companyName;
+      insurersSeen.add(rec.company);
+      // A product line ("Motor") is not a cover. Drop it rather than let it
+      // ride along as this file's one and only Policy Type.
+      if (!isPolicyTypeValue(rec.policyType)) rec.policyType = '';
+
+      for (let j = 0; j < extraCols.length; j++) {
+        const c = extraCols[j];
+        rec._extra[c.h] = row[c.i] === undefined ? '' : String(row[c.i]).trim();
+      }
+      // Columns come in the same order on every row, so no sort is needed.
+      let fingerprint = rec.company;
+      for (let j = 0; j < stdKeys.length; j++) fingerprint += '\u0001' + rec[stdKeys[j].key];
+      for (let j = 0; j < extraCols.length; j++) fingerprint += '\u0002' + rec._extra[extraCols[j].h];
+      if (seenRows.has(fingerprint)) { dupCount++; return; }
+      seenRows.add(fingerprint);
+      database.push(rec);
+      addedCount++;
+    };
+
+    const done = () => onDone({ added: addedCount, dupes: dupCount, insurers: [...insurersSeen].filter(Boolean).sort() });
+
+    // Work through the rows in slices, handing the browser a moment between
+    // each one so the page keeps painting and the progress line updates.
+    const CHUNK = 20000;
+    const total = rows.length;
+    if (total > CHUNK) {
+      let i = 0;
+      const step = () => {
+        const end = Math.min(i + CHUNK, total);
+        for (; i < end; i++) buildRow(rows[i]);
+        showImportProgress(i, total);
+        if (i < total) { setTimeout(step, 0); return; }
+        showImportProgress(0, 0);
+        done();
+      };
+      setTimeout(step, 0);
+      return;
+    }
+    for (let i = 0; i < total; i++) buildRow(rows[i]);
+    done();
+  }
+
+  // Records the files that were added and reports once, whatever the count.
+  function finishAll(results, companyName){
+    const lines = [];
+    let totalAdded = 0, filesAdded = 0;
+    results.forEach(r => {
+      if (r.error) { lines.push('• ' + r.file + ' — not added: ' + r.error); return; }
+      if (r.master) { lines.push('• ' + r.file + ' — loaded as the vehicle master'); return; }
+      const st = r.stats;
+      loadedFiles.push({
+        company: st.insurers.length > 1 ? `${st.insurers.length} insurers (${r.companyName})` : (st.insurers[0] || r.companyName),
+        insurers: st.insurers,
+        rows: st.added,
+        dupes: st.dupes
+      });
+      totalAdded += st.added; filesAdded++;
+      let line = '• ' + r.file + ' — ' + st.added.toLocaleString() + ' rows';
+      if (st.dupes) line += ' (' + st.dupes.toLocaleString() + ' exact duplicates skipped)';
+      if (st.insurers.length > 1) line += ' — ' + st.insurers.length + ' insurers: ' + st.insurers.join(', ');
+      lines.push(line);
+    });
+
+    if (results.length > 1) {
+      alert('Added ' + totalAdded.toLocaleString() + ' rows from ' + filesAdded + ' file' + (filesAdded === 1 ? '' : 's') + '.\n\n' + lines.join('\n'));
+    } else if (results.length === 1 && results[0].stats) {
+      const st = results[0].stats, notes = [];
+      if (st.insurers.length > 1) notes.push(`Found ${st.insurers.length} insurers in this file: ${st.insurers.join(', ')}.`);
+      if (st.dupes) notes.push(`${st.dupes} identical duplicate row${st.dupes===1?' was':'s were'} skipped — they were exact copies across every column.`);
+      if (notes.length) alert(`Added ${st.added} rows.\n\n` + notes.join('\n\n'));
+    }
+    document.getElementById('mappingCard').style.display = 'none';
+    document.getElementById('savedMapBanner').style.display = 'none';
+    usingSavedMappingSig = null;
+    uploadQueue = [];
+    populateSearchOptions();
+    refreshDbSummary();
+    nextUpload();            // queue is empty: resets the banner and the file input
+  }
+
+  // Files picked together with the one just mapped: add each with the same
+  // mapping, without asking again. A layout the portal already knows keeps its
+  // own saved mapping; anything else follows the one the person just confirmed.
+  function addRemainingFiles(nameMap, results){
+    const step = () => {
+      if (!uploadQueue.length) { finishAll(results); return; }
+      const file = uploadQueue.shift();
+      const pb = document.getElementById('importProgress');
+      showImportProgress(0, 1);
+      if (pb) pb.textContent = 'Adding ' + file.name + ' (' + (queueTotal - uploadQueue.length) + ' of ' + queueTotal + ')…';
+      readRows(file, (err, rows) => {
+        if (err) { results.push({ file: file.name, error: err.message }); step(); return; }
+        if (looksLikeVehicleMaster(rows[0] || [])) {
+          loadVehicleMaster(rows, file.name);
+          results.push({ file: file.name, master: true }); step(); return;
+        }
+        if (rows.length < 2) { results.push({ file: file.name, error: 'no data rows' }); step(); return; }
+        const headers = rows[0].map(h => String(h).trim());
+        const sig = headerSignature(headers);
+        const mapping = mappingFromNames(savedMappings[sig] || nameMap, headers);
+        // Remember the layout so a later upload of the same format needs one click.
+        if (!savedMappings[sig]) savedMappings[sig] = namesFromMapping(mapping, headers);
+        const company = file.name.replace(/\.[^/.]+$/, '');
+        importRows(headers, rows.slice(1), mapping, company, stats => {
+          results.push({ file: file.name, companyName: company, stats });
+          step();
+        });
+      });
+    };
+    step();
+  }
 
   document.getElementById('addToDbBtn').addEventListener('click', () => {
     const companyName = document.getElementById('companyNameInput').value.trim();
@@ -1311,369 +1308,49 @@
 
     const sig = headerSignature(pendingHeaders);
     let mapping = {};
+    let nameMap;
 
     if (usingSavedMappingSig && savedMappings[sig]){
       // Reapply a remembered mapping (stored by header name) to this file's actual column order
-      const nameMap = savedMappings[sig];
-      Object.entries(nameMap).forEach(([field, headerName]) => {
-        mapping[field] = headerName === null ? -1 : pendingHeaders.indexOf(headerName);
-      });
+      nameMap = savedMappings[sig];
+      mapping = mappingFromNames(nameMap, pendingHeaders);
     } else {
       const mapSelects = document.querySelectorAll('#mapRows select');
       mapSelects.forEach(sel => { mapping[sel.dataset.field] = parseInt(sel.value, 10); });
       // Remember this mapping (by header name, not index) for future files with the same columns
-      const nameMap = {};
-      Object.entries(mapping).forEach(([field, idx]) => {
-        nameMap[field] = idx >= 0 ? pendingHeaders[idx] : null;
-      });
+      nameMap = namesFromMapping(mapping, pendingHeaders);
       savedMappings[sig] = nameMap;
     }
 
-    let addedCount = 0;
-    let dupCount = 0;
-    const insurersSeen = new Set();
-    // Computed ONCE. These were being rebuilt for every column of every row —
-    // Object.values(mapping) on a 400k-row file is tens of millions of array
-    // allocations, which is what made a large upload look frozen.
-    const usedIdx = new Set(Object.values(mapping).filter(i => i >= 0));
-    const extraCols = pendingHeaders
-      .map((h, i) => ({ h, i }))
-      .filter(x => !usedIdx.has(x.i));
-
-    // Make sure the store has a column for every field this file writes, and
-    // keep a direct handle on each one: the import loop must not do a map
-    // lookup per cell.
-    STD_FIELDS.forEach(f => storeCol(f.key));
-    extraCols.forEach(c => {
-      if (store.extraKeys.indexOf(c.h) < 0) store.extraKeys.push(c.h);
-      storeCol('x:' + c.h);
-    });
-    const writeCols = [];
-    STD_FIELDS.forEach(f => {
-      const idx = mapping[f.key];
-      if (idx >= 0) writeCols.push({ col: store.cols.get(f.key), idx, key: f.key });
-    });
-    extraCols.forEach(c => writeCols.push({ col: store.cols.get('x:' + c.h), idx: c.i, key: null }));
-    const companyCol = store.cols.get('company');
-    const companyMapped = mapping.company >= 0;
-    // Columns an earlier file introduced that this one does not write still
-    // need an entry for every new row, or the columns fall out of step.
-    const written = new Set(writeCols.map(w => w.col));
-    const blankCols = store.keys.map(k => store.cols.get(k)).filter(c => !written.has(c));
-
-    // Payout grids repeat the same row many times (the same combination on
-    // several sheets or blocks). Identical rows carry no extra information and
-    // would show up as several indistinguishable cards, so keep the first copy
-    // of each. The old check built a JSON string per row; this one hashes the
-    // integers already written and only compares rows when two hashes collide.
-    const allCols = store.keys.map(k => store.cols.get(k));
-    const seenHash = new Map();
-    function sameRow(a, b){
-      for (let j = 0; j < allCols.length; j++){
-        if (allCols[j].codes[a] !== allCols[j].codes[b]) return false;
-      }
-      return true;
-    }
-
-    const buildRow = row => {
-      const i = store.n;                 // written provisionally; kept only if new
-      let anything = false;
-      for (let j = 0; j < writeCols.length; j++){
-        const w = writeCols[j];
-        const raw = row[w.idx];
-        const v = raw === undefined || raw === null ? '' : String(raw).trim();
-        if (v !== '') anything = true;
-        w.col.setAt(i, v);
-      }
-      // A parser export can hold several insurers in one file. When an Insurer
-      // column is mapped, each row keeps its own insurer; otherwise every row
-      // falls back to the name typed above.
-      if (!companyMapped || !companyCol.get(i)){ companyCol.setAt(i, companyName); anything = true; }
-      for (let j = 0; j < blankCols.length; j++) blankCols[j].setAt(i, '');
-      if (!anything) return;
-      insurersSeen.add(companyCol.get(i));
-
-      let h = 2166136261;
-      for (let j = 0; j < allCols.length; j++){
-        h ^= allCols[j].codes[i];
-        h = Math.imul(h, 16777619);
-      }
-      h = h >>> 0;
-      const prior = seenHash.get(h);
-      if (prior !== undefined){
-        if (typeof prior === 'number'){
-          if (sameRow(prior, i)) { dupCount++; return; }
-          seenHash.set(h, [prior, i]);
-        } else {
-          for (let j = 0; j < prior.length; j++) if (sameRow(prior[j], i)) { dupCount++; return; }
-          prior.push(i);
-        }
-      } else {
-        seenHash.set(h, i);
-      }
-      store.n = i + 1;
-      addedCount++;
-    };
-
-    runImport();
-
-    async function runImport(){
-      try{
-        if (pendingSource && pendingSource.kind === 'csv'){
-          // Re-read the file straight from disk. Only the header was kept, so
-          // the rows never exist as a second copy in memory.
-          let header = true;
-          await streamCsv(pendingSource.file,
-            r => { if (header){ header = false; return; } buildRow(r); },
-            (d, t) => showImportProgress(d, t, 'bytes'));
-        } else {
-          const rows = (pendingSource && pendingSource.rows) || [];
-          const total = rows.length, CHUNK = 20000;
-          for (let i = 0; i < total; i += CHUNK){
-            const end = Math.min(i + CHUNK, total);
-            for (let j = i; j < end; j++) buildRow(rows[j]);
-            if (total > CHUNK){
-              showImportProgress(end, total);
-              await new Promise(r => setTimeout(r, 0));
-            }
-          }
-        }
-      } catch(err){
-        showImportProgress(0, 0);
-        alert('Could not finish reading this file: ' + err.message);
-        return;
-      }
-      showImportProgress(0, 0);
-      // Trim every column to the rows actually kept, so saving to the browser
-      // copies exactly the data and not the spare capacity behind it.
-      store.cols.forEach(c => { if (c.codes.length !== store.n) c.codes = c.codes.slice(0, store.n); c.n = store.n; });
-      canonLocationColumn();
-      repairCityNames();
-      normaliseConditions();
-      promoteBodyCategories();
-      dropFabricatedSplits();
-      mergeCaseVariants('make');
-      mergeCaseVariants('excludeMake');
-      resolveResidualMakes();
-      computeDeclined();
-      rebuildCodeInfo();
-      learnClusters();
-      finishImport();
-    }
-
-    function finishImport(){
-    const insurerList = [...insurersSeen].filter(Boolean).sort();
-    loadedFiles.push({
-      company: insurerList.length > 1 ? `${insurerList.length} insurers (${companyName})` : (insurerList[0] || companyName),
-      insurers: insurerList,
-      rows: addedCount,
-      dupes: dupCount
-    });
-    const notes = [];
-    if (insurerList.length > 1) notes.push(`Found ${insurerList.length} insurers in this file: ${insurerList.join(', ')}.`);
-    if (dupCount) notes.push(`${dupCount} identical duplicate row${dupCount===1?' was':'s were'} skipped — they were exact copies across every column.`);
-    if (notes.length) alert(`Added ${addedCount} rows.\n\n` + notes.join('\n\n'));
+    const fileName = pendingFileLabel || pendingFileName;
+    const results = [];
     document.getElementById('mappingCard').style.display = 'none';
-    document.getElementById('savedMapBanner').style.display = 'none';
-    usingSavedMappingSig = null;
-    fileInputUpload.value = '';
-    pendingSource = null;              // lets the browser reclaim a parsed workbook
-    populateSearchOptions();
-    refreshDbSummary();
-    }
+    importRows(pendingHeaders, pendingRows, mapping, companyName, stats => {
+      results.push({ file: fileName, companyName, stats });
+      if (uploadQueue.length) addRemainingFiles(nameMap, results);
+      else finishAll(results);
+    });
   });
 
   // A visible line of progress, so a long import does not look like a hang.
-  function showImportProgress(done, total, unit){
+  function showImportProgress(done, total){
     const box = document.getElementById('importProgress');
     if (!box) return;
     if (!total) { box.style.display = 'none'; return; }
     box.style.display = 'block';
     const pct = Math.round(done / total * 100);
-    box.textContent = unit === 'bytes'
-      ? 'Reading ' + Math.round(done / 1048576) + ' of ' + Math.round(total / 1048576) +
-        ' MB (' + pct + '%) — ' + store.n.toLocaleString() + ' rows so far…'
-      : 'Reading ' + done.toLocaleString() + ' of ' + total.toLocaleString() +
-        ' rows (' + pct + '%)…';
-  }
-
-  // ── Keeping the loaded payout data ──────────────────────────
-  // Uploaded grids stay until they are removed, across reloads and restarts.
-  // This uses IndexedDB rather than localStorage: localStorage caps out around
-  // 5 MB and a few real grids run to hundreds of thousands of rows, so it would
-  // fail on exactly the data worth keeping. IndexedDB also stores the arrays
-  // directly, with no JSON round-trip.
-  const PDB_NAME = 'payoutPortal', PDB_STORE = 'state', PDB_KEY = 'payoutData.v1';
-  let persistReady = false;     // false while restoring, so we don't re-save what we just read
-  let persistTimer = null;
-
-  function idbOpen(){
-    return new Promise((resolve, reject) => {
-      if (!window.indexedDB) return reject(new Error('IndexedDB unavailable'));
-      const req = indexedDB.open(PDB_NAME, 1);
-      req.onupgradeneeded = () => {
-        const db = req.result;
-        if (!db.objectStoreNames.contains(PDB_STORE)) db.createObjectStore(PDB_STORE);
-      };
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
-    });
-  }
-
-  function idbWrite(value, key){
-    return idbOpen().then(db => new Promise((resolve, reject) => {
-      const tx = db.transaction(PDB_STORE, 'readwrite');
-      const store = tx.objectStore(PDB_STORE);
-      if (value === null) store.delete(key || PDB_KEY); else store.put(value, key || PDB_KEY);
-      tx.oncomplete = () => { db.close(); resolve(); };
-      tx.onerror = () => { db.close(); reject(tx.error); };
-    }));
-  }
-
-  function idbRead(key){
-    return idbOpen().then(db => new Promise((resolve, reject) => {
-      const tx = db.transaction(PDB_STORE, 'readonly');
-      const req = tx.objectStore(PDB_STORE).get(key || PDB_KEY);
-      req.onsuccess = () => { db.close(); resolve(req.result || null); };
-      req.onerror = () => { db.close(); reject(req.error); };
-    }));
-  }
-
-  // Debounced: loading a file fires several refreshes, and writing 300k rows
-  // each time would stall the tab.
-  // The store goes to IndexedDB as it sits in memory: the distinct-value lists
-  // plus one block of integers per column. Structured clone copies a typed array
-  // wholesale, so there is no JSON round-trip and no per-row work at all.
-  function serializeStore(){
-    const cols = {};
-    store.keys.forEach(k => {
-      const c = store.cols.get(k);
-      cols[k] = { vals: c.vals, codes: c.codes.length === store.n ? c.codes : c.codes.slice(0, store.n) };
-    });
-    return { v: 2, n: store.n, keys: store.keys.slice(), extraKeys: store.extraKeys.slice(), cols };
-  }
-
-  function loadStore(snap){
-    storeClear();
-    store.n = snap.n || 0;
-    store.keys = (snap.keys || []).slice();
-    store.extraKeys = (snap.extraKeys || []).slice();
-    store.keys.forEach(k => {
-      const src = snap.cols[k] || { vals: [''], codes: [] };
-      const c = new Col();
-      c.vals = src.vals;
-      c.codes = src.codes instanceof Int32Array ? src.codes : Int32Array.from(src.codes || []);
-      c.n = store.n;
-      c.map = null;                   // rebuilt only if another file is imported
-      store.cols.set(k, c);
-    });
-    canonLocationColumn();
-    repairCityNames();
-    normaliseConditions();
-    promoteBodyCategories();
-    dropFabricatedSplits();
-    mergeCaseVariants('make');
-    mergeCaseVariants('excludeMake');
-    resolveResidualMakes();
-    computeDeclined();
-    rebuildCodeInfo();
-    learnClusters();
-  }
-
-  // A master file saved by an older build is a plain array of row objects.
-  function loadLegacyRows(rows){
-    storeClear();
-    if (!rows || !rows.length) return;
-    const extras = new Set();
-    rows.forEach(r => { if (r._extra) Object.keys(r._extra).forEach(k => extras.add(k)); });
-    store.extraKeys = [...extras];
-    STD_FIELDS.forEach(f => storeCol(f.key));
-    store.extraKeys.forEach(k => storeCol('x:' + k));
-    const cols = store.keys.map(k => ({ k, c: store.cols.get(k) }));
-    rows.forEach((r, i) => {
-      cols.forEach(({ k, c }) => {
-        const v = k.slice(0, 2) === 'x:' ? (r._extra ? r._extra[k.slice(2)] : '') : r[k];
-        c.setAt(i, v == null ? '' : String(v));
-      });
-    });
-    store.n = rows.length;
-    canonLocationColumn();
-    repairCityNames();
-    normaliseConditions();
-    promoteBodyCategories();
-    dropFabricatedSplits();
-    mergeCaseVariants('make');
-    mergeCaseVariants('excludeMake');
-    resolveResidualMakes();
-    computeDeclined();
-    rebuildCodeInfo();
-    learnClusters();
-  }
-
-  function persistDatabase(){
-    if (!persistReady) return;
-    clearTimeout(persistTimer);
-    persistTimer = setTimeout(() => {
-      const payload = store.n
-        ? { savedAt: new Date().toISOString(), store: serializeStore(), loadedFiles, savedMappings }
-        : null;                       // nothing loaded means nothing to keep
-      idbWrite(payload)
-        .then(() => setPersistNote(store.n ? 'saved' : 'empty'))
-        .catch(e => {
-          console.warn('payout data not saved:', e && e.message);
-          setPersistNote('failed', e && e.message);
-        });
-    }, 400);
-  }
-
-  function setPersistNote(state, detail){
-    const el = document.getElementById('persistNote');
-    if (!el) return;
-    if (state === 'saved'){
-      el.style.color = 'var(--text-soft)';
-      el.textContent = 'Saved on this browser — stays until you remove it.';
-    } else if (state === 'failed'){
-      el.style.color = 'var(--neg, #b91c1c)';
-      el.textContent = 'Could not save to this browser (' + (detail || 'storage error') +
-                       '). Data will be lost when the tab closes — use Download master file.';
-    } else {
-      el.textContent = '';
-    }
-  }
-
-  function restorePayoutData(){
-    return idbRead().then(saved => {
-      if (saved && saved.store && saved.store.n){
-        loadStore(saved.store);
-        loadedFiles = saved.loadedFiles || [];
-        savedMappings = saved.savedMappings || savedMappings;
-      } else if (saved && saved.database && saved.database.length){
-        loadLegacyRows(saved.database);          // saved by an older build
-        loadedFiles = saved.loadedFiles || [];
-        savedMappings = saved.savedMappings || savedMappings;
-      }
-      persistReady = true;
-      refreshDbSummary();
-      populateSearchOptions();
-      if (store.n) setPersistNote('saved');
-    }).catch(e => {
-      console.warn('payout data not restored:', e && e.message);
-      persistReady = true;      // still allow saving later
-    });
+    box.textContent = 'Reading ' + done.toLocaleString() + ' of ' +
+                      total.toLocaleString() + ' rows (' + pct + '%)…';
   }
 
   function refreshDbSummary(){
-    // Every path that adds, removes or restores rows ends here, so this is the
-    // one place the RTO-to-state index has to be rebuilt and the one place the
-    // browser copy has to be brought up to date.
-    rebuildCodeState();
-    persistDatabase();
-    const companies = distinctCount('company');
-    document.getElementById('statRecords').textContent = store.n.toLocaleString();
-    document.getElementById('statCompanies').textContent = companies;
+    const companySet = new Set();
+    for (let i = 0; i < database.length; i++) companySet.add(database[i].company);
+    document.getElementById('statRecords').textContent = database.length;
+    document.getElementById('statCompanies').textContent = companySet.size;
     document.getElementById('statFiles').textContent = loadedFiles.length;
-    document.getElementById('downloadMasterBtn').disabled = store.n === 0;
-    document.getElementById('clearDbBtn').disabled = store.n === 0;
+    document.getElementById('downloadMasterBtn').disabled = database.length === 0;
+    document.getElementById('clearDbBtn').disabled = database.length === 0;
 
     const tbl = document.getElementById('filesTable');
     const body = document.getElementById('filesTableBody');
@@ -1685,10 +1362,8 @@
     }
 
     const status = document.getElementById('dbStatus');
-    if (store.n){
-      const rtos = distinctCount('location');
-      status.innerHTML = `<b>${store.n.toLocaleString()}</b> records loaded from ` +
-                         `<b>${companies}</b> companies · ${rtos.toLocaleString()} RTOs`;
+    if (database.length){
+      status.innerHTML = `<b>${database.length}</b> records loaded from <b>${companySet.size}</b> companies`;
     } else {
       status.textContent = 'No data loaded yet';
     }
@@ -1701,61 +1376,25 @@
       // A single file may have carried several insurers, so drop them all
       const names = new Set(removed.insurers && removed.insurers.length
         ? removed.insurers : [removed.company]);
-      const company = store.cols.get('company');
-      if (company){
-        const drop = new Uint8Array(company.vals.length);
-        for (let v = 0; v < company.vals.length; v++) if (names.has(company.vals[v])) drop[v] = 1;
-        const keep = new Uint8Array(store.n);
-        for (let i = 0; i < store.n; i++) keep[i] = drop[company.codes[i]] ? 0 : 1;
-        storeKeep(keep);
-        computeDeclined();
-        rebuildCodeInfo();
-        learnClusters();
-      }
+      database = database.filter(r => !names.has(r.company));
       loadedFiles.splice(idx, 1);
-      populateSearchOptions();
       refreshDbSummary();
     }
   });
 
   document.getElementById('clearDbBtn').addEventListener('click', () => {
-    if (!confirm('Clear all loaded payout data?\n\nThis also removes the copy saved in this ' +
-                 'browser, so it will not come back on reload.')) return;
-    storeClear();
+    if (!confirm('Clear all loaded payout data?')) return;
+    database = [];
     loadedFiles = [];
-    currentMatches = [];
-    populateSearchOptions();
-    refreshDbSummary();          // writes the empty state through to storage
+    refreshDbSummary();
   });
 
-  // ── The master file ─────────────────────────────────────────
-  // A JSON array of 1.3 million row objects is both too slow to write and, at
-  // several hundred megabytes of text, past what a browser will hold as one
-  // string. The master file therefore carries the same shape the portal keeps
-  // in memory: a small JSON header naming the columns and their distinct
-  // values, then the integer blocks as raw bytes.
-  const PGDB_MAGIC = 'PGDB';
   document.getElementById('downloadMasterBtn').addEventListener('click', () => {
-    const vals = {};
-    store.keys.forEach(k => { vals[k] = store.cols.get(k).vals; });
-    const header = JSON.stringify({
-      savedAt: new Date().toISOString(), v: 2, n: store.n,
-      keys: store.keys, extraKeys: store.extraKeys, vals, loadedFiles, savedMappings
-    });
-    const headerBytes = new TextEncoder().encode(header);
-    const lead = new DataView(new ArrayBuffer(12));
-    for (let i = 0; i < 4; i++) lead.setUint8(i, PGDB_MAGIC.charCodeAt(i));
-    lead.setUint32(4, 2, true);
-    lead.setUint32(8, headerBytes.byteLength, true);
-    const parts = [lead.buffer, headerBytes];
-    store.keys.forEach(k => {
-      const c = store.cols.get(k);
-      parts.push(c.codes.length === store.n ? c.codes : c.codes.slice(0, store.n));
-    });
-    const blob = new Blob(parts, { type: 'application/octet-stream' });
+    const payload = { savedAt: new Date().toISOString(), database, loadedFiles, savedMappings };
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'payout-master-database.pgdb';
+    a.href = url; a.download = 'payout-master-database.json';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
   });
@@ -1766,37 +1405,24 @@
     const reader = new FileReader();
     reader.onload = (ev) => {
       try{
-        const buf = ev.target.result;
-        const head = new Uint8Array(buf, 0, Math.min(4, buf.byteLength));
-        const isPgdb = String.fromCharCode.apply(null, head) === PGDB_MAGIC;
-        if (isPgdb){
-          const lead = new DataView(buf);
-          const hLen = lead.getUint32(8, true);
-          const payload = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 12, hLen)));
-          let off = 12 + hLen;
-          const cols = {};
-          payload.keys.forEach(k => {
-            cols[k] = { vals: payload.vals[k], codes: new Int32Array(buf.slice(off, off + payload.n * 4)) };
-            off += payload.n * 4;
-          });
-          loadStore({ n: payload.n, keys: payload.keys, extraKeys: payload.extraKeys, cols });
-          loadedFiles = payload.loadedFiles || [];
-          savedMappings = payload.savedMappings || {};
-        } else {
-          // A master file written by an older build: plain JSON.
-          const payload = JSON.parse(new TextDecoder().decode(new Uint8Array(buf)));
-          loadLegacyRows(payload.database || []);
-          loadedFiles = payload.loadedFiles || [];
-          savedMappings = payload.savedMappings || {};
-        }
-        populateSearchOptions();
+        const payload = JSON.parse(ev.target.result);
+        database = payload.database || [];
+        // A master saved before the Product Line / Policy Type mix-up was
+        // fixed carries "Motor" in every row's policy type, and remembers the
+        // mapping that put it there. Clean both on the way in.
+        database.forEach(r => { if (!isPolicyTypeValue(r.policyType)) r.policyType = ''; });
+        loadedFiles = payload.loadedFiles || [];
+        savedMappings = payload.savedMappings || {};
+        Object.values(savedMappings).forEach(m => {
+          if (m && /product\s*line/i.test(String(m.policyType || ''))) m.policyType = null;
+        });
         refreshDbSummary();
-        alert('Master database loaded: ' + store.n.toLocaleString() + ' records.');
+        alert('Master database loaded: ' + database.length + ' records.');
       } catch(err){
         alert('Could not read this master file: ' + err.message);
       }
     };
-    reader.readAsArrayBuffer(file);
+    reader.readAsText(file);
   });
 
   // ---- Search form ----
@@ -1806,52 +1432,6 @@
   const selInsurer = document.getElementById('sel-insurer');
   const selMake = document.getElementById('sel-make');
   const selModel = document.getElementById('sel-model');
-  // ── One set of weight slabs for every insurer ───────────────
-  // Each insurer cuts tonnage its own way: 50 different bands across the book,
-  // many of them overlapping — 0-2T, 0-2.3T, 0-2.5T, 2-2.5T, 2-2.8T, 2-3.5T,
-  // 2.3-3.5T, 2.5-3.5T all describe vehicles you would call the same thing.
-  // Picking from that list meant knowing whose band you were looking at, and a
-  // 2.6T lorry priced by Royal Sundaram at 2.3-3.5T was invisible if you chose
-  // 2.5-3.5T.
-  //
-  // So the filter offers ONE standard set of slabs, and a rule matches a slab
-  // when the insurer's own band overlaps it. A band that straddles two slabs
-  // appears under both, so no rule is lost, and the result card still shows the
-  // insurer's real band — only the filter is simplified.
-  const GVW_SLABS = [
-    { label: 'Up to 2.5T', lo: 0,  hi: 2.5 },
-    { label: '2.5 - 3.5T', lo: 2.5, hi: 3.5 },
-    { label: '3.5 - 7.5T', lo: 3.5, hi: 7.5 },
-    { label: '7.5 - 12T',  lo: 7.5, hi: 12 },
-    { label: '12 - 20T',   lo: 12,  hi: 20 },
-    { label: '20 - 40T',   lo: 20,  hi: 40 },
-    { label: 'Above 40T',  lo: 40,  hi: Infinity }
-  ];
-
-  // "0-2.5T", "7.5T+", "48+ Ton", "2.5-2.805T" → a numeric span.
-  function parseGvwBand(v){
-    const t = String(v == null ? '' : v).toLowerCase()
-      .replace(/[\s,]/g, '').replace(/tonnes?|tons?|t/g, '');
-    let m;
-    if ((m = /^([\d.]+)-([\d.]+)$/.exec(t))) return [parseFloat(m[1]), parseFloat(m[2])];
-    if ((m = /^([\d.]+)\+$/.exec(t)))        return [parseFloat(m[1]), Infinity];
-    if ((m = /^([\d.]+)$/.exec(t)))          return [0, parseFloat(m[1])];
-    return null;
-  }
-
-  function gvwSlabFor(label){ return GVW_SLABS.find(s => s.label === label) || null; }
-
-  // A row with no band is not weight-specific, so it answers every slab.
-  function gvwMatchesSlab(bandText, slabLabel){
-    const slab = gvwSlabFor(slabLabel);
-    if (!slab) return true;
-    const raw = clean(bandText);
-    if (!raw) return true;
-    const b = parseGvwBand(raw);
-    if (!b) return true;                       // unreadable band: never hide it
-    return b[0] < slab.hi && b[1] > slab.lo;   // touching endpoints do not overlap
-  }
-
   const selGvw = document.getElementById('sel-gvwRange');
   const selBodyType = document.getElementById('sel-bodyType');
 
@@ -1910,21 +1490,66 @@
   // Comprehensive; STP / SATP / TP Only; SAOD / SA OD / OD Only). Selecting
   // "Comprehensive" must return every insurer's rows for that segment, so the
   // dropdown offers canonical names and matching compares canonical to canonical.
+  const _policyCache = new Map();
   function canonPolicyType(v){
+    const key = v == null ? '' : String(v);
+    let hit = _policyCache.get(key);
+    if (hit === undefined) { hit = canonPolicyTypeRaw(key); _policyCache.set(key, hit); }
+    return hit;
+  }
+  function canonPolicyTypeRaw(v){
     const s = String(v||'').trim().toLowerCase();
     if (!s) return '';
     if (/\bsa\s*od\b|\bsaod\b|od\s*only|stand\s*alone\s*od/.test(s)) return 'SAOD';
     if (/\bsatp\b|\bstp\b|\btp\b|third\s*party|liability\s*only/.test(s)) return 'SATP';
     if (/comp|package|\bpkg\b|\bod\s*\+\s*tp\b|1\s*\+\s*1|bundled/.test(s)) return 'Comprehensive';
+    // "Motor", "Motor CV - GCV", "Non-Motor" name the product LINE, not the
+    // cover. They are not a choice the user can make here, and a file that
+    // lands the product line in this column must not turn the whole filter
+    // into a single meaningless option. ("Motor Package Policy" and the like
+    // already matched Comprehensive above, so nothing real is lost.)
+    if (/^(non[\s-]?)?motor\b/.test(s)) return '';
     return String(v).trim();
   }
-  function policyTypeOptions(mask){
-    return uniqueValsMasked(mask, 'policyType', canonPolicyType);
+  // Was the value a policy type at all? Used to scrub the column on import.
+  function isPolicyTypeValue(v){
+    return !String(v || '').trim() || !!canonPolicyType(v);
+  }
+  function policyTypeOptions(records){
+    return [...new Set(records.map(r => canonPolicyType(r.policyType)).filter(Boolean))].sort();
+  }
+
+  function uniqueVals(records, key){
+    return [...new Set(records.map(r => r[key]).filter(v => v && v.trim()))].sort();
   }
 
   // ── Location labels: "DL1C - New Delhi, Delhi" ──
   // RTO code first, then city, then state. Any part that's missing (or just
   // repeats another part) is skipped, so a file with only codes still works.
+  // ── Every RTO in the country, not just the ones someone prices ──────────
+  // The location list used to be built from the payout records alone, so an
+  // RTO no insurer had a rate for could not even be selected — it looked as
+  // though the RTO did not exist. The full master is embedded here so the
+  // dropdown is the same 1,401 RTOs every time, payout or no payout.
+  const RTO_UNIV_STATES = ["ANDAMAN & NICOBAR ISLANDS", "ANDHRA PRADESH", "ARUNACHAL PRADESH", "ASSAM", "BIHAR", "CHANDIGARH", "CHATTISGARH", "DADRA AND NAGAR HAVELI", "DAMAN & DIU", "DELHI", "GOA", "GUJARAT", "HARYANA", "HIMACHAL PRADESH", "JAMMU & KASHMIR", "JHARKHAND", "KARNATAKA", "KERALA", "LADAKH", "LAKSHADWEEP", "MADHYA PRADESH", "MAHARASHTRA", "MANIPUR", "MEGHALAYA", "MIZORAM", "NAGALAND", "ORISSA", "PONDICHERRY", "PUNJAB", "RAJASTHAN", "SIKKIM", "TAMIL NADU", "TELANGANA", "TRIPURA", "UTTAR PRADESH", "UTTARAKHAND", "WEST BENGAL"];
+  const RTO_UNIV_PACKED = "AN01~Nicobar~0|AN02~Port Blair~0|AP01~Adilabad~32|AP02~Ananthapur~1|AP03~Chittoor~1|AP04~Cuddapah~1|AP05~East Godavari~1|AP06~Thallarevu~1|AP07~Guntur~1|AP08~Guntur~1|AP09~Hyderabad~32|AP10~Hyderabad~32|AP11~Hyderabad~32|AP12~Hyderabad~32|AP13~Hyderabad~32|AP14~Karim Nagar~32|AP15~Karim Nagar~32|AP16~Vijayawada~1|AP17~Vijayawada~1|AP18~Vijayawada~1|AP19~Vijayawada~1|AP20~Khammam~32|AP21~Kurnool~1|AP22~Mahabub Nagar~32|AP23~Medak~32|AP24~Nalgonda~32|AP25~Nizamabad~32|AP26~Nellore~1|AP27~Prakasam~1|AP28~Rangareddy~32|AP29~Rangareddy~32|AP30~Srikakulam~1|AP31~Visakhapatnam~1|AP32~Visakhapatnam~1|AP33~Visakhapatnam~1|AP34~Visakhapatnam~1|AP35~Vizianagaram~1|AP36~Warangal~32|AP37~West Godavari~1|AP38~Eluru~1|AP39~Vijayawada~1|AR01~Itanagar~2|AR02~Itanagar~2|AR03~Tawang~2|AR04~West Kameng~2|AR05~East Kameng~2|AR06~Lower Subansiri~2|AR07~Upper Subansiri~2|AR08~West Siang~2|AR09~East Siang~2|AR10~Dibang Valley~2|AR11~Lohit~2|AR12~Changlang~2|AR13~Tirap~2|AR14~Upper Siang~2|AR15~Kurung Kumey~2|AR16~Lower Dibang Valley~2|AR17~Lohit~2|AR18~Longding~2|AR19~Palin~2|AR20~Lohit~2|AR22~Lower Siang~2|AR23~Kamle~2|AR26~Shi-Yomi~2|AS01~Guwahati~3|AS02~Nagaon~3|AS03~Jorhat~3|AS04~Sibsagar~3|AS05~Golaghat~3|AS06~Dibrugarh~3|AS07~Lakhimpur~3|AS08~North Cachar Hills~3|AS09~Karbi Anglong~3|AS10~Karimganj~3|AS11~Cachar~3|AS12~Sonitpur~3|AS13~Darrang~3|AS14~Nalbari~3|AS15~Barpeta~3|AS16~Kokrajhar~3|AS17~Dhubri~3|AS18~Goalpara~3|AS19~Bongaigaon~3|AS20~Guwahati~3|AS21~Marigaon~3|AS22~Dhemaji~3|AS23~Tinsukia~3|AS24~Hailakandi~3|AS25~Kamrup~3|AS26~Bongaigaon~3|AS27~Darrang~3|AS28~Nalbari~3|AS29~Majuli~3|AS30~Guwahati~3|AS31~Hojai~3|AS32~Biswanath~3|AS34~Hatsingimari~3|BR01~Patna~4|BR02~Gaya~4|BR03~Bhojpur~4|BR04~Chapra~4|BR05~East Champaran~4|BR06~Muzaffarpur~4|BR07~Darbhanga~4|BR08~Munger~4|BR09~Begusarai~4|BR10~Bhagalpur~4|BR11~Purnia~4|BR12~Dumka~15|BR13~Hazaribag~15|BR14~Ranchi~15|BR15~Palamau~15|BR16~Jamshedpur~15|BR17~Dhanbad~15|BR18~West Singhbhum~15|BR19~Saharsa~4|BR20~Bokaro~15|BR21~Nalanda~4|BR22~West Champaran~4|BR23~Giridh~15|BR24~Rohtas~4|BR25~Jehanabad~4|BR26~Aurangabad(Bh)~4|BR27~Nawada~4|BR28~Gopalganj~4|BR29~Siwan~4|BR30~Sitamarhi~4|BR31~Vaishali~4|BR32~Madhubani~4|BR33~Samastipur~4|BR34~Khagaria~4|BR35~Sahibganj~15|BR36~Godda~15|BR37~Kishanganj~4|BR38~Araria~4|BR39~Katihar~4|BR40~Deoghar~15|BR41~Gumla~15|BR42~Lohardaga~15|BR43~Madhepura~4|BR44~Buxar~4|BR45~Kaimur (Bhabua)~4|BR46~Jamui~4|BR47~Koderma~15|BR50~Supaul~4|BR51~Banka~4|BR52~Sheikhpura~4|BR53~Lakhisarai~4|BR55~Sheohar~4|BR56~Arwal~4|BR57~Rohtas~4|CG01~Raipur~6|CG02~Raipur~6|CG03~Raipur~6|CG04~Raipur~6|CG05~Dhamtari~6|CG06~Mahasamund~6|CG07~Durg~6|CG08~Rajnandgaon~6|CG09~Kawardha~6|CG10~Bilaspur(Cgh)~6|CG11~Janjgir-Champa~6|CG12~Korba~6|CG13~Raigarh~6|CG14~Jashpur~6|CG15~Surguja~6|CG16~Koriya~6|CG17~Dantewada~6|CG18~Dantewada~6|CG19~Kanker~6|CG20~Bijapur(Cgh)~6|CG21~Narayanpur~6|CG22~Raipur~6|CG23~Gariaband~6|CG24~Durg~6|CG25~Durg~6|CG26~Dantewada~6|CG27~Bastar~6|CG28~Bilaspur(Cgh)~6|CG29~Surguja~6|CG30~Balrampur~6|CG31~Gaurela Pendra Marwahi~6|CH01~Chandigarh~5|CH02~Chandigarh~5|CH03~Chandigarh~5|CH04~Chandigarh~5|DD01~Dadra And Nagar Haveli~7|DD02~Diu~8|DD03~Daman~8|DL01~New Delhi~9|DL02~New Delhi~9|DL03~New Delhi~9|DL04~New Delhi~9|DL05~New Delhi~9|DL06~New Delhi~9|DL07~New Delhi~9|DL08~New Delhi~9|DL09~New Delhi~9|DL10~New Delhi~9|DL11~New Delhi~9|DL12~New Delhi~9|DL13~New Delhi~9|DL14~New Delhi~9|DL15~New Delhi~9|DL16~New Delhi~9|DL17~New Delhi~9|DL18~New Delhi~9|DL30~New Delhi~9|DL51~RAIPUR~9|DN09~Dadra And Nagar Haveli~7|GA01~North Goa~10|GA02~South Goa~10|GA03~North Goa~10|GA04~North Goa~10|GA05~South Goa~10|GA06~South Goa~10|GA07~North Goa~10|GA08~South Goa~10|GA09~South Goa~10|GA10~South Goa~10|GA11~North Goa~10|GA12~South Goa~10|GA13~South Goa~10|GJ01~Ahmedabad~11|GJ02~Mahesana~11|GJ03~Rajkot~11|GJ04~Bhavnagar~11|GJ05~Surat~11|GJ06~Vadodara~11|GJ07~Kheda~11|GJ08~Banaskantha~11|GJ09~Sabarkantha~11|GJ10~Jamnagar~11|GJ11~Junagadh~11|GJ12~Kutch~11|GJ13~Surendra Nagar~11|GJ14~Amreli~11|GJ15~Valsad~11|GJ16~Bharuch~11|GJ17~Panch Mahals~11|GJ18~Gandhi Nagar~11|GJ19~Bardoli~11|GJ20~Dahod~11|GJ21~Navsari~11|GJ22~Narmada~11|GJ23~Anand~11|GJ24~Patan~11|GJ25~Porbandar~11|GJ26~Tapi~11|GJ27~Ahmedabad~11|GJ28~Surat~11|GJ29~Vadodara~11|GJ30~The Dangs~11|GJ31~Modasa~11|GJ32~Veraval~11|GJ33~Botad~11|GJ34~Chhotaudepur~11|GJ35~Mahisagar~11|GJ36~Morbi~11|GJ37~Dwarka~11|GJ38~Ahmedabad~11|HP01~Shimla~13|HP02~Shimla~13|HP03~Shimla~13|HP04~Kangra~13|HP05~Mandi~13|HP06~Shimla~13|HP07~Shimla~13|HP08~Shimla~13|HP09~Shimla~13|HP10~Shimla~13|HP11~Solan~13|HP12~Solan~13|HP13~Solan~13|HP14~Solan~13|HP15~Solan~13|HP16~Sirmaur~13|HP17~Sirmaur~13|HP18~Sirmaur~13|HP19~Una~13|HP20~Una~13|HP21~Hamirpur(Hp)~13|HP22~Hamirpur(Hp)~13|HP23~Bilaspur (Hp)~13|HP24~Bilaspur (Hp)~13|HP25~Kinnaur~13|HP26~Kinnaur~13|HP27~Kinnaur~13|HP28~Mandi~13|HP29~Mandi~13|HP30~Mandi~13|HP31~Mandi~13|HP32~Mandi~13|HP33~Mandi~13|HP34~Kullu~13|HP35~Kullu~13|HP36~Kangra~13|HP37~Palampur~13|HP38~Kangra~13|HP39~Dharamshala~13|HP40~Kangra~13|HP41~Kullu~13|HP42~Lahul And Spiti~13|HP43~Kullu~13|HP44~Chamba~13|HP45~Chamba~13|HP46~Chamba~13|HP47~Dalhousie~13|HP48~Chamba~13|HP49~Kullu~13|HP50~Shimla~13|HP51~Shimla~13|HP52~Shimla~13|HP53~Kangra~13|HP54~Kangra~13|HP55~Hamirpur(Hp)~13|HP56~Kangra~13|HP57~Chamba~13|HP58~Kullu~13|HP59~Solan~13|HP60~Hamirpur~13|HP61~Kullu~13|HP62~Shimla~13|HP63~Shimla~13|HP64~Solan~13|HP65~Mandi~13|HP66~Kullu~13|HP67~Hamirpur(Hp)~13|HP68~Kangra~13|HP69~Bilaspur (Hp)~13|HP70~Bilaspur (Hp)~13|HP71~Sirmaur~13|HP72~Una~13|HP73~Chamba~13|HP74~Hamirpur(Hp)~13|HP76~Mandi~13|HP77~Shimla~13|HP78~Una~13|HP79~Sirmaur~13|HP80~Una~13|HP81~Chamba~13|HP82~Mandi~13|HP83~Kangra~13|HP84~Hamirpur(Hp)~13|HP85~Sirmaur~13|HP86~Mandi~13|HP87~Janjehli~13|HP88~Fatehpur~13|HP89~Jhandutta~13|HP90~Shahapur~13|HP91~Swarghat~13|HP92~Rampur~13|HP93~Nalagarh~13|HP94~KANGRA~13|HP95~Kumarsain~13|HP96~KANGRA~13|HP97~Kangra~13|HP98~Kasauli~13|HR01~Ambala~12|HR02~Yamuna Nagar~12|HR03~Panchkula~12|HR04~Ambala~12|HR05~Karnal~12|HR06~Panipat~12|HR07~Kurukshetra~12|HR08~Kaithal~12|HR09~Kaithal~12|HR10~Sonipat~12|HR11~Sonipat~12|HR12~Rohtak~12|HR13~Bahadurgarh~12|HR14~Jhajjar~12|HR15~Rohtak~12|HR16~Bhiwani~12|HR17~Bhiwani~12|HR18~Bhiwani~12|HR19~Bhiwani~12|HR20~Hisar~12|HR21~Hisar~12|HR22~Fatehabad~12|HR23~Fatehabad~12|HR24~Sirsa~12|HR25~Sirsa~12|HR26~Gurgaon~12|HR27~Bhiwani~12|HR28~Bhiwani~12|HR29~Faridabad~12|HR30~Faridabad~12|HR31~Jind~12|HR32~Jind~12|HR33~Jind~12|HR34~Mahendragarh~12|HR35~Mahendragarh~12|HR36~Rewari~12|HR37~Ambala~12|HR38~Faridabad~12|HR39~Hisar~12|HR40~Karnal~12|HR41~Kurukshetra~12|HR42~Sonipat~12|HR43~Rewari~12|HR44~Sirsa~12|HR45~Karnal~12|HR46~Rohtak~12|HR47~Rewari~12|HR48~Bhiwani~12|HR49~Panchkula~12|HR50~Faridabad~12|HR51~Faridabad~12|HR52~Faridabad~12|HR53~Hisar~12|HR54~Ambala~12|HR55~Gurgaon~12|HR56~Jind~12|HR57~Sirsa~12|HR58~Yamuna Nagar~12|HR59~Fatehabad~12|HR60~Panipat~12|HR61~Bhiwani~12|HR62~Fatehabad~12|HR63~Jhajjar~12|HR64~Kaithal~12|HR65~Kurukshetra~12|HR66~Mahendragarh~12|HR67~Panipat~12|HR68~Panchkula~12|HR69~Sonipat~12|HR70~Panchkula~12|HR71~Yamuna Nagar~12|HR72~Gurgaon~12|HR73~Faridabad~12|HR74~Mewat~12|HR75~Karnal~12|HR76~Bhiwani~12|HR77~Mahendragarh~12|HR78~Kurukshetra~12|HR79~Sonipat~12|HR80~Hisar~12|HR81~Mahendragarh~12|HR82~Mahendragarh~12|HR83~Kaithal~12|HR84~Charkhi Dadri~12|HR85~Ambala~12|HR86~Sonipat~12|HR87~Faridabad~12|HR88~Sonipat~12|HR89~Jhajjar~12|HR90~Jind~12|HR91~Karnal~12|HR92~Yamuna Nagar~12|HR93~Punhana~12|HR94~Sirsa~12|HR95~Rohtak~12|HR96~Tauru~12|HR97~Kurukshetra~12|HR98~Gurgaon~12|JH01~Ranchi~15|JH02~Hazaribag~15|JH03~Palamau~15|JH04~Dumka~15|JH05~East Singhbhum~15|JH06~West Singhbhum~15|JH07~Gumla~15|JH08~Lohardaga~15|JH09~Bokaro~15|JH10~Dhanbad~15|JH11~Giridh~15|JH12~Koderma~15|JH13~Chatra~15|JH14~Garhwa~15|JH15~Deoghar~15|JH16~Pakur~15|JH17~Godda~15|JH18~Sahibganj~15|JH19~Latehar~15|JH20~Simdega~15|JH21~Jamtara~15|JH22~Seraikela-Kharsawan~15|JH23~Khunti~15|JH24~Ramgarh~15|JK01~Srinagar~14|JK02~Jammu~14|JK03~Ananthnag~14|JK04~Budgam~14|JK05~Baramulla~14|JK06~Doda~14|JK07~Kargil~14|JK08~Kathua~14|JK09~Kupwara~14|JK10~Leh~14|JK11~Rajauri~14|JK12~Poonch~14|JK13~Pulwama~14|JK14~Udhampur~14|JK15~Bandipur~14|JK16~Ganderbal~14|JK17~Doda~14|JK18~Kulgam~14|JK19~Doda~14|JK20~Reasi~14|JK21~Jammu~14|JK22~Shopian~14|KA01~Bengaluru~16|KA02~Bengaluru~16|KA03~Bengaluru~16|KA04~Bengaluru~16|KA05~Bengaluru~16|KA06~Tumkur~16|KA07~Kolar~16|KA08~Kolar~16|KA09~Mysore~16|KA10~Chamrajnagar~16|KA11~Mandya~16|KA12~Kodagu~16|KA13~Hassan~16|KA14~Shimoga~16|KA15~Shimoga~16|KA16~Chitradurga~16|KA17~Davangere~16|KA18~Chickmagalur~16|KA19~Mangalore~16|KA20~Udupi~16|KA21~Dakshina Kannada~16|KA22~Belgaum~16|KA23~Belgaum~16|KA24~Belgaum~16|KA25~Dharwad~16|KA26~Gadag~16|KA27~Haveri~16|KA28~Bijapur(Kar)~16|KA29~Bagalkot~16|KA30~Uttara Kannada~16|KA31~Uttara Kannada~16|KA32~Gulbarga~16|KA33~Yadgir~16|KA34~Bellary~16|KA35~Hospet~16|KA36~Raichur~16|KA37~Koppal~16|KA38~Bidar~16|KA39~Bidar~16|KA40~Chikkaballapur~16|KA41~Bengaluru~16|KA42~Ramanagar~16|KA43~Bengaluru Rural~16|KA44~Tumkur~16|KA45~Mysore~16|KA46~Hassan~16|KA47~Uttara Kannada~16|KA48~Bagalkot~16|KA49~Belgaum~16|KA50~Bengaluru~16|KA51~Bengaluru~16|KA52~Bengaluru~16|KA53~Bengaluru~16|KA54~Mandya~16|KA55~Mysore~16|KA56~Bidar~16|KA57~Bengaluru~16|KA58~Bengaluru~16|KA59~Bengaluru~16|KA60~Bengaluru~16|KA61~Bengaluru~16|KA62~Mangalore~16|KA63~Hubli~16|KA64~Tumkur~16|KA65~Uttara Kannada~16|KA66~Chickmagalur~16|KA67~Gulbarga~16|KA68~Kolar~16|KA69~Haveri~16|KA70~Dakshina Kannada~16|KA71~Athani~16|KL01~Thiruvananthapuram~17|KL02~Kollam~17|KL03~Pathanamthitta~17|KL04~Alappuzha~17|KL05~Kottayam~17|KL06~Idukki~17|KL07~Ernakulam~17|KL08~Thrissur~17|KL09~Palakkad~17|KL10~Malappuram~17|KL11~Kozhikode~17|KL12~Wayanad~17|KL13~Kannur~17|KL14~Kasargod~17|KL15~Thiruvananthapuram~17|KL16~Thiruvananthapuram~17|KL17~Muvattupuzha~17|KL18~Kozhikode~17|KL19~Thiruvananthapuram~17|KL20~Thiruvananthapuram~17|KL21~Thiruvananthapuram~17|KL22~Thiruvananthapuram~17|KL23~Kollam~17|KL24~Kollam~17|KL25~Kollam~17|KL26~Pathanamthitta~17|KL27~Pathanamthitta~17|KL28~Pathanamthitta~17|KL29~Alappuzha~17|KL30~Alappuzha~17|KL31~Alappuzha~17|KL32~Alappuzha~17|KL33~Kottayam~17|KL34~Kottayam~17|KL35~Kottayam~17|KL36~Kottayam~17|KL37~Idukki~17|KL38~Thodupuzha~17|KL39~Ernakulam~17|KL40~Ernakulam~17|KL41~Ernakulam~17|KL42~Ernakulam~17|KL43~Ernakulam~17|KL44~Ernakulam~17|KL45~Thrissur~17|KL46~Thrissur~17|KL47~Thrissur~17|KL48~Thrissur~17|KL49~Palakkad~17|KL50~Palakkad~17|KL51~Palakkad~17|KL52~Palakkad~17|KL53~Malappuram~17|KL54~Malappuram~17|KL55~Tirur~17|KL56~Kozhikode~17|KL57~Kozhikode~17|KL58~Thalassery~17|KL59~Kannur~17|KL60~Kasargod~17|KL61~Kollam~17|KL62~Pathanamthitta~17|KL63~Kochi~17|KL64~Thrissur~17|KL65~Malappuram~17|KL66~Alappuzha~17|KL67~Kottayam~17|KL68~Idukki~17|KL69~Idukki~17|KL70~Palakkad~17|KL71~Malappuram~17|KL72~Wayanad~17|KL73~Wayanad~17|KL74~Thiruvananthapuram~17|KL75~Thrissur~17|KL76~Kozhikode~17|KL77~Kozhikode~17|KL78~Kannur~17|KL79~Kasargod~17|KL80~Pathanapuram Kollam~17|KL81~Kozhikode~17|KL82~Kannur~17|KL83~Kannur~17|KL84~KONDOTTY~17|KL85~Kozhikode~17|KL86~Payyannur~17|LA01~Leh~18|LA02~Ladakh~18|LD01~Lakshadweep~19|LD02~Lakshadweep~19|LD03~Lakshadweep~19|LD04~Lakshadweep~19|LD05~Lakshadweep~19|LD07~Lakshadweep~19|LD08~Lakshadweep~19|LD09~Lakshadweep~19|MH01~Mumbai~21|MH02~Mumbai~21|MH03~Mumbai~21|MH04~Thane~21|MH05~Kalyan-Dombivali~21|MH06~Raigad~21|MH07~Sindhudurg~21|MH08~Ratnagiri~21|MH09~Kolhapur~21|MH10~Sangli~21|MH11~Satara~21|MH12~Pune~21|MH13~Solapur~21|MH14~Pimpri Chinchwad~21|MH15~Nashik~21|MH16~Ahmed Nagar~21|MH17~Ahmed Nagar~21|MH18~Dhule~21|MH19~Jalgaon~21|MH20~Aurangabad~21|MH21~Jalna~21|MH22~Parbhani~21|MH23~Beed~21|MH24~Latur~21|MH25~Osmanabad~21|MH26~Nanded~21|MH27~Amravati~21|MH28~Buldhana~21|MH29~Yavatmal~21|MH30~Akola~21|MH31~Nagpur~21|MH32~Wardha~21|MH33~Gadchiroli~21|MH34~Chandrapur~21|MH35~Gondia~21|MH36~Bhandara~21|MH37~Washim~21|MH38~Hingoli~21|MH39~Nandurbar~21|MH40~Nagpur~21|MH41~Nashik~21|MH42~Baramati~21|MH43~Navi Mumbai~21|MH44~Beed~21|MH45~Solapur~21|MH46~Raigad~21|MH47~Mumbai~21|MH48~Vasai Virar~21|MH49~Nagpur~21|MH50~Satara~21|MH51~Nashik~21|MH52~Nanded~21|MH53~Nanded~21|MH54~Pune~21|MH55~Mumbai~21|MH56~Latur~21|MH57~Parbhani~21|MH58~Sangli~21|MH59~Aurangabad~21|MH60~Satara~21|MH61~Nashik~21|MH62~Nanded~21|ML01~East Khasi Hills~23|ML02~East Khasi Hills~23|ML03~East Khasi Hills~23|ML04~Jaintia Hills~23|ML05~East Khasi Hills~23|ML06~West Khasi Hills~23|ML07~East Garo Hills~23|ML08~West Garo Hills~23|ML09~South Garo Hills~23|ML10~Ri Bhoi~23|ML11~Jaintia Hills~23|ML12~South West Khasi Hills~23|ML13~North Garo Hills~23|ML14~South West Garo Hills~23|ML56~East Garo Hills~23|MN01~Imphal West~22|MN02~Tamenglong~22|MN03~Imphal~22|MN04~Thoubal~22|MN05~Chandel~22|MN06~Imphal~22|MN07~Ukhrul~22|MP01~Bhopal~20|MP02~Bhopal~20|MP03~Bhopal~20|MP04~Bhopal~20|MP05~Hoshangabad~20|MP06~Morena~20|MP07~Gwalior~20|MP08~Guna~20|MP09~Indore~20|MP10~Barwaha~20|MP11~Dhar~20|MP12~East Nimar~20|MP13~Ujjain~20|MP14~Mandsaur~20|MP15~Sagar~20|MP16~Chhatarpur~20|MP17~Rewa~20|MP18~Shahdol~20|MP19~Satna~20|MP20~Jabalpur~20|MP21~Katni~20|MP22~Seoni~20|MP23~Chhindwara~20|MP24~Bhind~20|MP25~Sheopur~20|MP26~Umaria~20|MP27~Shivpuri~20|MP28~Chhindwara~20|MP29~Panna~20|MP30~Bhind~20|MP31~Sheopur~20|MP32~Datia~20|MP33~Shivpuri~20|MP34~Damoh~20|MP35~Dewas~20|MP36~Tikamgarh~20|MP37~Sehore~20|MP38~Raisen~20|MP39~Rajgarh~20|MP40~Vidisha~20|MP41~Dewas~20|MP42~Shajapur~20|MP43~Ratlam~20|MP44~NEEMUCH~20|MP45~Jhabua~20|MP46~Barwani~20|MP47~Harda~20|MP48~Betul~20|MP49~Narsinghpur~20|MP50~Balaghat~20|MP51~Mandla~20|MP52~Dindori~20|MP53~Sidhi~20|MP54~Umaria~20|MP55~Dewas~20|MP65~Anuppur~20|MP66~Singrauli~20|MP67~Ashok Nagar~20|MP68~Burhanpur~20|MP69~Alirajpur~20|MP70~Agar~20|MP71~Niwari~20|MP72~Nagda~20|MP73~Maihar~20|MP74~Chachaura~20|MZ01~Aizawl~24|MZ02~Lunglei~24|MZ03~Saiha~24|MZ04~Champhai~24|MZ05~Kolasib~24|MZ06~Serchhip~24|MZ07~Lawngtlai~24|MZ08~Mammit~24|MZ09~AIZAWL~24|NL01~Kohima~25|NL02~Longleng~25|NL03~Tuensang~25|NL04~Mon~25|NL05~Wokha~25|NL06~Zunhebotto~25|NL07~Dimapur~25|NL08~Phek~25|NL10~Kohima~25|OD01~Baleswar~26|OD02~Bhubaneswar~26|OD03~Balangir~26|OD04~Chandikhol~26|OD05~Cuttack~26|OD06~Dhenkanal~26|OD07~Ganjam~26|OD08~Kalahandi~26|OD09~Kendujhar~26|OD10~Koraput~26|OD11~Mayurbhanj~26|OD12~Kandhamal~26|OD13~Puri~26|OD14~Rourkela~26|OD15~Sambalpur~26|OD16~Sundergarh~26|OD17~Bargarh~26|OD18~Rayagada~26|OD19~Angul~26|OD20~Gajapati~26|OD21~Jagatsinghapur~26|OD22~Bhadrak~26|OD23~Jharsuguda~26|OD24~Nabarangapur~26|OD25~Nayagarh~26|OD26~Nuapada~26|OD27~Boudh~26|OD28~Debagarh~26|OD29~Kendrapara~26|OD30~Malkangiri~26|OD31~Sonapur~26|OD32~Ganjam~26|OD33~Bhubaneswar~26|OD34~Jajapur~26|OD35~Angul~26|PB01~Chandigarh~5|PB02~Amritsar~28|PB03~Bathinda~28|PB04~Faridkot~28|PB05~Firozpur~28|PB06~Gurdaspur~28|PB07~Hoshiarpur~28|PB08~Jalandhar~28|PB09~Kapurthala~28|PB10~Ludhiana~28|PB11~Patiala~28|PB12~Rupnagar~28|PB13~Sangrur~28|PB14~Amritsar~28|PB15~Abohar~28|PB16~Ropar~28|PB17~Amritsar~28|PB18~Gurdaspur~28|PB19~Barnala~28|PB20~Nawanshahr~28|PB21~Hoshiarpur~28|PB22~Fazilka~28|PB23~Fatehgarh Sahib~28|PB24~Hoshiarpur~28|PB25~Ludhiana~28|PB26~Ludhiana~28|PB27~Mohali~28|PB28~Malerkotla~28|PB29~Moga~28|PB30~Muktsar~28|PB31~Mansa~28|PB32~Nawanshahr~28|PB33~Jalandhar~28|PB34~Patiala~28|PB35~Pathankot~28|PB36~Kapurthala~28|PB37~Jalandhar~28|PB38~Tarn Taran~28|PB39~Patiala~28|PB40~Bathinda~28|PB41~Kapurthala~28|PB42~Patiala~28|PB43~Ludhiana~28|PB44~Sunam~28|PB45~Bathinda~28|PB46~Tarn Taran~28|PB47~Zira~28|PB48~Patiala~28|PB49~Ludhiana~28|PB50~Mansa~28|PB51~Mansa~28|PB52~Fatehgarh Sahib~28|PB53~Muktsar~28|PB54~Hoshiarpur~28|PB55~Ludhiana~28|PB56~Ludhiana~28|PB57~Kapurthala~28|PB58~Gurdaspur~28|PB59~Dhuri~28|PB60~Muktsar~28|PB61~Jalalabad~28|PB62~Faridkot~28|PB63~Amritsar~28|PB64~Sangrur~28|PB65~Mohali~28|PB66~Moga~28|PB67~Jalandhar~28|PB68~Gurdaspur~28|PB69~Moga~28|PB70~Mohali~28|PB71~Ropar~28|PB72~Patiala~28|PB73~Barnala~28|PB74~Ropar~28|PB75~Lehragaga~28|PB76~Ahmedgarh~28|PB77~Bathinda~28|PB78~Nawanshahr~28|PB79~Faridkot~28|PB80~Bathinda~28|PB81~Majitha~28|PB82~Sangrur~28|PB83~Patiala~28|PB84~Sangrur~28|PB85~Gurdaspur~28|PB86~Sangrur~28|PB87~Rupnagar~28|PB88~Tarn Taran~28|PB89~Amritsar~28|PB90~JALANDHAR~28|PB91~Ludhiana~28|PB99~Gurdaspur~28|PY01~Pondicherry~27|PY02~Karaikal~27|PY03~Mahe~27|PY04~Yanam~27|PY05~Pondicherry~27|PY11~Bahour~27|RJ01~Ajmer~29|RJ02~Alwar~29|RJ03~Banswara~29|RJ04~Barmer~29|RJ05~Bharatpur~29|RJ06~Bhilwara~29|RJ07~Bikaner~29|RJ08~Bundi~29|RJ09~Chittorgarh~29|RJ10~Churu~29|RJ11~Dholpur~29|RJ12~Dungarpur~29|RJ13~Ganganagar~29|RJ14~Jaipur~29|RJ15~Jaisalmer~29|RJ16~Jalor~29|RJ17~Jhalawar~29|RJ18~Jhujhunu~29|RJ19~Jodhpur~29|RJ20~Kota~29|RJ21~Nagaur~29|RJ22~Pali~29|RJ23~Sikar~29|RJ24~Sirohi~29|RJ25~Sawai Madhopur~29|RJ26~Tonk~29|RJ27~Udaipur~29|RJ28~Baran~29|RJ29~Dausa~29|RJ30~Rajsamand~29|RJ31~Hanumangarh~29|RJ32~Kotputli~29|RJ33~Kota~29|RJ34~Karauli~29|RJ35~Pratapgarh (Rajasthan)~29|RJ36~Ajmer~29|RJ37~Nagaur~29|RJ38~Sirohi~29|RJ39~Barmer~29|RJ40~Alwar~29|RJ41~Jaipur~29|RJ42~Ajmer~29|RJ43~Jodhpur~29|RJ44~Churu~29|RJ45~Jaipur~29|RJ46~Jalor~29|RJ47~Jaipur~29|RJ48~Ajmer~29|RJ49~Hanumangarh~29|RJ50~Bikaner~29|RJ51~Bhilwara~29|RJ52~Shahpura~29|RJ53~Shahpura~29|RJ54~Jodhpur~29|RJ55~Pokhran~29|RJ56~Sadulshahar~29|RJ57~Jaipur~29|RJ59~Churu~29|SK01~Gangtok~30|SK02~Gayzing~30|SK03~Mangan~30|SK04~Jorethang~30|SK05~Gangtok~30|SK06~GANGTOK~30|SK07~Pakyong~30|SK08~Rongli~30|TN01~Chennai~31|TN02~Chennai~31|TN03~Chennai~31|TN04~Chennai~31|TN05~Chennai~31|TN06~Chennai~31|TN07~Chennai~31|TN09~Chennai~31|TN10~Chennai~31|TN11~Kanchipuram~31|TN12~Poonamalee~31|TN13~Tiruvallur~31|TN14~Chennai~31|TN15~Villupuram~31|TN15Z~Villupuram~31|TN16~Villupuram~31|TN16Z~Villupuram~31|TN18~Tiruvallur~31|TN18Y~Tiruvallur~31|TN19~Kanchipuram~31|TN20~Tiruvallur~31|TN20X~Tiruvarur~31|TN21~Kanchipuram~31|TN22~Meenambakkam~31|TN23~Vellore~31|TN23T~Vellore~31|TN24~Krishnagiri~31|TN25~Tiruvannamalai~31|TN27~Salem~31|TN28~Namakkal~31|TN29~Dharmapuri~31|TN30~Salem~31|TN30W~Salem~31|TN31~Cuddalore~31|TN31Z~Cuddalore~31|TN32~Villupuram~31|TN33~Erode~31|TN34~Namakkal~31|TN36~Erode~31|TN36W~Erode~31|TN36Z~Erode~31|TN37~Coimbatore~31|TN37Z~Coimbatore~31|TN38~Coimbatore~31|TN39~Tiruppur~31|TN39Z~Coimbatore~31|TN40~Coimbatore~31|TN41~Coimbatore~31|TN41W~Coimbatore~31|TN42~TIRUPPUR~31|TN42Y~Erode~31|TN43~Nilgiris~31|TN45~Tiruchirappalli~31|TN45Z~Tiruchirappalli~31|TN46~Perambalur~31|TN47~Karur~31|TN48~Tiruchirappalli~31|TN48X~Tiruchirappalli~31|TN48Z~Tiruchirappalli~31|TN49~Thanjavur~31|TN50~Tiruvarur~31|TN50Z~Tiruvarur~31|TN51~Nagapattinam~31|TN52~Salem~31|TN54~Salem~31|TN55~Pudukkottai~31|TN56~Erode~31|TN57~Dindigul~31|TN58~Madurai~31|TN59~Madurai~31|TN60~Theni~31|TN61~Ariyalur~31|TN63~Sivaganga~31|TN63Z~Sivaganga~31|TN64~Madurai~31|TN65~Ramanathapuram~31|TN66~Coimbatore~31|TN67~Virudhunagar~31|TN67W~Virudhunagar~31|TN68~Thanjavur~31|TN69~Tuticorin~31|TN70~Hosur~31|TN72~Tirunelveli~31|TN73~Vellore~31|TN73Z~Vellore~31|TN74~Kanyakumari~31|TN75~Kanyakumari~31|TN76~Tirunelveli~31|TN77~Salem~31|TN77Z~Salem~31|TN78~Erode~31|TN78Z~Tiruppur~31|TN79~Tirunelveli~31|TN81~Tiruchirappalli~31|TN82~Nagapattinam~31|TN82Z~Salem~31|TN83~Vellore~31|TN83Z~Vellore~31|TN84~Virudhunagar~31|TN85~Kanchipuram~31|TN86~Erode~31|TN87~Kanchipuram~31|TN88~Namakkal~31|TN88Z~Namakkal~31|TN90~Salem~31|TN91~Cuddalore~31|TN91Y~Cuddalore~31|TN91Z~Villupuram~31|TN92~Tuticorin~31|TN93~Salem~31|TN94~Dindigul~31|TN95~Virudhunagar~31|TN96~Tuticorin~31|TN97~Arani~31|TN99~Coimbatore~31|TR01~West Tripura~33|TR02~North Tripura~33|TR03~South Tripura~33|TR04~North Tripura~33|TR05~North Tripura~33|TR06~West Tripura~33|TR07~West Tripura~33|TR08~South Tripura~33|TS01~Adilabad~32|TS02~Karim Nagar~32|TS03~Warangal~32|TS04~Khammam~32|TS05~Nalgonda~32|TS06~Mahabub Nagar~32|TS07~Rangareddy~32|TS08~Hyderabad~32|TS09~Hyderabad~32|TS10~Hyderabad~32|TS11~Hyderabad~32|TS12~Rangareddy~32|TS13~Hyderabad~32|TS14~Hyderabad~32|TS15~Medak~32|TS16~Nizamabad~32|TS17~Nizamabad~32|TS18~Adilabad~32|TS19~Adilabad~32|TS20~Adilabad~32|TS21~Karim Nagar~32|TS22~Karim Nagar~32|TS23~Karim Nagar~32|TS24~Warangal~32|TS25~Warangal~32|TS26~Warangal~32|TS27~Jangaon~32|TS28~Khammam~32|TS29~Nalgonda~32|TS30~Nalgonda~32|TS31~Mahabub Nagar~32|TS32~Mahabub Nagar~32|TS33~Mahabub Nagar~32|TS34~Rangareddy~32|TS35~Medak~32|TS36~Medak~32|TS37~Mulugu~32|TS38~Narayanpet~32|UK01~Almora~35|UK02~Bageshwar~35|UK03~Champawat~35|UK04~Haldwani~35|UK05~Pithoragarh~35|UK06~Udham Singh Nagar~35|UK07~Dehradun~35|UK08~Haridwar~35|UK09~Tehri Garhwal~35|UK10~Uttarkashi~35|UK11~Chamoli~35|UK12~Pauri Garhwal~35|UK13~Rudraprayag~35|UK14~Rishikesh~35|UK15~Pauri Garhwal~35|UK16~Dehradun~35|UK17~Roorkee~35|UK18~Udham Singh Nagar~35|UK19~NAINITAL~35|UK20~Almora~35|UP01~Almora~35|UP02~Nainital~35|UP03~Pithoragarh~35|UP04~Udham Singh Nagar~35|UP05~Chamoli~35|UP06~Pauri Garhwal~35|UP07~Dehradun~35|UP08~Tehri Garhwal~35|UP09~Uttarkashi~35|UP10~Haridwar~35|UP11~Saharanpur~34|UP12~Muzaffarnagar~34|UP13~Bulandshahr~34|UP14~Ghaziabad~34|UP15~Meerut~34|UP16~Noida~34|UP17~Bagpat~34|UP18~Gautam Buddha Nagar~34|UP19~Shamli~34|UP20~Bijnor~34|UP21~Moradabad~34|UP22~Rampur~34|UP23~Amroha~34|UP24~Budaun~34|UP25~Bareilly~34|UP26~Pilibhit~34|UP27~Shahjahanpur~34|UP28~Faizabad~34|UP30~Hardoi~34|UP31~Kheri~34|UP32~Lucknow~34|UP33~Raebareli~34|UP34~Sitapur~34|UP35~Unnao~34|UP36~Amethi~34|UP37~Hapur~34|UP38~Sambhal~34|UP40~Bahraich~34|UP41~Barabanki~34|UP42~Faizabad~34|UP43~Gonda~34|UP44~Sultanpur~34|UP45~Ambedkar Nagar~34|UP46~Shrawasti~34|UP47~Balrampur (U P)~34|UP50~Azamgarh~34|UP51~Basti~34|UP52~Deoria~34|UP53~Gorakhpur~34|UP54~Mau~34|UP55~Siddharthnagar~34|UP56~Maharajganj~34|UP57~Kushinagar~34|UP58~Sant Kabir Nagar~34|UP60~Ballia~34|UP61~Ghazipur~34|UP62~Jaunpur~34|UP63~Mirzapur~34|UP64~Sonbhadra~34|UP65~Varanasi~34|UP66~Sant Ravidas Nagar~34|UP67~Chandauli~34|UP70~Allahabad~34|UP71~Fatehpur~34|UP72~Pratapgarh (Up)~34|UP73~Kaushambi~34|UP74~Kannauj~34|UP75~Etawah~34|UP76~Farrukhabad~34|UP77~Kanpur Dehat~34|UP78~Kanpur Nagar~34|UP79~Auraiya~34|UP80~Agra~34|UP81~Aligarh~34|UP82~Etah~34|UP83~Firozabad~34|UP84~Mainpuri~34|UP85~Mathura~34|UP86~Hathras~34|UP87~Etah~34|UP90~Banda~34|UP91~Hamirpur~34|UP92~Jalaun~34|UP93~Jhansi~34|UP94~Lalitpur~34|UP95~Mahoba~34|UP96~Chitrakoot~34|WB01~Kolkata~36|WB02~Kolkata~36|WB03~Kolkata~36|WB04~Kolkata~36|WB05~Kolkata~36|WB06~Kolkata~36|WB07~Kolkata~36|WB08~Kolkata~36|WB09~Kolkata~36|WB10~Kolkata~36|WB11~Howrah~36|WB12~Howrah~36|WB13~Howrah~36|WB14~Howrah~36|WB15~Hooghly~36|WB16~Hooghly~36|WB17~HOOGHLY~36|WB18~Hooghly~36|WB19~South 24 Parganas~36|WB20~South 24 Parganas~36|WB21~South 24 Parganas~36|WB22~Kolkata~36|WB23~North 24 Parganas~36|WB24~Barrackpore~36|WB25~North 24 Parganas~36|WB26~North 24 Parganas~36|WB27~North 24 Parganas~36|WB28~North 24 Parganas~36|WB29~Midnapore~36|WB30~Midnapore~36|WB31~Midnapore~36|WB32~Midnapore~36|WB33~Midnapore~36|WB34~West Midnapore~36|WB35~Medinipur~36|WB36~Midnapore~36|WB37~Bardhaman~36|WB38~Bardhaman~36|WB39~Bardhaman~36|WB40~Durgapur~36|WB41~Bardhaman~36|WB42~Bardhaman~36|WB43~Nadia~36|WB44~Bardhaman~36|WB45~Birbhum~36|WB46~Birbhum~36|WB47~Birbhum~36|WB48~Birbhum~36|WB49~Midnapore~36|WB50~Midnapore~36|WB51~Nadia~36|WB52~Krishnanagar~36|WB53~Birbhum~36|WB54~Birbhum~36|WB55~Puruliya~36|WB56~Puruliya~36|WB57~Murshidabad~36|WB58~Murshidabad~36|WB59~North Dinajpur~36|WB60~North Dinajpur~36|WB61~South Dinajpur~36|WB62~South Dinajpur~36|WB63~Cooch Behar~36|WB64~Cooch Behar~36|WB65~Malda~36|WB66~Malda~36|WB67~Bankura~36|WB68~Bankura~36|WB69~Alipurduar~36|WB70~Alipurduar~36|WB71~Jalpaiguri~36|WB72~Jalpaiguri~36|WB73~Siliguri~36|WB74~Siliguri~36|WB75~Bardhaman~36|WB76~Darjeeling~36|WB77~Darjeeling~36|WB78~Kalimpong~36|WB79~Kalimpong~36|WB81~Puruliya~36|WB82~Puruliya~36|WB83~Malda~36|WB84~Malda~36|WB85~Cooch Behar~36|WB86~Cooch Behar~36|WB87~Bankura~36|WB88~Bankura~36|WB89~Kalyani~36|WB90~Kalyani~36|WB91~Bardhaman~36|WB92~NORTH DINAJPUR~36|WB93~Murshidabad~36|WB94~Murshidabad~36|WB95~South 24 Parganas~36|WB96~South 24 Parganas~36|WB97~South 24 Parganas~36|WB98~Diamond Harbour~36|WB99~Jaynagar~36";
+  let __rtoUniv = null;
+  function titleCaseState(v){
+    return String(v||'').toLowerCase()
+      .replace(/\b[a-z]/g, c => c.toUpperCase())
+      .replace(/\b(And|Of)\b/g, w => w.toLowerCase());
+  }
+  function rtoUniverse(){
+    if (__rtoUniv) return __rtoUniv;
+    __rtoUniv = new Map();
+    RTO_UNIV_PACKED.split('|').forEach(rec => {
+      const p = rec.split('~');
+      if (p.length < 3) return;
+      __rtoUniv.set(p[0], { city: p[1], state: titleCaseState(RTO_UNIV_STATES[+p[2]] || '') });
+    });
+    return __rtoUniv;
+  }
+
   function locationLabel(code, city, state){
     const parts = [];
     const seen = new Set();
@@ -1939,694 +1564,25 @@
     if (!parts.length) return '';
     return parts.length > 1 ? parts[0] + ' - ' + parts.slice(1).join(', ') : parts[0];
   }
-  // ── How wide is a row's geography? ──────────────────────────
-  // Three cases, narrowest first:
-  //   RTO code given      → that code only
-  //   state but no RTO    → every RTO in that state
-  //   neither             → every RTO in the country
-  // The last two are assertions, not gaps. A circular that names a state and
-  // excludes no RTO means every RTO in the state, and one that names no
-  // geography at all means the whole book. Treating a blank as "matches
-  // nothing" hid every such row; treating it as "matches everything" was worse,
-  // because a Maharashtra rate then answered a search for a Delhi RTO.
-  const stateKey = v => String(v || '').toLowerCase()
-      .replace(/&/g, 'and').replace(/[^a-z]/g, '')
-      // the spellings that differ between circulars
-      .replace(/^pondicherry$/, 'puducherry')
-      .replace(/^chattisgarh$/, 'chhattisgarh')
-      .replace(/^orissa$/, 'odisha')
-      .replace(/^uttaranchal$/, 'uttarakhand')
-      // "New Delhi" IS the state Delhi. "Delhi NCR" is NOT — it is a block that
-      // reaches into Haryana, UP, Chandigarh and beyond, and folding it onto
-      // Delhi made a Delhi-only rate answer an NCR search and hid the Haryana
-      // and UP RTOs an NCR rate actually covers.
-      .replace(/^newdelhi$/, 'delhi');
-
-  // ── One RTO office, one code ────────────────────────────────
-  // A Delhi plate carries the SERIES letter — DL 1A, DL 1C, DL 1S — but DL-1 is
-  // a single RTO office, not twenty-six. The letter says which batch the
-  // registration came from, broadly by vehicle class, and the grids file under
-  // both styles: 259 Delhi codes for 13 real offices. Searching DL1A returned
-  // three insurers where the same car under DL01 returned ten, so seven
-  // insurers' payouts were invisible. The letter is dropped and the zone padded
-  // to two digits, so every Delhi code lands on DL01 … DL13.
-  //
-  // Delhi only. Tamil Nadu, UP, Assam and Chandigarh also have letter-suffixed
-  // codes, but there the letter can mark a genuinely separate sub-office, and
-  // merging those would hide real differences rather than reveal them.
-  const canonRto = code => {
-    const c = String(code == null ? '' : code).trim().toUpperCase().replace(/[\s-]/g, '');
-    const m = /^DL0?(\d{1,2})[A-Z]{0,2}$/.exec(c);
-    return m ? 'DL' + (m[1].length === 1 ? '0' + m[1] : m[1]) : String(code == null ? '' : code).trim();
-  };
-
-  // Applied to the column's DISTINCT values, so every row that pointed at DL1A
-  // points at DL01 with no per-row work at all.
-  function canonLocationColumn(){
-    const loc = store.cols.get('location');
-    if (!loc) return;
-    for (let v = 0; v < loc.vals.length; v++){
-      const c = canonRto(loc.vals[v]);
-      if (c !== loc.vals[v]) loc.vals[v] = c;
-    }
-    loc.map = null;          // the value-to-index map no longer matches
-  }
-
-  // ── There is no "Old" ───────────────────────────────────────
-  // Vehicle Condition has three values: New, Rollover, Renewal. A grid saying
-  // "Old", "Non New" or "Used" has not chosen between the two old-vehicle
-  // types, so it means both. The parser writes "Rollover/Renewal" now; every
-  // CSV exported before that still says "Old", so it is rewritten on import
-  // and old exports filter correctly without being rebuilt.
-  const COND_OLD = /^(old|non[\s-]?new|old\s*business|used|old\s*vehicle)$/i;
-  function normaliseConditions(){
-    const c = store.cols.get('condition');
-    if (!c || !store.n) return 0;
-    let changed = 0;
-    for (let v = 0; v < c.vals.length; v++){
-      const t = clean(c.vals[v]);
-      if (!t) continue;
-      let out = t;
-      if (COND_OLD.test(t)) out = 'Rollover/Renewal';
-      else if (/\s&\s/.test(t)) out = t.split(/\s*&\s*/).join('/');   // "New & Rollover"
-      if (out !== c.vals[v]){ c.vals[v] = out; changed++; }
-    }
-    if (changed) c.map = null;
-    return changed;
-  }
-
-  // ── A region is not a city ──────────────────────────────────
-  // Several grids carry their cluster name in the column the parser reads as
-  // City, so the location list showed "DL53 - Delhi NCR, Delhi" — a region
-  // standing where a city belongs. A few Delhi codes also arrived with a city
-  // from another state ("DL51 - Raipur"). The parser no longer writes either,
-  // but every CSV exported before that still does, so they are repaired on the
-  // way in as well and old exports read correctly without being rebuilt.
-  const CITY_IS_REGION = /\bncr\b|\bregion\b|\bcluster\b|\brest\s+of\b|\ball\s+rto/i;
-  // Only the codes the RTO master actually had wrong. Everything else keeps
-  // whatever the grid said — DL14-DL18 in particular are read differently by
-  // different insurers and are not something to overwrite from here.
-  const CITY_FIX = new Map([
-    ['DL38','New Delhi'], ['DL48','East Delhi'], ['DL51','Rajpur Road Burari'],
-    ['DL52','New Delhi'], ['DL53','New Delhi'], ['DL56','East Delhi']
-  ]);
-
-  function repairCityNames(){
-    const loc = store.cols.get('location');
-    if (!loc || !store.n) return 0;
-    const city = storeCol('city');
-    // Decide once per distinct value, then the rows are a walk over integers.
-    const wanted = new Array(loc.vals.length).fill(null);   // per RTO code
-    let anyCode = false;
-    for (let v = 0; v < loc.vals.length; v++){
-      const w = CITY_FIX.get(clean(loc.vals[v]));
-      if (w){ wanted[v] = w; anyCode = true; }
-    }
-    const bad = new Uint8Array(city.vals.length);           // per city value
-    let anyBad = false;
-    for (let v = 0; v < city.vals.length; v++){
-      const t = clean(city.vals[v]);
-      if (!t) continue;
-      if (CITY_IS_REGION.test(t) || NOT_A_PLACE.test(t) || isZoneName(t)){ bad[v] = 1; anyBad = true; }
-    }
-    if (!anyCode && !anyBad) return 0;
-    const lc = loc.codes, cc = city.codes;
-    let changed = 0;
-    for (let i = 0; i < store.n; i++){
-      const want = wanted[lc[i]];
-      if (want != null){
-        if (clean(city.vals[cc[i]]) !== want){ city.setAt(i, want); changed++; }
-        continue;
-      }
-      if (bad[cc[i]]){ city.setAt(i, ''); changed++; }
-    }
-    city.map = null;
-    return changed;
-  }
-
-  // ── A Vehicle Category never belongs in Body Type ───────────
-  // Body Type is for the machine WITHIN a class — a Tipper, a Tanker, a
-  // Scooter. Some grids write the CLASS there instead: SBI files tractors as
-  // GCV with "Tractor" in Body Type, Magma files school buses as "Passenger
-  // Bus" with "School Bus" in Body Type, Chola as "Taxi". A search for the
-  // Tractor category then missed all 1,219 of them. Where the body names a
-  // class, the class wins and the body is cleared.
-  //
-  // Only an exact class name counts. Folding the body through the whole
-  // vocabulary would be too eager — "Trailer" is a GCV class in some grids but
-  // a genuine goods body on 7,259 rows, and must stay in Body Type.
-  const CATEGORY_NAMES = new Map([
-    ['private car','Private Car'], ['two wheeler','Two Wheeler'], ['taxi','Taxi'],
-    ['kaali peeli taxi','Kaali Peeli Taxi'], ['kaali peeli','Kaali Peeli Taxi'],
-    ['school bus','School Bus'], ['pcv bus','PCV Bus'], ['passenger bus','PCV Bus'],
-    ['pcv','PCV'], ['gcv','GCV'],
-    ['misc-d vehicles','Misc-D vehicles'], ['misc d vehicles','Misc-D vehicles']
-  ]);
-  // Tractor is deliberately absent above: it is a GCV whose BODY is "Tractor",
-  // the way the vehicle master files it, so it must not be lifted out of Body
-  // Type. Rows that arrive with it as a category are turned round instead.
-
-  // "TATA MOTORS" and "Tata Motors" are one make written twice; a filter on one
-  // misses the other's rows. Values differing only in case settle on a single
-  // spelling, preferring the one that is not shouted.
-  function mergeCaseVariants(key){
-    const col = store.cols.get(key);
-    if (!col) return;
-    const spelling = new Map();
-    for (let v = 0; v < col.vals.length; v++){
-      const raw = clean(col.vals[v]);
-      if (!raw) continue;
-      const k = raw.toLowerCase();
-      const kept = spelling.get(k);
-      if (!kept || (kept === kept.toUpperCase() && raw !== raw.toUpperCase())) spelling.set(k, raw);
-    }
-    for (let v = 0; v < col.vals.length; v++){
-      const raw = clean(col.vals[v]);
-      if (!raw) continue;
-      const kept = spelling.get(raw.toLowerCase());
-      if (kept && kept !== col.vals[v]) col.vals[v] = kept;
-    }
-    col.map = null;
-  }
-
-  // ── An OD/TP split has to be a real split ───────────────────
-  // It is only worth showing when it says something the net rate does not.
-  // SBI's grid quotes ONE net figure per cell — "Comp /SATP (Net)" — and the
-  // parser copied that figure into OD as well, so all 28,665 of its rows read
-  // "OD 54%, TP —" for a rate the circular never split. New India leaves the
-  // net blank and quotes OD and TP separately, and United India writes
-  // "OD - 10%, TP - 0%"; both survive this, because their legs differ from the
-  // net or carry a TP of their own.
-  function dropFabricatedSplits(){
-    const pay = store.cols.get('payout'), od = store.cols.get('odPayout');
-    if (!pay || !od) return;
-    const tp = store.cols.get('tpPayout');
-    const num = v => {
-      const m = String(v == null ? '' : v).match(/-?\d+(?:\.\d+)?/);
-      return m ? parseFloat(m[0]) : null;
-    };
-    const payN = pay.vals.map(num), odN = od.vals.map(num);
-    const tpHas = tp ? tp.vals.map(v => clean(v) !== '') : null;
-    let blank = od.vals.indexOf('');
-    if (blank < 0) blank = od.vals.push('') - 1;
-    const pc = pay.codes, oc = od.codes, tc = tp ? tp.codes : null;
-    for (let i = 0; i < store.n; i++){
-      const o = odN[oc[i]];
-      if (o === null) continue;
-      if (tc && tpHas[tc[i]]) continue;       // a TP leg of its own means a real split
-      if (payN[pc[i]] === o) oc[i] = blank;
-    }
-    od.map = null;
-  }
-
-  // ── "Other Makes" is a column heading, not a manufacturer ───
-  // A grid prices a few makes in columns of their own and puts everything else
-  // in a catch-all cell. Stored as though it were a make, that cell answered to
-  // nothing — a search for Hyundai skipped the very row meant to cover Hyundai,
-  // and "Other Makes" sat in the Make list as if you could buy one.
-  //
-  // So the make is emptied, because a blank make covers every make, and the
-  // makes priced separately in the same block move into Exclude Make — which is
-  // exactly what "other" means. A block is one insurer's rates for one category
-  // at one GVW band: SBI names Ashok Leyland, Chevrolet, Force and Mahindra at
-  // 2-2.5T, so its catch-all there excludes those four, while its 0-2.5T
-  // catch-all names nobody and so covers the lot.
-  const RESIDUAL_MAKE = /^(other|others|other\s*makes?|all\s*other\s*makes?|rest(\s*of(\s*the)?)?\s*makes?|remaining\s*makes?|any\s*other(\s*makes?)?)$/i;
-
-  function resolveResidualMakes(){
-    const make = store.cols.get('make');
-    if (!make) return;
-    const isResid = make.vals.map(v => RESIDUAL_MAKE.test(clean(v)));
-    if (!isResid.some(Boolean)) return;
-    const ex  = storeCol('excludeMake');
-    const ins = store.cols.get('company');
-    const cat = store.cols.get('vehicleType');
-    const gvw = store.cols.get('gvwRange');
-    // An exact numeric key for the block, so the two passes below never build
-    // two million strings.
-    const K1 = cat ? cat.vals.length : 1, K2 = gvw ? gvw.vals.length : 1;
-    const keyAt = i => (((ins ? ins.codes[i] : 0) * K1) + (cat ? cat.codes[i] : 0)) * K2 +
-                       (gvw ? gvw.codes[i] : 0);
-
-    // Which makes does each block price in their own right?
-    const siblings = new Map();
-    for (let i = 0; i < store.n; i++){
-      const mc = make.codes[i];
-      if (isResid[mc]) continue;
-      const v = clean(make.vals[mc]);
-      if (!v) continue;
-      const k = keyAt(i);
-      let set = siblings.get(k);
-      if (!set) siblings.set(k, set = new Set());
-      set.add(v);
-    }
-
-    let blankMake = make.vals.indexOf('');
-    if (blankMake < 0) blankMake = make.vals.push('') - 1;
-    const exIndex = new Map();
-    for (let i = 0; i < ex.vals.length; i++) if (!exIndex.has(ex.vals[i])) exIndex.set(ex.vals[i], i);
-    const exCodeFor = text => {
-      if (exIndex.has(text)) return exIndex.get(text);
-      const i = ex.vals.push(text) - 1;
-      exIndex.set(text, i);
-      return i;
-    };
-
-    for (let i = 0; i < store.n; i++){
-      if (!isResid[make.codes[i]]) continue;
-      const sibs = siblings.get(keyAt(i));
-      make.codes[i] = blankMake;
-      if (!sibs || !sibs.size) continue;
-      // Whatever the grid already excluded is kept; the siblings are added to it.
-      const already = clean(ex.vals[ex.codes[i]]);
-      const have = new Set(already ? already.split(/\s*[,;/|]\s*/).filter(Boolean) : []);
-      sibs.forEach(v => have.add(v));
-      ex.codes[i] = exCodeFor([...have].sort().join(', '));
-    }
-    make.map = null; ex.map = null;
-  }
-
-  // A rule filed under a "Tractor" category becomes a GCV carrying a Tractor
-  // body, so it lines up with the master and answers a GCV search.
-  function demoteTractorCategory(){
-    const cat = store.cols.get('vehicleType');
-    if (!cat) return;
-    const isTractor = cat.vals.map(v => /^tractor$/i.test(clean(v)));
-    if (!isTractor.some(Boolean)) return;
-    const body = storeCol('bodyType');
-    let gcv = cat.vals.findIndex(v => clean(v) === 'GCV');
-    if (gcv < 0) gcv = cat.vals.push('GCV') - 1;
-    let tb = body.vals.findIndex(v => clean(v) === 'Tractor');
-    if (tb < 0) tb = body.vals.push('Tractor') - 1;
-    const blankBody = new Set();
-    for (let v = 0; v < body.vals.length; v++) if (!clean(body.vals[v])) blankBody.add(v);
-    const cc = cat.codes, bc = body.codes;
-    for (let i = 0; i < store.n; i++){
-      if (!isTractor[cc[i]]) continue;
-      cc[i] = gcv;
-      if (blankBody.has(bc[i])) bc[i] = tb;
-    }
-    cat.map = null; body.map = null;
-  }
-
-  function promoteBodyCategories(){
-    demoteTractorCategory();
-    const cat = store.cols.get('vehicleType');
-    if (!cat) return;
-    // "Passenger Bus" is the same class as PCV Bus under another insurer's name.
-    for (let v = 0; v < cat.vals.length; v++){
-      const hit = CATEGORY_NAMES.get(clean(cat.vals[v]).toLowerCase());
-      if (hit && hit !== cat.vals[v]) cat.vals[v] = hit;
-    }
-    cat.map = null;
-
-    const body = store.cols.get('bodyType');
-    if (!body) return;
-    mergeCaseVariants('bodyType');    // "AUTO" and "Auto" are one body type
-    const promoted = [];
-    let any = false;
-    for (let v = 0; v < body.vals.length; v++){
-      const hit = CATEGORY_NAMES.get(clean(body.vals[v]).toLowerCase());
-      promoted.push(hit || null);
-      if (hit) any = true;
-    }
-    if (!any) return;
-
-    let blankIdx = body.vals.indexOf('');
-    if (blankIdx < 0) blankIdx = body.vals.push('') - 1;
-    const catIndex = new Map();
-    for (let i = 0; i < cat.vals.length; i++) if (!catIndex.has(cat.vals[i])) catIndex.set(cat.vals[i], i);
-    const codeFor = name => {
-      if (catIndex.has(name)) return catIndex.get(name);
-      const i = cat.vals.push(name) - 1;
-      catIndex.set(name, i);
-      return i;
-    };
-    // Worked out once per distinct body value, then applied as integers.
-    const target = promoted.map(n => (n === null ? -1 : codeFor(n)));
-    const bc = body.codes, cc = cat.codes;
-    for (let i = 0; i < store.n; i++){
-      const t = target[bc[i]];
-      if (t < 0) continue;
-      cc[i] = t;
-      bc[i] = blankIdx;
-    }
-    body.map = null;
-  }
-
-  function rebuildCodeState(){
-    codeStateMap = new Map();
-    const loc = store.cols.get('location'), st = store.cols.get('state');
-    if (!loc || !st) return;
-    const done = new Uint8Array(loc.vals.length);
-    for (let i = 0; i < store.n; i++){
-      const lv = loc.codes[i];
-      if (done[lv]) continue;
-      const code = clean(loc.vals[lv]);
-      if (!code) { done[lv] = 1; continue; }
-      const sk = stateKey(st.get(i));
-      if (!sk) continue;                 // a later row may still name the state
-      done[lv] = 1;
-      codeStateMap.set(code, sk);
-    }
-  }
-
-  // ── Clusters: one name standing for many RTOs ───────────────
-  // Digit prices "Delhi NCR" as a single block covering 274 codes across four
-  // states. Those rows arrive from the parser already expanded to one code
-  // each, so the name is the only thing left to put back. Any city, state or
-  // geography label covering more than one RTO becomes a location you can pick,
-  // and choosing it searches every code it stands for. Nothing has to be set
-  // up: the clusters are read back out of the data itself.
-  let clusters = new Map();      // key -> { key, label, codes:Set, states:Set }
-
-  // Not every label in a grid is a place. Royal Sundaram writes a bare "Y"
-  // where a city belongs; several insurers carry a compass zone, which means
-  // something different to each of them, so merging IndusInd's NORTH with Royal
-  // Sundaram's invents coverage neither grid ever gave; and some rows hold a
-  // bare state or RTO code. None of those is a region worth offering.
-  const NOT_A_PLACE = /^(y|n|na|nil|none|null|blank|-+|\d+(\.\d+)?)$|^[a-z]$|^[a-z]{2}\s*\d{0,2}$/i;
-
-  // A compass zone, however it is written: "North", "North 1", "North East 2",
-  // "NE-3", "North East States". The single-word version was caught by a regex,
-  // which then let "North East 2" through — so the name is read word by word
-  // instead, and it is a zone only when every word in it is a direction, a zone
-  // number, or one of the filler words a grid puts after one.
-  const DIRECTION = /^(north|south|east|west|central|ne|nw|se|sw|n|s|e|w)$/i;
-  const ZONE_FILLER = /^(states?|zones?|regions?|india)$/i;
-  const isZoneName = v => {
-    const parts = String(v || '').trim().split(/[\s\-_,.\/]+/).filter(Boolean);
-    let directions = 0;
-    for (let i = 0; i < parts.length; i++){
-      const p = parts[i];
-      if (/^\d+$/.test(p) || ZONE_FILLER.test(p)) continue;
-      if (!DIRECTION.test(p)) return false;
-      directions++;
-    }
-    return directions > 0;
-  };
-
-  // The same region is written differently by every insurer — "Delhi NCR",
-  // "DL - NCR", "All RTOs in Delhi NCR" — and an older Magma export can still
-  // carry the payout rate inside the name, "All RTOs in DL NCR (53)". Left as
-  // they are, one region becomes four.
-  const tidyRegion = v => String(v || '').trim()
-      .replace(/\s*\(\s*\d+(?:\.\d+)?\s*%?\s*\)\s*$/, '')
-      .replace(/^all\s+rtos?\s+in\s+/i, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-  // The same spellings stateKey already reconciles. Without them Shriram's
-  // "CHATTISGARH" and United India's "Chhattisgarh" were separate regions, each
-  // hiding the other's payouts, and so were Orissa/Odisha and
-  // Pondicherry/Puducherry. Applied as substring swaps so "REST OF CHATTISGARH"
-  // lands on the same key as "Rest Of Chhattisgarh".
-  const clusterKey = v => String(v || '').toLowerCase()
-      .replace(/&/g, 'and').replace(/[^a-z0-9]/g, '')
-      .replace(/chattisgarh/g, 'chhattisgarh')
-      .replace(/orissa/g, 'odisha')
-      .replace(/pondicherry/g, 'puducherry')
-      .replace(/uttaranchal/g, 'uttarakhand')
-      .replace(/^(ncr|ncrdelhi|delhincrregion|delhiandncr|dlncr|dlncrregion)$/, 'delhincr');
-  const letterCount = v => (String(v).match(/[a-z]/gi) || []).length;
-  let clusterAlias = new Map();      // a merged region's other keys -> the surviving one
-
-  // A region is a GRID's own geography — the block an insurer priced as one
-  // unit — so it is read from the geography and cluster columns and from
-  // nowhere else. City and state are not regions: reading them made every town
-  // its own "region", and worse, it made "Delhi" mean every row in Delhi state,
-  // which would have left "Delhi - DL01" and "Delhi NCR - DL01" returning the
-  // same thing. Zone columns are left out too — a zone is each insurer's own
-  // carve-up of the country and means something different to each of them.
-  function regionSourceCols(){
-    const out = [];
-    store.extraKeys.forEach(k => {
-      if (/geograph|cluster/i.test(k) && !/zone/i.test(k)){
-        const c = store.cols.get('x:' + k);
-        if (c) out.push(c);
-      }
+  function locationOptions(records){
+    const map = new Map();   // code → label
+    // Start from the full master so every RTO is selectable regardless of the
+    // other filters, then let the loaded data fill in anything the master
+    // does not carry (a cluster code, a newly issued series).
+    rtoUniverse().forEach((v, code) => map.set(code, locationLabel(code, v.city, v.state)));
+    records.forEach(r => {
+      const code = (r.location||'').trim();
+      if (!code) return;
+      if (!map.has(code)) map.set(code, locationLabel(code, r.city, r.state));
     });
-    return out;
+    return [...map.entries()]
+      .map(([value, label]) => ({ value, label }))
+      .sort((a,b) => a.label.localeCompare(b.label, undefined, {numeric:true, sensitivity:'base'}));
   }
-  // A geography column is written widest-first — "Delhi / Delhi NCR" — so the
-  // region it actually prices is the last part. Keeping both halves made
-  // "Delhi" stand for all 276 NCR codes instead of the 255 the state really has.
-  const regionNameOf = v => {
-    const p = String(v == null ? '' : v).split('/');
-    return tidyRegion(p[p.length - 1]);
-  };
-
-  function learnClusters(){
-    clusters = new Map();
-    rebuildCodeState();                  // cluster states are read off this
-    const loc = store.cols.get('location');
-    if (!loc || !store.n) return;
-    const sources = regionSourceCols();
-    const lc = loc.codes;
-    sources.forEach(src => {
-      const sc = src.codes;
-      const nameOf = regionNameOf;
-      const pairs = new Set();
-      let lastA = -1, lastB = -1;
-      for (let i = 0; i < store.n; i++){
-        const a = sc[i], b = lc[i];
-        if (a === lastA && b === lastB) continue;   // rows arrive grouped by RTO
-        lastA = a; lastB = b;
-        pairs.add(a * 8388608 + b);
-      }
-      pairs.forEach(p => {
-        const name = nameOf(clean(src.vals[Math.floor(p / 8388608)]));
-        const code = clean(loc.vals[p % 8388608]);
-        if (!name || !code || NOT_A_PLACE.test(name) || isZoneName(name)) return;
-        const k = clusterKey(name);
-        if (!k || k === clusterKey(code)) return;
-        let e = clusters.get(k);
-        if (!e){ e = { key: k, label: name, codes: new Set(), states: new Set() }; clusters.set(k, e); }
-        // Several spellings land on the same key; show the fullest one.
-        else if (letterCount(name) > letterCount(e.label)) e.label = name;
-        e.codes.add(code);
-      });
-    });
-    // A name standing for a single RTO is not a region — it is that RTO.
-    [...clusters.keys()].forEach(k => { if (clusters.get(k).codes.size < 2) clusters.delete(k); });
-
-    // Two regions covering exactly the same RTOs are one block under several
-    // names — "Bhopal", "Gwalior" and "Indore" all arrive covering the same 61
-    // codes. Merging them lists those RTOs once instead of three times over,
-    // and the group name says every wording it answers to, so it is visible
-    // that the grids do not actually separate them.
-    clusterAlias = new Map();
-    const bySet = new Map();
-    [...clusters.values()].forEach(e => {
-      const sig = [...e.codes].sort().join(',');
-      const first = bySet.get(sig);
-      if (!first){ bySet.set(sig, e); e.names = [e.label]; e.keys = [e.key]; return; }
-      first.names.push(e.label);
-      first.keys.push(e.key);
-      clusters.delete(e.key);
-      clusterAlias.set(e.key, first.key);
-    });
-    bySet.forEach(e => {
-      if (e.names.length > 1){
-        e.names.sort((a, b) => letterCount(b) - letterCount(a) || a.localeCompare(b));
-        e.short = e.names[0];
-        e.label = e.names.slice(0, 3).join(' / ') +
-                  (e.names.length > 3 ? ' +' + (e.names.length - 3) + ' more' : '');
-      } else {
-        e.short = e.label;
-      }
-    });
-    clusters.forEach(e => e.codes.forEach(c => {
-      const st = codeStateMap.get(c); if (st) e.states.add(st);
-    }));
-  }
-
-  // A region by any of its names.
-  function clusterFor(key){
-    return clusters.get(key) || clusters.get(clusterAlias.get(key)) || null;
-  }
-
-  // What the chosen location stands for. The dropdown lists an RTO once on its
-  // own and again under each region it belongs to, and a region entry carries
-  // its key after a "#": "DL01#delhincr". The two are different questions.
-  // "Delhi NCR - DL01" asks what the Delhi NCR grid pays at DL01; "Delhi - DL01"
-  // asks what the Delhi grid pays there, which is a different rate at several
-  // insurers. Picking DL01 on its own, under All RTOs, still returns every rate
-  // that applies there.
-  function expandLocationChoice(want){
-    let w = String(want == null ? '' : want);
-    const hash = w.indexOf('#');
-    if (hash >= 0) w = w.slice(0, hash);
-    // "@delhincr" — the whole-region entry kept working for searches saved
-    // before the list was split out into individual RTOs.
-    if (w.charAt(0) === '@'){
-      const e = clusterFor(w.slice(1));
-      return e ? { codes: e.codes, states: e.states } : { codes: new Set(), states: new Set() };
-    }
-    w = canonRto(w);
-    const codes = new Set([w]), states = new Set();
-    const st = codeStateMap.get(w);
-    if (st) states.add(st);
-    return { codes, states };
-  }
-
-  // ── How wide is a row's geography? ──────────────────────────
-  // Three cases, narrowest first:
-  //   RTO code (or a cluster name) given → those codes only
-  //   state but no RTO                   → every RTO in that state
-  //   neither                            → every RTO in the country
-  // The last two are assertions, not gaps. A circular naming a state and
-  // excluding no RTO means every RTO in that state, and one naming no geography
-  // at all means the whole book.
-  function geoCovers(r, want){
-    const rowCode = clean(r.location);
-    const w = expandLocationChoice(want);
-    if (rowCode){
-      const e = clusterFor(clusterKey(rowCode));
-      if (e) { for (const c of e.codes) if (w.codes.has(c)) return true; return false; }
-      return w.codes.has(rowCode);
-    }
-    const rowState = stateKey(r.state);
-    if (!rowState) return true;                    // countrywide rule
-    // If nothing in the data says which state these RTOs belong to, show the
-    // row rather than hide a real rate on a technicality.
-    if (!w.states.size) return true;
-    return w.states.has(rowState);
-  }
-
-  // Does a row belong to a named region? It does when one of the geography
-  // columns the regions were learned from names that region on that row.
-  function regionTest(key){
-    const e = key ? clusterFor(key) : null;
-    if (!e) return null;
-    // A merged region answers to every name that was folded into it.
-    const want = new Set(e.keys && e.keys.length ? e.keys : [e.key]);
-    const masks = [];
-    regionSourceCols().forEach(col => {
-      const ok = new Uint8Array(col.vals.length);
-      let any = false;
-      for (let v = 0; v < col.vals.length; v++){
-        if (want.has(clusterKey(regionNameOf(col.vals[v])))){ ok[v] = 1; any = true; }
-      }
-      if (any) masks.push({ codes: col.codes, ok });
-    });
-    if (!masks.length) return null;
-    if (masks.length === 1){
-      const c = masks[0].codes, o = masks[0].ok;
-      return i => o[c[i]] === 1;
-    }
-    return i => {
-      for (let m = 0; m < masks.length; m++) if (masks[m].ok[masks[m].codes[i]]) return true;
-      return false;
-    };
-  }
-
-  // The same question answered for every row at once: each distinct location
-  // and state value is tested once, then the rows are a walk over integers.
-  function geoTest(want){
-    const loc = store.cols.get('location');
-    if (!loc) return null;
-    const hash = String(want == null ? '' : want).indexOf('#');
-    const regionKey = hash >= 0 ? String(want).slice(hash + 1) : '';
-    const st = store.cols.get('state');
-    const w = expandLocationChoice(want);
-    const locOk = new Uint8Array(loc.vals.length);
-    for (let v = 0; v < loc.vals.length; v++){
-      const raw = clean(loc.vals[v]);
-      if (!raw){ locOk[v] = 2; continue; }          // 2 = fall through to the state
-      const e = clusterFor(clusterKey(raw));
-      if (e){
-        let hit = 0;
-        for (const c of e.codes) if (w.codes.has(c)) { hit = 1; break; }
-        locOk[v] = hit;
-      } else {
-        locOk[v] = w.codes.has(raw) ? 1 : 0;
-      }
-    }
-    let stOk = null;
-    if (st){
-      stOk = new Uint8Array(st.vals.length);
-      for (let v = 0; v < st.vals.length; v++){
-        const k = stateKey(st.vals[v]);
-        stOk[v] = (!k || !w.states.size || w.states.has(k)) ? 1 : 0;
-      }
-    }
-    const lc = loc.codes, sc = st ? st.codes : null;
-    const atCode = i => {
-      const a = locOk[lc[i]];
-      if (a !== 2) return a === 1;
-      return stOk ? stOk[sc[i]] === 1 : true;
-    };
-    const inRegion = regionTest(regionKey);
-    if (!inRegion) return atCode;
-    return i => atCode(i) && inRegion(i);
-  }
-
-  // ── The location list ───────────────────────────────────────
-  // One line per RTO: code, city, state. Nothing else. An RTO belongs to
-  // several of the insurers' named blocks at once, so listing it under each of
-  // them put the same code on screen five to thirteen times over; the blocks
-  // are still used to MATCH rows whose grid names a region instead of a code,
-  // they are just not something to scroll through.
-  function locationOptions(mask){
-    const loc = store.cols.get('location');
-    if (!loc || !store.n) return [];
-    const seen = new Uint8Array(loc.vals.length);
-    const codes = loc.codes;
-    if (mask){ for (let i = 0; i < store.n; i++){ if (mask[i]) seen[codes[i]] = 1; } }
-    else     { for (let i = 0; i < store.n; i++){ seen[codes[i]] = 1; } }
-    const visible = new Set();
-    for (let v = 0; v < loc.vals.length; v++){
-      if (!seen[v]) continue;
-      const code = clean(loc.vals[v]);
-      if (code) visible.add(code);           // a Set: one entry per code, never two
-    }
-    const rtos = [...visible]
-      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
-      .map(c => {
-        const i = codeInfo.get(c) || {};
-        return { value: c, label: locationLabel(c, i.city, i.state) };
-      });
-    // Delhi NCR is the one block worth its own line: it crosses three states,
-    // so no city and no state in this list reaches it, and several grids price
-    // it as a unit. Every OTHER block the insurers name — KOTA, Lucknow,
-    // Madhya Pradesh, AHMEDABAD — only repeats a city or a state that is
-    // already pickable, so listing all 193 of them buried the RTO codes behind
-    // a wall of duplicates. They are still used to MATCH rows whose grid names
-    // a region instead of a code; they are just not something to scroll past.
-    const regions = [];
-    const ncr = clusterFor('delhincr');
-    if (ncr && ncr.codes && ncr.codes.size > 1){
-      for (const c of ncr.codes){
-        if (!visible.has(c)) continue;
-        regions.push({ group: 'Region', value: '@' + ncr.key,
-                       label: 'Delhi NCR \u2014 ' + ncr.codes.size + ' RTOs' });
-        break;
-      }
-    }
-    return regions.concat(rtos);
-  }
-
   function fillLocationSelect(sel, items, placeholder){
     const current = sel.value;
-    const esc = v => String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-    // The items arrive already ordered by group, so the optgroups are opened and
-    // closed in one pass — with 13,000 entries this is the difference between a
-    // dropdown that appears instantly and one that stalls the tab.
-    const parts = ['<option value="">' + esc(placeholder) + '</option>'];
-    let open = null;
-    for (let i = 0; i < items.length; i++){
-      const o = items[i];
-      const g = o.group || '';
-      if (g !== open){
-        if (open) parts.push('</optgroup>');
-        if (g) parts.push('<optgroup label="' + esc(g) + '">');
-        open = g;
-      }
-      parts.push('<option value="' + esc(o.value) + '">' + esc(o.label) + '</option>');
-    }
-    if (open) parts.push('</optgroup>');
-    sel.innerHTML = parts.join('');
+    sel.innerHTML = `<option value="">${placeholder}</option>` +
+      items.map(o => `<option value="${o.value.replace(/"/g,'&quot;')}">${o.label}</option>`).join('');
     if (items.some(o => o.value === current)) sel.value = current;
     if (sel._syncCombo) sel._syncCombo();
   }
@@ -2648,10 +1604,21 @@
   }
   // Classes to offer in Vehicle Type: what the grids price, plus what the master
   // can describe. Only grid-side filters apply here.
-  function vehicleTypeOptions(maskFor){
-    const out = new Set(uniqueValsMasked(maskFor('vehicleType'), 'vehicleType', canonCategory));
+  const NOT_A_VEHICLE_TYPE = /^(cpa|motor[\s_\-]*trade[rs]?)$/i;
+  function vehicleTypeOptions(){
+    const f = currentFilters();
+    const pool = database.filter(r => {
+      if (f.location && r.location !== f.location) return false;
+      if (f.policyType && canonPolicyType(r.policyType) !== f.policyType) return false;
+      if (f.insurer && r.company !== f.insurer) return false;
+      if (f.gvwRange && r.gvwRange !== f.gvwRange) return false;
+      return true;
+    });
+    const out = new Set(pool.map(r => canonCategory(r.vehicleType)).filter(v => v && v.trim()));
     if (vehicleMaster.length) vehicleMaster.forEach(v => { const c = vmClass(v); if (c) out.add(c); });
-    return [...out].sort();
+    // CPA (personal accident cover) and Motor Trade (a policy/business type) are
+    // not kinds of vehicle, so they must not be offered as a Vehicle Type.
+    return [...out].filter(v => !NOT_A_VEHICLE_TYPE.test(String(v).trim())).sort();
   }
 
 
@@ -2662,44 +1629,58 @@
   // the dropdown fills with GCV-Truck, GCV-Tipper, GCV-Tanker...
   const CATEGORY_RULES = [
     [/kaali\s*peeli|kali\s*pili|black\s*(and|&)?\s*yellow/i, 'Kaali Peeli Taxi'],
-    // "School" anywhere means a school bus — "PCV-Bus_School" reads back-to-front.
-    [/\bschool\b|educational\s*inst/i,                         'School Bus'],
-    // Every other bus is its own class, "PCV Bus" — not plain PCV, which the
-    // grids use for passenger three-wheelers.
-    [/(passenger|staff|omni|stage|contract)\s*bus|^bus\b|\bbus\b/i, 'PCV Bus'],
-    [/employee\s*pick|employee\s*transport|staff\s*transport/i, 'Taxi'],
-    [/\btaxi\b|\bcab\b/i,                                     'Taxi'],
-    [/\bgcv\b|goods/i,                                         'GCV'],
-    [/\bpcv\b|passenger\s*carrying/i,                          'PCV'],
+    [/school\s*bus|bus[\s_\-]*school/i,                          'School Bus'],
+    // \b does not fire between a letter and a digit or an underscore, so
+    // "GCV3", "GCV4 1.6T To 2.5T" and "PCV-Bus_Other" matched none of these
+    // and survived as Vehicle Types of their own — which is why the dropdown
+    // listed "GCV3"/"GCV4" beside GCV, and a bus under two names.
+    [/(passenger|staff|omni|stage|contract)\s*bus|(^|[^a-z])bus(?![a-z])/i, 'Passenger Bus'],
+    // Taxi folds into PCV — it is a permit, not a kind of vehicle. The kaali
+    // peeli rule above runs first, so that livery keeps its own heading.
+    [/(^|[^a-z])(taxi|cab)(?![a-z])/i,                          'PCV'],
+    // Ahead of GCV on purpose. "GCV - Tractor" and "GCV Tractor" are tractor
+    // business, not a goods vehicle with a tractor body — a tractor is priced
+    // on its own grid and belongs in its own class.
+    [/tractor/i,                                                'GCV - Tractor'],
+    [/(^|[^a-z])(gcv|gccv|lcv|mcv|hcv)\d*(?![a-z])|goods/i,      'GCV'],
+    [/(^|[^a-z])(pcv|pccv)\d*(?![a-z])|passenger\s*carrying/i,   'PCV'],
     [/two\s*wheeler|\b2\s*w\b|scooter|moped|motor\s*cycle|motorbike|\bbike\b/i, 'Two Wheeler'],
     [/private\s*car|\bpvt\b|^car\b/i,                          'Private Car'],
     [/trailer/i,                                                'Trailer'],
-    // "Tractor" alone is a GCV body, not a class of its own.
-    [/tractor/i,                                                'GCV'],
     [/misc|construction|\bce\b/i,                               'Misc-D vehicles'],
   ];
 
+  // Strings that ARE a class name and must never be split apart. "Misc-D
+  // vehicles" is one class; splitting on its hyphen produced a body type of
+  // "D vehicles" that then showed up in the Body Type dropdown.
+  const WHOLE_CLASS = /^(misc[\s_\-]*d([\s_\-]*vehicles?)?|school[\s_\-]*bus|passenger[\s_\-]*bus|staff[\s_\-]*bus|kaali[\s_\-]*peeli([\s_\-]*taxi)?|private[\s_\-]*car|two[\s_\-]*wheeler|three[\s_\-]*wheeler|gcv[\s_\-]*tractor|gcv|pcv|taxi|trailer|tractor)$/i;
+
+  // Rows are many but the distinct strings are few, so each is worked out once.
+  const _splitCache = new Map();
   function splitCategoryBody(raw){
+    const key = raw == null ? '' : String(raw);
+    let hit = _splitCache.get(key);
+    if (!hit) { hit = splitCategoryBodyRaw(key); _splitCache.set(key, hit); }
+    return hit;
+  }
+  function splitCategoryBodyRaw(raw){
     const t = String(raw || '').trim();
     if (!t) return { category: '', body: '' };
-    // A class name is the whole value, never a class plus a body. Splitting
-    // "Misc-D vehicles" on its hyphen invented a body type called "D vehicles".
-    const whole = CATEGORY_NAMES.get(t.toLowerCase());
-    if (whole) return { category: whole, body: '' };
+    if (WHOLE_CLASS.test(t)) {
+      for (const [re, name] of CATEGORY_RULES) if (re.test(t)) return { category: name, body: '' };
+    }
     // "GCV-Truck" / "GCV - Heavy Truck/Semi Trailer" / "PCV_Taxi"
     const m = t.match(/^([A-Za-z][A-Za-z .]*?)\s*[-_/|]\s*(.+)$/);
     let head = m ? m[1].trim() : t, tail = m ? m[2].trim() : '';
     // The HEAD names the class. Only a bus or taxi in the tail can override it,
-    // because those are genuinely different classes — "GCV-Tractor" and
-    // "GCV-Heavy Truck/Semi Trailer" are still GCV with a body, not a Tractor
-    // class and not a Trailer class.
-    // A bus now resolves to PCV, so testing the RESULT for "Bus|Taxi" no longer
-    // works — test the tail itself instead.
-    if (tail && /\b(bus|taxi|cab|kaali\s*peeli)\b|school/i.test(tail)) {
+    // because those are genuinely different classes. ("GCV - Tractor" never
+    // reaches here — the tractor rule sits above GCV and claims the whole
+    // string, so it stays one class rather than splitting into GCV + body.)
+    // the separator class again: "Bus_Other" has no \b between "Bus" and "_"
+    if (tail && /(^|[^a-z])(bus|taxi|cab|kaali\s*peeli)(?![a-z])/i.test(tail)) {
       for (const [re, name] of CATEGORY_RULES) {
-        if (re.test(tail) && /^(PCV|PCV Bus|Taxi|School Bus|Kaali Peeli Taxi)$/.test(name)) {
-          return { category: name, body: tail };
-        }
+        // the tail names the class here, so it is not also a body
+        if (re.test(tail) && /Bus|Taxi/i.test(name)) return { category: name, body: '' };
       }
     }
     for (const [re, name] of CATEGORY_RULES) {
@@ -2710,113 +1691,66 @@
 
   function canonCategory(raw){ return splitCategoryBody(raw).category || String(raw || '').trim(); }
 
-  // ── One filter, tested once per distinct value ──────────────
-  // Every filter in the search bar asks about a single column, so the answer
-  // only ever depends on which of that column's distinct values a row holds.
-  // Each test is therefore worked out over the few hundred values the column
-  // actually contains, and applied to the rows as a lookup on an integer.
-  function dictMask(key, test){
-    const c = store.cols.get(key);
-    if (!c) return null;
-    const ok = new Uint8Array(c.vals.length);
-    for (let v = 0; v < c.vals.length; v++) if (test(c.vals[v])) ok[v] = 1;
-    return { c, ok };
-  }
-  const maskTest = m => { const codes = m.c.codes, ok = m.ok; return i => ok[codes[i]] === 1; };
-
-  // [{ key, test }] — tagged so a dropdown can be refreshed against every
-  // filter except its own.
-  function buildTests(f){
-    const t = [];
-    const add = (key, m) => { if (m) t.push({ key, test: maskTest(m) }); };
-    if (f.vehicleType){
-      add('vehicleType', dictMask('vehicleType',
-        v => canonCategory(v) === f.vehicleType || valueContains(v, f.vehicleType)));
-    }
-    if (f.bodyType){
-      const mb = dictMask('bodyType', v => valueContains(v, f.bodyType));
-      const mv = dictMask('vehicleType', v => valueContains(splitCategoryBody(v).body, f.bodyType));
-      if (mb && mv){
-        const bc = mb.c.codes, bo = mb.ok, vc = mv.c.codes, vo = mv.ok;
-        t.push({ key: 'bodyType', test: i => bo[bc[i]] === 1 || vo[vc[i]] === 1 });
-      } else { add('bodyType', mb || mv); }
-    }
-    if (f.location){
-      const g = geoTest(f.location);
-      if (g) t.push({ key: 'location', test: g });
-    }
-    if (f.policyType) add('policyType', dictMask('policyType', v => canonPolicyType(v) === f.policyType));
-    if (f.make){
-      // A row naming no make covers EVERY make, so an exact match would discard
-      // almost all of them. An explicit exclusion still blocks it.
-      add('make', dictMask('excludeMake', v => !excludedBy(v, f.make)));
-      add('make', dictMask('make', v => !clean(v) || valueContains(v, f.make)));
-    }
-    if (f.model){
-      // The chosen MODEL can be on the exclusion list too.
-      add('model', dictMask('excludeMake', v => !excludedBy(v, f.model)));
-      add('model', dictMask('model', v => !clean(v) || valueContains(v, f.model)));
-    }
-    if (f.gvwRange) add('gvwRange', dictMask('gvwRange', v => gvwMatchesSlab(v, f.gvwRange)));
-    if (f.insurer) add('insurer', dictMask('company', v => v === f.insurer));
-    return t;
-  }
-
-  function maskFrom(tests){
-    if (!tests.length) return null;                 // null means "every row"
-    const mask = new Uint8Array(store.n);
-    outer: for (let i = 0; i < store.n; i++){
-      for (let t = 0; t < tests.length; t++) if (!tests[t].test(i)) continue outer;
-      mask[i] = 1;
-    }
-    return mask;
-  }
-
-  // Refreshing the search form asks the same question of eight dropdowns, each
-  // time leaving its own filter out. The tests are built once and the masks
-  // cached, instead of eight full passes over the data building row objects.
-  function maskerForOptions(){
-    const tagged = buildTests(currentFilters());
-    const cache = new Map();
-    return key => {
-      if (!cache.has(key)) cache.set(key, maskFrom(tagged.filter(t => t.key !== key)));
-      return cache.get(key);
-    };
+  function filteredExcept(exceptKey){
+    const f = currentFilters();
+    return database.filter(r => {
+      // Compare the CANONICAL class, as the search itself does. Comparing the
+      // raw label meant a row written "Taxi" vanished from the option lists
+      // the moment PCV was chosen, even though the search would return it.
+      if (exceptKey !== 'vehicleType' && f.vehicleType &&
+          canonCategory(r.vehicleType) !== f.vehicleType) return false;
+      if (exceptKey !== 'location' && f.location && r.location !== f.location) return false;
+      if (exceptKey !== 'policyType' && f.policyType && canonPolicyType(r.policyType) !== f.policyType) return false;
+      if (exceptKey !== 'insurer' && f.insurer && r.company !== f.insurer) return false;
+      // Only apply make/model when the grid itself names one. A grid row with a
+      // blank make covers every make, so filtering it out is wrong.
+      if (exceptKey !== 'make' && f.make && isMakeExcluded(r, f.make)) return false;
+      if (exceptKey !== 'make' && f.make && r.make && r.make !== f.make) return false;
+      if (exceptKey !== 'model' && f.model && r.model && r.model !== f.model) return false;
+      if (exceptKey !== 'gvwRange' && f.gvwRange && r.gvwRange !== f.gvwRange) return false;
+      if (exceptKey !== 'bodyType' && f.bodyType && r.bodyType && r.bodyType !== f.bodyType) return false;
+      return true;
+    });
   }
   function populateSearchOptions(){
-    const maskFor = maskerForOptions();
     // Vehicle Type lists every class that is PRICED, and is never narrowed by
     // make/model/body: those come from the vehicle master, so filtering payout
     // rows by "TVS" found nothing and blanked this dropdown.
-    fillSelect(selVehicleType, vehicleTypeOptions(maskFor), 'Select Vehicle Type');
+    fillSelect(selVehicleType, vehicleTypeOptions(), 'Select Vehicle Type');
     // Bodies come from the master when loaded, plus any body the grids carry
     // inside their vehicle-type string ("GCV-Tipper" -> Tipper).
-    const bodyMask = maskFor('bodyType');
-    const gridBodies = new Set(uniqueValsMasked(bodyMask, 'bodyType'));
-    uniqueValsMasked(bodyMask, 'vehicleType', v => splitCategoryBody(v).body)
-      .forEach(b => gridBodies.add(b));
-    const bodyOpts = vehicleMaster.length
-      ? [...new Set(vmOptions('body').concat([...gridBodies]))].sort()
-      : [...gridBodies].sort();
+    const gridBodies = new Set();
+    const vtSel = selVehicleType ? selVehicleType.value : '';
+    filteredExcept('bodyType').forEach(r => {
+      const b = (r.bodyType || '').trim() || splitCategoryBody(r.vehicleType).body;
+      if (b && bodyAllowed(b, vtSel)) gridBodies.add(b);
+    });
+    // A tractor offers exactly four bodies, always — the two kinds times with
+    // and without a trailer. Neither source can supply that list on its own:
+    // the master records no trailer at all, and a grid that says only
+    // "Tractor" would leave the choice empty. Listing the sources' own
+    // half-stated spellings beside these ("Agricultural Tractor" next to
+    // "Agricultural Tractor with Trailer") would read as eight bodies, so the
+    // four replace them; an under-stated row still answers to all of them.
+    const bodyOpts = /tractor/i.test(vtSel)
+      ? TRACTOR_BODIES.slice()
+      : (vehicleMaster.length
+          ? [...new Set(vmOptions('body').concat([...gridBodies]))]
+          : [...gridBodies]).sort();
     fillSelect(selBodyType, bodyOpts, 'Select Body Type');
-    fillLocationSelect(selLocation, locationOptions(maskFor('location')), 'Select Location');
-    fillSelect(selPolicyType, policyTypeOptions(maskFor('policyType')), 'Select Policy Type');
-    fillSelect(selInsurer, uniqueValsMasked(maskFor('insurer'), 'company'), 'All Insurers');
+    fillLocationSelect(selLocation, locationOptions(filteredExcept('location')), 'Select Location');
+    fillSelect(selPolicyType, policyTypeOptions(filteredExcept('policyType')), 'Select Policy Type');
+    fillSelect(selInsurer, uniqueVals(filteredExcept('insurer'), 'company'), 'All Insurers');
     // Vehicles come from the master when it is loaded; the grids rarely name a
     // make, so reading them here is what left these empty.
     if (vehicleMaster.length){
       fillSelect(selMake,  vmOptions('make'),  'Select Make');
       fillSelect(selModel, vmOptions('model'), 'Select Model');
     } else {
-      fillSelect(selMake, uniqueValsMasked(maskFor('make'), 'make'), 'Select Make');
-      fillSelect(selModel, uniqueValsMasked(maskFor('model'), 'model'), 'Select Model');
+      fillSelect(selMake, uniqueVals(filteredExcept('make'), 'make'), 'Select Make');
+      fillSelect(selModel, uniqueVals(filteredExcept('model'), 'model'), 'Select Model');
     }
-    // Only the slabs some rule actually reaches, in weight order.
-    const bandsPresent = uniqueValsMasked(maskFor('gvwRange'), 'gvwRange');
-    const slabs = GVW_SLABS
-      .filter(sl => bandsPresent.some(b => { const p = parseGvwBand(b); return p && p[0] < sl.hi && p[1] > sl.lo; }))
-      .map(sl => sl.label);
-    fillSelect(selGvw, slabs, 'Select GVW Range');
+    fillSelect(selGvw, uniqueVals(filteredExcept('gvwRange'), 'gvwRange'), 'Select GVW Range');
   }
   // Changing the vehicle class re-scopes Make and Model. A make that does not
   // exist in the new class has to go, or the search runs with an impossible
@@ -2867,14 +1801,7 @@
     }
     function renderList(query){
       const q = (query||'').trim().toLowerCase();
-      // Someone reading a number plate types DL1C, which is no longer a code of
-      // its own. Match what it folds into as well, so a plate still finds its RTO.
-      const qc = q ? canonRto(q).toLowerCase() : '';
-      const opts = currentOptions().filter(o => {
-        if (!q) return true;
-        const t = o.textContent.toLowerCase();
-        return t.includes(q) || (qc !== q && t.includes(qc));
-      });
+      const opts = currentOptions().filter(o => !q || o.textContent.toLowerCase().includes(q));
       if (!opts.length){
         list.innerHTML = '<div class="combo-empty">' +
           (currentOptions().length ? 'Nothing matches that search.' : emptyMsg) +
@@ -2960,7 +1887,6 @@
   document.getElementById('resetSearchBtn').addEventListener('click', () => {
     [selVehicleType, selBodyType, selLocation, selPolicyType, selInsurer, selMake, selModel, selGvw].filter(Boolean).forEach(s => s.value = '');
     document.getElementById('regNumber').value = '';
-    document.getElementById('searchDate').value = '';
     document.getElementById('resultsWrap').style.display = 'none';
     populateSearchOptions();
   });
@@ -2975,28 +1901,17 @@
   const DECLINE_RE = /\b(decline[d]?|declining|not\s*covered|no\s*cover|excluded?|exclusion|block(ed)?|no\s*business|nb\s*stop|stopped|restricted|prohibit)/i;
 
   // Is the chosen make on this row's exclusion list?
-  // An exclusion list can name MODELS as well as makes. IndusInd prices
-  // "Tata/Maruti/Mahindra (Mahindra Below 2T other than Jeeto & Supro)", and
-  // Jeeto and Supro are Mahindra models, not manufacturers — 21,264 rows carry
-  // exactly that list. Testing it against the make alone never matched, so the
-  // portal paid out on the two vehicles the grid had carved out.
-  function excludedBy(listText, name){
-    const raw = clean(listText);
-    const want = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (!raw || !want) return false;
+  function isMakeExcluded(r, make){
+    const raw = clean(r.excludeMake);
+    if (!raw || !make) return false;
+    const want = String(make).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!want) return false;
     return raw.split(/\s*[,;/|]\s*|\s+&\s+|\s+and\s+/i).some(x => {
       const k = String(x).toLowerCase().replace(/[^a-z0-9]/g, '');
-      if (!k) return false;
-      if (k === want) return true;
-      // "Tata" must match "Tata Motors", and the reverse — but a prefix rule on
-      // a two- or three-letter name matches half the catalogue, so short names
-      // have to be exact.
-      if (k.length < 4 || want.length < 4) return false;
-      return want.indexOf(k) === 0 || k.indexOf(want) === 0;
+      // "Tata" must match "Tata Motors", and the reverse
+      return k && (k === want || want.indexOf(k) === 0 || k.indexOf(want) === 0);
     });
   }
-
-  function isMakeExcluded(r, make){ return excludedBy(r && r.excludeMake, make); }
 
   function isDeclined(r){
     // Only explicit wording counts. A bare 0% is a real, useful answer — this
@@ -3043,85 +1958,44 @@
       'but pay no commission, which is not the same as refusing it.';
   }
 
-  // No one reads a hundred thousand cards. Past this, the rest are held back
-  // and the search bar says so, rather than locking the tab up building them.
-  const RESULT_CAP = 20000;
-  let resultsTruncated = 0;
-
   function runSearch(opts){
     opts = opts || {};
-    if (!store.n){
+    if (!database.length){
       if (!opts.keepScroll) alert('No payout data loaded yet. Go to "Upload & Manage Data" first.');
       return;
     }
     const f = currentFilters();
-    // Every top-bar field is optional — only filter on whatever the person
-    // actually filled in. A grid row often covers several vehicles/fuels/ages at
-    // once ("Petrol, Diesel, CNG, LPG"), so matching asks whether the selected
-    // value is contained within the row's value, not that they are identical.
-    // The work happens over the columns; only the rows that survive are ever
-    // rebuilt as objects.
-    const tests = buildTests(f);
-    // A region covers hundreds of RTOs and the parser's export repeats each rule
-    // once per code, so the same answer can arrive 276 times. Those copies are
-    // folded together HERE rather than in the renderer, so that the cap below
-    // counts rules and not repetitions — otherwise picking "Delhi NCR" filled
-    // the page with copies of the first few rules and held back all the rest.
-    const sigCols = store.keys
-      .filter(k => k !== 'location' && k !== 'state' && k !== 'city')
-      .map(k => store.cols.get(k));
-    const locCol = store.cols.get('location');
-    const bySig = new Map(), droppedSigs = new Set();
-    const keep = [], counts = [], wheres = [], declinedIdx = [];
-    resultsTruncated = 0;
-
-    const sameRule = (a, b) => {
-      for (let c = 0; c < sigCols.length; c++) if (sigCols[c].codes[a] !== sigCols[c].codes[b]) return false;
-      return true;
-    };
-
-    outer: for (let i = 0; i < store.n; i++){
-      for (let t = 0; t < tests.length; t++) if (!tests[t].test(i)) continue outer;
-      // Insurers that will not write this combination are reported separately.
-      if (declinedBits && declinedBits[i]){ if (declinedIdx.length < 500) declinedIdx.push(i); continue; }
-
-      let h = 2166136261;
-      for (let j = 0; j < sigCols.length; j++){ h ^= sigCols[j].codes[i]; h = Math.imul(h, 16777619); }
-      h = h >>> 0;
-
-      const prior = bySig.get(h);
-      let slot = -1;
-      if (prior !== undefined){
-        const list = typeof prior === 'number' ? [prior] : prior;
-        for (let j = 0; j < list.length; j++){
-          if (sameRule(keep[list[j]], i)){ slot = list[j]; break; }
-        }
-      }
-      if (slot >= 0){
-        counts[slot]++;
-        if (locCol && wheres[slot].size < 8){ const w = clean(locCol.get(i)); if (w) wheres[slot].add(w); }
-        continue;
-      }
-      if (keep.length >= RESULT_CAP){
-        if (!droppedSigs.has(h)){ droppedSigs.add(h); resultsTruncated++; }
-        continue;
-      }
-      const s = keep.length;
-      keep.push(i); counts.push(1);
-      const w = new Set();
-      if (locCol){ const v = clean(locCol.get(i)); if (v) w.add(v); }
-      wheres.push(w);
-      if (prior === undefined) bySig.set(h, s);
-      else if (typeof prior === 'number') bySig.set(h, [prior, s]);
-      else prior.push(s);
-    }
-
-    currentMatches = keep.map((i, s) => {
-      const r = dbRow(i);
-      if (counts[s] > 1){ r.__preCount = counts[s]; r.__preWhere = [...wheres[s]]; }
-      return r;
-    });
-    lastDeclined = declinedIdx.map(dbRow);
+    // Every top-bar field is optional — only filter on whatever the person actually filled in.
+    // A grid row often covers several vehicles/fuels/ages at once (e.g. "Petrol, Diesel, CNG, LPG"),
+    // so matching here checks whether the selected value is contained within the row's value,
+    // not that they're identical.
+    currentMatches = database.filter(r =>
+      (!f.vehicleType || canonCategory(r.vehicleType) === f.vehicleType ||
+                         valueContains(r.vehicleType, f.vehicleType) ||
+       // A grid may file a tractor under its goods or Misc-D heading. Let the
+       // body answer for the class, or that rate is unreachable. A tractor
+       // loader is plant, not a tractor, so it is not let through here.
+       (/tractor/i.test(f.vehicleType) && !!tractorFacets(r.bodyType))) &&
+      (!f.bodyType || valueContains(r.bodyType, f.bodyType) ||
+                      // Agricultural / commercial and with / without trailer
+                      // are separate facts; whatever the grid left unsaid
+                      // answers to both values. See tractorBodyMatches.
+                      tractorBodyMatches(r.bodyType, f.bodyType) ||
+                      valueContains(splitCategoryBody(r.vehicleType).body, f.bodyType)) &&
+      (!f.location || r.location === f.location) &&
+      (!f.policyType || canonPolicyType(r.policyType) === f.policyType) &&
+      // A row that names no make covers EVERY make, so an exact match would
+      // discard almost all of them. An explicit exclusion still blocks it.
+      (!f.make || !isMakeExcluded(r, f.make)) &&
+      (!f.make || !clean(r.make) || valueContains(r.make, f.make)) &&
+      (!f.model || !clean(r.model) || valueContains(r.model, f.model)) &&
+      (!f.gvwRange || r.gvwRange === f.gvwRange) &&
+      (!f.insurer || r.company === f.insurer)
+    );
+    // Insurers that will not write this combination are reported separately.
+    const declined = currentMatches.filter(isDeclined);
+    currentMatches = currentMatches.filter(r => !isDeclined(r));
+    lastDeclined = declined;
 
     // Editing a chip keeps the sidebar filters; a fresh search from the form clears them
     if (!opts.keepFilters) sidebarFilterState = {};
@@ -3169,8 +2043,6 @@
   ];
 
   function renderSummaryBar(f){
-    const dateVal = document.getElementById('searchDate').value;
-    const dateDisplay = dateVal ? new Date(dateVal + 'T00:00:00').toLocaleDateString('en-GB') : '—';
     const reg = document.getElementById('regNumber').value.trim();
     const bar = document.getElementById('summaryBar');
 
@@ -3224,8 +2096,10 @@
       dateEl.textContent = effDates.size + ' dates';
       dateEl.title = [...effDates].join(', ');
     } else {
-      labelEl.textContent = 'Date';
-      dateEl.textContent = dateDisplay;
+      // No row states an effective date. There is no date to fall back on now
+      // that the picker is gone — say so rather than show today's.
+      labelEl.textContent = 'Effective from';
+      dateEl.textContent = '—';
     }
   }
 
@@ -3273,20 +2147,15 @@
                          'zeroDep','noOfWheels','gvwRange'];
     const NOISE_VALUE = /^(n\/?a|na|nil|none|-|--|blank|null)$/i;
     DATA_GROUPS.forEach(field => {
-      const raw = (MULTI_VALUE.has(field)
-          ? currentMatches.flatMap(r => splitMulti(r[field]))
-          : currentMatches.map(r => field === 'policyType' ? canonPolicyType(r[field])
-                                  : field === 'noOfWheels' ? normWheeler(r[field])
-                                  : r[field]))
+      const raw = currentMatches
+          .map(r => field === 'policyType' ? canonPolicyType(r[field])
+                  : field === 'noOfWheels' ? normWheeler(r[field])
+                  : r[field])
           .map(v => String(v ?? '').trim())
           .filter(v => v && !NOISE_VALUE.test(v));
       let vals = [...new Set(raw)];
       if (field === 'noOfWheels') vals = WHEELER_ORDER.filter(w => vals.indexOf(w) >= 0);
-      else if (field === 'gvwRange'){
-        // The insurers' 50 overlapping bands collapse to the standard slabs.
-        const raw = vals.slice();
-        vals = GVW_SLABS.filter(sl => raw.some(b => gvwMatchesSlab(b, sl.label))).map(sl => sl.label);
-      }
+      else if (field === 'gvwRange') vals = sortGvw(vals);
       else vals.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
       const group = document.getElementById('fp-' + field + '-group');
       const opts  = document.getElementById('fp-' + field + '-opts');
@@ -3301,7 +2170,7 @@
       opts.innerHTML = vals.map(v => `
         <label class="fp-check"${lone ? ' style="opacity:.6"' : ''}>
           <input type="checkbox" class="fp-fixed" data-field="${field}" value="${v.replace(/"/g,'&quot;')}"${lone ? ' disabled' : ''}>
-          <span>${v}${lone ? ' <em style="font-style:normal;color:#94a3b8">(all rows)</em>' : ''}</span>
+          <span>${v}</span>
         </label>`).join('');
     });
 
@@ -3393,33 +2262,6 @@
     return true;
   }
 
-  // ── One cell, several values ────────────────────────────────
-  // A grid writes "Diesel/CNG/LPG" on a rule that covers all three, and the
-  // parser writes "Rollover/Renewal" on an old-vehicle rule that covers both
-  // business types. Listing each spelling as its own filter line gave eleven
-  // fuel options for six actual fuels — "Petrol/Diesel/CNG/LPG" sitting beside
-  // "Petrol" as though it were a different fuel. These fields are split into
-  // their parts: the sidebar lists the parts, and a rule matches when ANY of
-  // its parts is ticked, so ticking Diesel still finds the Diesel/CNG/LPG rule.
-  const MULTI_VALUE = new Set(['fuel', 'condition']);
-  const MULTI_CANON = new Map([
-    ['ev','EV'], ['electric','EV'], ['e-vehicle','EV'], ['battery','EV'],
-    ['cng','CNG'], ['lpg','LPG'], ['petrol','Petrol'], ['diesel','Diesel'],
-    ['hybrid','Hybrid'], ['bi-fuel','Bi-Fuel'], ['bifuel','Bi-Fuel'],
-    ['rollover','Rollover'], ['roll over','Rollover'], ['roll-over','Rollover'],
-    ['renewal','Renewal'], ['renew','Renewal'], ['new','New']
-  ]);
-  function splitMulti(v){
-    const t = String(v == null ? '' : v).trim();
-    if (!t) return [];
-    return t.split(/\s*(?:[\/,&+|]|\band\b)\s*/i)
-            .map(x => x.trim())
-            .filter(Boolean)
-            .map(x => MULTI_CANON.get(x.toLowerCase()) || x)
-            // the same part twice ("Petrol/Petrol") is one option, not two
-            .filter((x, i, a) => a.indexOf(x) === i);
-  }
-
   function applySidebarAndRender(){
     let final = currentMatches;
     const s = sidebarFilterState;
@@ -3428,18 +2270,6 @@
     // Policy type compares canonically so COMP/Comprehensive/Package all agree.
     if (s.fixed) Object.entries(s.fixed).forEach(([field, valueSet]) => {
       if (!valueSet.size) return;
-      // Weight is offered as one standard set of slabs, not each insurer's own
-      // band, so ticking a slab keeps every rule whose band overlaps it.
-      if (field === 'gvwRange'){
-        final = final.filter(r => [...valueSet].some(sl => gvwMatchesSlab(r[field], sl)));
-        return;
-      }
-      // Ticking Diesel keeps the "Diesel/CNG/LPG" rule; ticking Renewal keeps
-      // the "Rollover/Renewal" rule. Any part matching is enough.
-      if (MULTI_VALUE.has(field)){
-        final = final.filter(r => splitMulti(r[field]).some(t => valueSet.has(t)));
-        return;
-      }
       final = final.filter(r => {
         // Wheels are offered as bands ("6W"), so the row's raw value has to be
         // banded the same way here or ticking a band would match nothing.
@@ -3464,17 +2294,20 @@
     final = final.slice().sort((a,b) => (parseFloat(b.payout)||0) - (parseFloat(a.payout)||0));
     const insurerCount = new Set(final.map(r => r.company).filter(Boolean)).size;
     document.getElementById('resultsCount').textContent =
-      `Showing ${final.length.toLocaleString()} result${final.length === 1 ? '' : 's'}` +
-      (insurerCount > 1 ? ` across ${insurerCount} insurers` : '') +
-      (resultsTruncated ? ` — ${resultsTruncated.toLocaleString()} more rules match; narrow the search to see them` : '');
+      `Showing ${final.length} result${final.length === 1 ? '' : 's'}` +
+      (insurerCount > 1 ? ` across ${insurerCount} insurers` : '');
 
     // If several results are indistinguishable, say so plainly — otherwise it
     // looks like a bug rather than repeated rows in the source grid.
     const noteEl = document.getElementById('identicalNote');
     if (noteEl){
-      const sig = r => JSON.stringify([r.company, r.payout,
-        Object.keys(r).filter(k => k !== '_extra').sort().map(k => r[k]),
-        Object.keys(r._extra||{}).sort().map(k => k + '=' + r._extra[k])]);
+      const sig = r => {
+        let k = '';
+        for (const f in r) if (f !== '_extra') k += r[f] + '\u0001';
+        const x = r._extra;
+        if (x) for (const f in x) k += f + '=' + x[f] + '\u0002';
+        return k;
+      };
       const groups = {};
       final.forEach(r => { const k = sig(r); groups[k] = (groups[k]||0) + 1; });
       const repeated = Object.values(groups).filter(c => c > 1).length;
@@ -3513,7 +2346,21 @@
   function renderResultCards(matches){
     const list = document.getElementById('resultsList');
     if (!matches.length){
-      list.innerHTML = '<div class="empty-state">No payout entries match this combination. Try loosening a filter.</div>';
+      // Every RTO is selectable now, so "nothing matched" has two very
+      // different causes: the filters are too tight, or no insurer in the
+      // loaded grids prices that RTO at all. Say which one it is.
+      let msg = 'No payout entries match this combination. Try loosening a filter.';
+      try {
+        const loc = selLocation && selLocation.value;
+        if (loc && !database.some(r => (r.location||'').trim() === loc)) {
+          const u = rtoUniverse().get(loc);
+          const where = u ? (u.city + ', ' + u.state) : loc;
+          msg = 'No insurer in the loaded grids has any payout for ' + loc +
+                ' (' + where + '). This RTO is not priced in the data you have ' +
+                'imported \u2014 it is not a filter problem.';
+        }
+      } catch (e) {}
+      list.innerHTML = '<div class="empty-state">' + msg + '</div>';
       return;
     }
     // Never shown, even if the value varies — these are file bookkeeping, not
@@ -3542,7 +2389,11 @@
     // here, so it was never rendered.
     const TAG_FIELDS = [
       ['vehicleType','Vehicle Category'], ['make','Make'], ['model','Model'],
-      ['excludeMake','Excluded Makes'], ['seating','Seating'],
+      // Exclude Make is deliberately NOT shown. It is the reason a row is
+      // withheld from a search for one of those makes, not a property of the
+      // rows that do appear — printing it on a visible card reads as though
+      // the insurer refuses a make you did not even ask about.
+      ['seating','Seating'],
       ['fuel','Fuel Type'], ['policyType','Policy Type'], ['vehicleAge','Vehicle Age'],
       ['bodyType','Body Type'],
       ['ncb','NCB'], ['condition','Condition'], ['zeroDep','Zero Dep'],
@@ -3564,9 +2415,7 @@
     // payout differs. Collapse them into one card and say how many there were,
     // rather than repeating the same answer several times.
     const visSig = r => {
-      // Two rows at the same net rate can still split OD and TP differently.
-      // Those are different answers, so they must not collapse into one card.
-      const parts = [r.company, r.payout, r.odPayout, r.tpPayout];
+      const parts = [r.company, r.payout];
       TAG_FIELDS.forEach(([k]) => parts.push(String(r[k] ?? '').trim()));
       extraKeys.forEach(k => parts.push(String((r._extra || {})[k] ?? '').trim()));
       return parts.join('\u0001');
@@ -3576,16 +2425,9 @@
       const k = visSig(r);
       if (!groups.has(k)) groups.set(k, { row: r, count: 0, where: new Set() });
       const g = groups.get(k);
-      // Copies already folded together by the search (one rule repeated across
-      // every RTO of a region) bring their own count and their own list of
-      // where they applied.
-      g.count += (r.__preCount || 1);
-      if (r.__preWhere) r.__preWhere.forEach(w => { if (w) g.where.add(String(w).trim()); });
-      // The RTO code, not the grid's own wording. Printing the geography column
-      // verbatim put "Delhi / All RTOs in DL NCR (52.5)" on the card, which
-      // reads like a stray remark rather than saying where the rate applies.
-      const w = r.location ||
-                (r._extra && (r._extra['Grid Geography (as written)'] || r._extra['Grid Geography'])) || '';
+      g.count++;
+      const w = (r._extra && (r._extra['Grid Geography (as written)'] || r._extra['Grid Geography'])) ||
+                r.location || '';
       if (w) g.where.add(String(w).trim());
     });
     const collapsed = [...groups.values()];
@@ -3593,44 +2435,16 @@
       if (g.count > 1) {
         const r = Object.assign({}, g.row);
         r.__dupCount = g.count;
-        r.__dupWhere = [...g.where].slice(0, 4).join(' · ') + (g.where.size > 4 ? ' …' : '');
+        r.__dupWhere = [...g.where].slice(0, 4).join(' · ');
         return r;
       }
       return g.row;
     });
 
-    list.innerHTML = matches.map(r => {
+    const PAGE = 100;
+    const cardHtml = r => {
       const tag = (label, value, key) =>
         `<span class="tag${varies[key] ? ' tag-diff' : ''}">${label}: ${value}</span>`;
-      // A payout of zero is a real answer — Chola prints a dash and Digit a "D"
-      // where they pay nothing, and both arrive here as 0. A plain `||` test
-      // treats that as missing and shows a dash, which reads as "no rate found"
-      // — a different fact, and the one this number must not blur.
-      function payoutText(v) {
-        if (v === null || v === undefined || String(v).trim() === '') return '—';
-        const n = parseFloat(String(v).replace('%', ''));
-        return isNaN(n) ? String(v) : n + '%';
-      }
-      // The OD and TP legs sit under the headline rate. A leg of 0 is printed,
-      // because "they pay nothing on TP" is a real answer and must not look
-      // like "no TP rate was quoted".
-      function splitLegs(row) {
-        const leg = v => {
-          const s = String(v ?? '').trim();
-          if (s === '') return null;
-          const n = parseFloat(s.replace('%', ''));
-          return isNaN(n) ? null : n;
-        };
-        const od = leg(row.odPayout), tp = leg(row.tpPayout);
-        if (od === null && tp === null) return '';
-        const part = (lab, n) => n === null
-          ? `<span style="opacity:.45">${lab} —</span>`
-          : `<span>${lab} <b style="color:var(--text)">${n}%</b></span>`;
-        return `<div style="margin-top:3px;font-size:10px;color:var(--text-soft);
-                     display:flex;gap:8px;justify-content:flex-end;white-space:nowrap">
-                  ${part('OD', od)}${part('TP', tp)}
-                </div>`;
-      }
       const tags = TAG_FIELDS
         .filter(([k]) => meaningful(r[k]))
         .map(([k,label]) => tag(label, r[k], k))
@@ -3652,32 +2466,38 @@
             </div>
             <div class="rc-payout">
               <div class="lbl">Payout</div>
-              <div class="val">${payoutText(r.payout)}</div>
-              ${splitLegs(r)}
+              <div class="val">${r.payout || '—'}${r.payout ? '%' : ''}</div>
             </div>
           </div>
           ${tags || extraTags ? `<div class="rc-tags">${tags}${extraTags}</div>` : ''}
-          ${r.__dupCount ? `<div class="rc-dup" style="margin-top:8px;font-size:12px;color:#64748b">
-              Same payout on ${r.__dupCount} grid rows${r.__dupWhere ? ` — ${r.__dupWhere}` : ''}
-            </div>` : ''}
         </div>`;
-    }).join('');
+    };
+    // Thousands of cards at once freeze the page; show a page at a time.
+    let shown = 0;
+    const more = document.createElement('div');
+    const showNext = () => {
+      const end = Math.min(shown + PAGE, matches.length);
+      let html = '';
+      for (; shown < end; shown++) html += cardHtml(matches[shown]);
+      more.insertAdjacentHTML('beforebegin', html);
+      if (shown >= matches.length) { more.remove(); return; }
+      more.innerHTML = '<button type="button" class="showMoreBtn" style="padding:10px 18px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--navy);font-weight:600;cursor:pointer;">Show ' +
+        Math.min(PAGE, matches.length - shown).toLocaleString() + ' more (' +
+        (matches.length - shown).toLocaleString() + ' left)</button>';
+      more.querySelector('button').onclick = showNext;
+    };
+    list.innerHTML = '';
+    more.style.cssText = 'text-align:center;padding:12px 0;';
+    list.appendChild(more);
+    showNext();
   }
 
   // Bring back a previously saved vehicle master, so it does not have to be
   // uploaded again every session.
+  if (restoreVehicleMaster()) populateSearchOptions();
   renderVehicleMasterStatus();
-  restoreVehicleMaster().then(ok => {
-    if (ok) populateSearchOptions();
-    renderVehicleMasterStatus();
-  });
 
   refreshDbSummary();
-  // Then bring back the payout grids themselves. Asynchronous, so the page is
-  // usable immediately and fills in once the rows are read back; refreshDbSummary
-  // and populateSearchOptions run again inside, with persistence armed only
-  // afterwards so the restore cannot overwrite itself.
-  restorePayoutData();
 })();
 </script>
 </body>
